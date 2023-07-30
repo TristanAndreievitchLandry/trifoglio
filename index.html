@@ -3,40 +3,48 @@
 <html>
 <head>
 
-  <title>labo</title>
+  <title>Trifoglio</title>
 	
+  <link rel="icon" href="clover_icon.png">
+
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     
-    <!-- scripts libraries -->
-
+    <!-- scripts -->
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
   <script src="main.js" async ></script>
+	<script src="leaflet-iiif.js"></script>
   <script src="draw.js"></script>
   <script src="saveLayer.js"></script>
-  <script src="addDraw.js"></script>
-	<script src="leaflet-iiif.js"></script>
-	<script src="drawing.js"></script>
-    <script type="text/javascript" src="leaflet-hash.js"></script>
+  <script type="text/javascript" src="leaflet-hash.js"></script>
 
-    <!--styles libraries-->
+    <!--styles-->
     <link href="styles.css" rel="stylesheet" type="text/css">
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
-    <!--fonts-->
-    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
+   
 </head>
 
 <body>
 
 <div id="map"></div>
 
+<div id="infoBox" class="info-box">
+  <img src="clover_300.png" class="icon" alt="Un trèfle">
+  <h2>Trifoglio</h2>
+  <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="blank">Tristan Landry</a> </p>
+</div>
+
 <div class="button-container">
+
+  <button id="info-button" style="font-size: 25px;">☘</button>
+
   <button id="save-button" onclick="downloadDrawnLayers()">💾</button>
 
   <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;">🗑</button>
+
 </div>
 
 </body>

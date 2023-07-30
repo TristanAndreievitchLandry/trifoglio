@@ -33,9 +33,8 @@ function drawSomething() {
 }
 
 
+
 function removeAllDrawnPolygons() {
   drawnLayers.clearLayers();
   localStorage.removeItem('drawnLayers');
-
-  drawSomething(); // Call the drawSomething function again to reinitialize the drawnLayers
 }

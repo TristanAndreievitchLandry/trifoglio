@@ -1,8 +1,7 @@
-//let drawnLayers = new L.FeatureGroup(); // Define drawnLayers outside the script block. Otherwise, it won't be accessible in the global scope. This is required for the Leaflet.draw plugin to work properly.
+//tristan landry
 
+// Initialize the Leaflet.draw plugin and load saved layers
 let drawnLayers;
-//usual Leaflet stuff. Notez le CRS pour la carte iiif.
-
 
 const map = L.map('map', {
   center: [0,0],
@@ -13,14 +12,14 @@ const map = L.map('map', {
 
 // Function to set the start view of the map
 function setStartview() {
-  map.setView([-84, 53.25], 5);
+  map.setView([-50, 50], 1);
 }
 
 // Event listener for the IIIF layer's 'load' event
 // This will be triggered when the IIIF layer is fully loaded
-map.on('load', () => {
+ map.on('load', () => {
   setStartview(); // Set the start view of the map
-});
+}); 
 
 drawSomething(); // Initialize the Leaflet.draw plugin
 // Load saved layers from local storage
@@ -33,9 +32,35 @@ loadFromLocalStorage();
 var iiifLayers = {};
 //pour monter les tuiles iiif
 
-  
-//Fond de carte
-var manifestUrl = "https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json";
+// Function to ask the user for the Manifest URL using a prompt
+function askForManifestUrl() {
+  const manifestUrl = prompt('Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):');
+  if (manifestUrl === null) {
+    // User clicked "Cancel" on the prompt
+    return null; // Return null to indicate that the prompt was canceled
+  }
+
+  // Check if the URL is valid using a regular expression
+  const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/;
+  if (!urlRegex.test(manifestUrl)) {
+    alert('Ce manifeste est invalide.💩Essayez de nouveau.');
+    return askForManifestUrl(); // Ask again if the user input is invalid
+  }
+
+  return manifestUrl; // Return the valid URL
+}
+
+// Call the function to ask for the Manifest URL when the app starts
+const manifestUrl = askForManifestUrl();
+// Now you have the user-specified URL stored in the manifestUrl variable.
+
+// Function to load the IIIF manifest using the provided URL
+function loadIIIFManifest(manifestUrl) {
+  // Your code to load the IIIF manifest goes here
+}
+
+// Call the function to load the IIIF manifest with the user-specified URL
+loadIIIFManifest(manifestUrl);
 
 // Grab a IIIF manifest
 $.getJSON(manifestUrl)
@@ -52,10 +77,8 @@ $.getJSON(manifestUrl)
   console.error("Failed to load IIIF manifest.");
 });
 
-setTimeout(setStartview, 1000); // Set the start view of the map after 1 second 
-  
 ////////////////
-//  LEAFLET HASH(ISH)//
+//LEAFLET HASH//
 ////////////////
 
 //Ajouter hash (Leaflet-hash lets you to add dynamic URL hashes to web pages with Leaflet maps.) Pratique pour les coords de la carte iiif
@@ -64,12 +87,53 @@ var hash = new L.Hash(map);
 ////////////////
 //LEAFLET DRAW//
 ////////////////
-// Call the drawSomething function from main.js
-// drawSomething();
-
 
 //en complement a draw.js
-var drawingGeoJson = L.geoJSON(drawing, {color: 'red', opacity: 0.5});
 
-//drawingGeoJson.addTo(map);
+ // Load saved layers from local storage when the page loads
+ loadFromLocalStorage();
+
+ ///////////////////////
+ //afficher les coords//
+  ///////////////////////
+
+ var div = document.createElement ('div');
+  div.id = 'coordsDiv';
+  div.style.position = 'absolute';
+  div.style.bottom = '0';
+  div.style.left = '0';
+  div.style.backgroundColor = 'white';
+  div.style.zIndex = '999';
+  document.getElementById('map').appendChild(div);
+
+  map.on('mousemove', function(e) {
+    var lat = e.latlng.lat.toFixed(5);
+    var lon = e.latlng.lng.toFixed(5);
+
+    document.getElementById('coordsDiv').innerHTML = lat + ', ' + lon;
+  });
+
+  ///////////////////////info box////////////////////////
+
+// Get references to the info box and button elements
+const infoBox = document.getElementById("infoBox");
+const infoButton = document.getElementById("info-button");
+
+// Add a click event listener to the button
+infoButton.addEventListener("click", function () {
+//   // Toggle the display of the info box
+if (infoBox.style.display === "block") {
+//     infoBox.style.display = "none"; // Hide the info box if it's already open
+   } else {
+     infoBox.style.display = "block"; // Show the info box if it's currently hidden
+   }
+ });
+
+ // Add a click event listener to the document
+document.addEventListener("click", function (event) {
+  // Check if the clicked element is inside the info box or the info button
+  if (!infoBox.contains(event.target) && event.target !== infoButton) {
+    infoBox.style.display = "none"; // Close the info box if clicked outside
+  }
+});
 

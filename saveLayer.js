@@ -10,7 +10,7 @@
   async function downloadDrawnLayers() {
     const savedLayers = JSON.parse(localStorage.getItem('drawnLayers'));
     if (!savedLayers || savedLayers.length === 0) {
-      alert('Dessinez d\'abord quelque chose');
+      alert('Dessinez d\'abord quelque chose 😉');
       return;
     }
 
@@ -18,7 +18,7 @@
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
-    const fileName = 'drawn_layers.json';
+    const fileName = 'mon_dessin.json';
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
@@ -39,5 +39,4 @@
     }
   }
 
-  // Load saved layers from local storage when the page loads
-  loadFromLocalStorage();
+ 
