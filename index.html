@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>labo</title>
+	
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    
+    <!-- scripts libraries -->
+
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  <script src="main.js" async ></script>
+  <script src="draw.js"></script>
+  <script src="saveLayer.js"></script>
+  <script src="addDraw.js"></script>
+	<script src="leaflet-iiif.js"></script>
+	<script src="drawing.js"></script>
+    <script type="text/javascript" src="leaflet-hash.js"></script>
+
+    <!--styles libraries-->
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <!--fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div class="button-container">
+  <button id="save-button" onclick="downloadDrawnLayers()">💾</button>
+
+  <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;">🗑</button>
+</div>
+
+</body>
+</html>
