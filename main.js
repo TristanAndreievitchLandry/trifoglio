@@ -1,5 +1,5 @@
 //tristan landry
-
+// 2021-04-20
 // Initialize the Leaflet.draw plugin and load saved layers
 let drawnLayers;
 
@@ -11,6 +11,13 @@ const map = L.map('map', {
   crs: L.CRS.Simple,
   zoom: 0
 });
+
+ // Define the drawnItems variable as a Leaflet FeatureGroup
+ const drawnItems = new L.FeatureGroup();
+
+ // Add the drawnItems to the map
+ drawnItems.addTo(map);
+ 
 
 // Function to set the start view of the map
 function setStartview() {
@@ -102,6 +109,7 @@ var hash = new L.Hash(map);
  // Load saved layers from local storage when the page loads
  loadFromLocalStorage();
 
+ 
  ///////////////////////
  //afficher les coords//
   ///////////////////////
@@ -157,10 +165,23 @@ window.addEventListener('drop', handleFileDrop);
 //GESTION DES POP-UPS//
 ///////////////////////
 
+// Fonction pour générer la liste à partir des données de data.js
+function generateListFromData(data) {
+  let listHtml = '<ul>';
+  data.forEach((item) => {
+    listHtml += `<li>${item.titre} - ${item.cartographe} (${year})</li>`;
+  });
+  listHtml += '</ul>';
+  return listHtml;
+}
+
 const infoBox = document.getElementById("infoBox");
 const infoContent = document.getElementById("infoContent");
 const infoButton = document.getElementById("info-button");
+const askButton = document.getElementById("ask-button");
 const addButton = document.getElementById("add-button");
+const favsButton = document.getElementById("favs-button");
+
 
 function openInfoBox(content) {
   infoContent.innerHTML = content;
@@ -195,13 +216,34 @@ infoButton.addEventListener("click", function (event) {
   openInfoBox(content);
 });
 
+
 // Add click event listeners to the buttons
 addButton.addEventListener("click", function (event) {
   event.stopPropagation(); // Stop the click event from propagating to the map
   const content = `
     <img src="clover_300.png" class="icon" alt="Un trèfle">
     <h2>Trifoglio</h2>
-    <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="_blank">Tristan Landry</a> </p>
+    <p>Pour ajouter une couche json, simplement la glisser-déposer dans la fenêtre.</p>
+  `;
+  openInfoBox(content);
+});
+
+// Add click event listeners to the buttons
+favsButton.addEventListener("click", function (event) {
+  event.stopPropagation(); // Stop the click event from propagating to the map
+  appDataArray.sort((a, b) => a.year - b.year);
+  // Générer la liste à partir des données de data.js
+  let list = "<ul>";
+  appDataArray.forEach((data) => {
+    list += `<li>${data.titre}, ${data.year}</li>`;
+  });
+  list += "</ul>";
+
+  // Display the list in the popup
+  const content = `
+    <img src="clover_300.png" class="icon" alt="Un trèfle">
+    <h2>Nos manifestes préférés</h2>
+    <div>${list}</div>
   `;
   openInfoBox(content);
 });
@@ -210,3 +252,4 @@ addButton.addEventListener("click", function (event) {
 function isClickInsideInfoBox(event) {
   return event.target === infoBox || infoBox.contains(event.target);
 }
+

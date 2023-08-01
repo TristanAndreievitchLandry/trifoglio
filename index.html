@@ -14,11 +14,12 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-  <script src="main.js" async ></script>
 	<script src="leaflet-iiif.js"></script>
   <script src="draw.js"></script>
-  <script src="saveLayer.js"></script>
+  <script src="saveLayer.js" async></script>
   <script type="text/javascript" src="leaflet-hash.js"></script>
+  <script src="data.js"></script>
+
 
     <!--styles-->
     <link href="styles.css" rel="stylesheet" type="text/css">
@@ -39,17 +40,22 @@
 
   <div class="button-container">
 
-    <button id="info-button" style="font-size: 25px;">☘</button>
+    <button id="info-button" style="font-size: 25px;" title="Info">☘</button>
 
-    <button id="save-button" onclick="downloadDrawnLayers()">💾</button>
+    <button id="save-button" onclick="downloadDrawnLayers()" title="Sauvegarder">💾</button>
 
-    <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;">🗑</button>
+    <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;" title="Effacer">🗑</button>
 
-    <button id="ask-button" style="font-size: 20px;">🕶</button>
+    <button id="ask-button" style="font-size: 20px;" title="Manifeste">🕶</button>
 
-    <button id="add-button">➕</button>
+    <button id="add-button" title="+json">➕</button>
+
+    <button id="favs-button" title="favoris">🖤</button>
+
 
   </div>
+
+<script src="main.js"></script>
 
 </body>
 </html>
