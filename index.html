@@ -27,27 +27,29 @@
    
 </head>
 
-<body>
+<body class="click-capture">
 
-<div id="map"></div>
+  <div id="map"></div>
 
-<div id="infoBox" class="info-box">
-  <img src="clover_300.png" class="icon" alt="Un trèfle">
-  <h2>Trifoglio</h2>
-  <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="blank">Tristan Landry</a> </p>
-</div>
+  <div id="infoBox" class="info-box">
+    <div id="infoContent" class="info-content">
+      <!-- Default content here -->
+    </div>
+  </div>
 
-<div class="button-container">
+  <div class="button-container">
 
-  <button id="info-button" style="font-size: 25px;">☘</button>
+    <button id="info-button" style="font-size: 25px;">☘</button>
 
-  <button id="save-button" onclick="downloadDrawnLayers()">💾</button>
+    <button id="save-button" onclick="downloadDrawnLayers()">💾</button>
 
-  <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;">🗑</button>
+    <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;">🗑</button>
 
-  <button id="change-button" onclick="askForManifestUrl()" style="font-size: 25px;">🛠</button>
+    <button id="ask-button" style="font-size: 20px;">🕶</button>
 
-</div>
+    <button id="add-button">➕</button>
+
+  </div>
 
 </body>
 </html>

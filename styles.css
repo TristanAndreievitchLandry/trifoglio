@@ -33,6 +33,11 @@ button {
     background-color: #f5f5f5; /* Add a different background color on hover */
   }
 
+  /* Add a class for click capturing */
+.click-capture {
+  position: relative;
+}
+
 /* Style for the info box container */
 .info-box {
     position: fixed;
@@ -43,9 +48,14 @@ button {
     padding: 15px;
     border: 1px solid rgb(26, 25, 25);
     z-index: 1000;
-    display: none;
     border-radius: 2em;
     text-align: justify;
+    overflow: auto;
+    display: none;
+  }
+
+  .info-content {
+    font-family: 'Courier New', Courier, monospace;  
   }
 
 h2 {

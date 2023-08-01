@@ -3,12 +3,14 @@
 // Initialize the Leaflet.draw plugin and load saved layers
 let drawnLayers;
 
+//make sure that the variable is defined
+let manifestUrl;
+
 const map = L.map('map', {
   center: [0,0],
   crs: L.CRS.Simple,
   zoom: 0
 });
-
 
 // Function to set the start view of the map
 function setStartview() {
@@ -50,33 +52,40 @@ function askForManifestUrl() {
   return manifestUrl; // Return the valid URL
 }
 
-// Call the function to ask for the Manifest URL when the app starts
-const manifestUrl = askForManifestUrl();
-// Now you have the user-specified URL stored in the manifestUrl variable.
+// Get a reference to the button element
+const manifestButton = document.getElementById("ask-button");
 
-// Function to load the IIIF manifest using the provided URL
-function loadIIIFManifest(manifestUrl) {
-  // Your code to load the IIIF manifest goes here
-}
+// Add a click event listener to the button
+manifestButton.addEventListener("click", function () {
+  // Call the function to ask for the Manifest URL when the button is clicked
+  const manifestUrl = askForManifestUrl();
 
-// Call the function to load the IIIF manifest with the user-specified URL
-loadIIIFManifest(manifestUrl);
-
-// Grab a IIIF manifest
-$.getJSON(manifestUrl)
-.done(function(data) {
-  // For each image create a L.TileLayer.Iiif object and add that to an object literal for the layer control
-  $.each(data.sequences[0].canvases, function(_, val) {
-    iiifLayers[val.label] = L.tileLayer.iiif(val.images[0].resource.service['@id'] + '/info.json');
-  });
-
-  // Access the first Iiif object and add it to the map
-  iiifLayers[Object.keys(iiifLayers)[0]].addTo(map);
-})
-.fail(function() {
-  console.error("Failed to load IIIF manifest.");
+  // Check if the user entered a valid URL
+  if (manifestUrl !== null) {
+    // Now you have the user-specified URL stored in the manifestUrl variable.
+    loadIIIFManifest(manifestUrl);
+  }
 });
 
+// Call the function to load the IIIF manifest with the user-specified URL
+
+function loadIIIFManifest(manifestUrl) {
+
+// Grab a IIIF manifest
+  $.getJSON(manifestUrl)
+  .done(function(data) {
+    // For each image create a L.TileLayer.Iiif object and add that to an object literal for the layer control
+    $.each(data.sequences[0].canvases, function(_, val) {
+      iiifLayers[val.label] = L.tileLayer.iiif(val.images[0].resource.service['@id'] + '/info.json');
+    });
+
+    // Access the first Iiif object and add it to the map
+    iiifLayers[Object.keys(iiifLayers)[0]].addTo(map);
+  })
+  .fail(function() {
+    console.error("Failed to load IIIF manifest.");
+  });
+}
 ////////////////
 //LEAFLET HASH//
 ////////////////
@@ -113,27 +122,91 @@ var hash = new L.Hash(map);
     document.getElementById('coordsDiv').innerHTML = lat + ', ' + lon;
   });
 
-  ///////////////////////info box////////////////////////
+///////////////////////
+//DRAG AND DROP ///////
+///////////////////////
 
-// Get references to the info box and button elements
+// Function to handle the file drop
+function handleFileDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0];
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const jsonContent = JSON.parse(e.target.result);
+      // Do something with the JSON content, e.g., add it to the map
+      L.geoJSON(jsonContent).addTo(map);
+    } catch (error) {
+      console.error("Error parsing JSON file:", error);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+// Add event listeners to the entire window
+window.addEventListener('dragover', (event) => event.preventDefault());
+window.addEventListener('drop', handleFileDrop);
+
+///////////////////////
+//GESTION DES POP-UPS//
+///////////////////////
+
 const infoBox = document.getElementById("infoBox");
+const infoContent = document.getElementById("infoContent");
 const infoButton = document.getElementById("info-button");
+const addButton = document.getElementById("add-button");
 
-// Add a click event listener to the button
-infoButton.addEventListener("click", function () {
-//   // Toggle the display of the info box
-if (infoBox.style.display === "block") {
-//     infoBox.style.display = "none"; // Hide the info box if it's already open
-   } else {
-     infoBox.style.display = "block"; // Show the info box if it's currently hidden
-   }
- });
+function openInfoBox(content) {
+  infoContent.innerHTML = content;
+  infoBox.style.display = "block";
+}
 
- // Add a click event listener to the document
+function closeInfoBox() {
+  infoBox.style.display = "none";
+}
+
+// Function to check if the click event is inside the info-box
+function isClickInsideInfoBox(event) {
+  return event.target === infoBox || infoBox.contains(event.target);
+}
+
+// Add a click event listener to the document
 document.addEventListener("click", function (event) {
   // Check if the clicked element is inside the info box or the info button
-  if (!infoBox.contains(event.target) && event.target !== infoButton) {
-    infoBox.style.display = "none"; // Close the info box if clicked outside
+  if (!isClickInsideInfoBox(event) && event.target !== infoButton && event.target !== addButton) {
+    closeInfoBox(); // Close the info box if clicked outside
   }
 });
 
+// Add click event listeners to the buttons
+infoButton.addEventListener("click", function (event) {
+  event.stopPropagation(); // Stop the click event from propagating to the map
+  const content = `
+    <img src="clover_300.png" class="icon" alt="Un trèfle">
+    <h2>Trifoglio</h2>
+    <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="_blank">Tristan Landry</a> </p>
+  `;
+  openInfoBox(content);
+});
+
+// Add click event listeners to the buttons
+addButton.addEventListener("click", function (event) {
+  event.stopPropagation(); // Stop the click event from propagating to the map
+  const content = `
+    <img src="clover_300.png" class="icon" alt="Un trèfle">
+    <h2>Trifoglio</h2>
+    <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="_blank">Tristan Landry</a> </p>
+  `;
+  openInfoBox(content);
+});
+
+// Function to check if the click event is inside the info-box
+function isClickInsideInfoBox(event) {
+  return event.target === infoBox || infoBox.contains(event.target);
+}
