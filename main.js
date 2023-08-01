@@ -183,6 +183,7 @@ const addButton = document.getElementById("add-button");
 const favsButton = document.getElementById("favs-button");
 
 
+
 function openInfoBox(content) {
   infoContent.innerHTML = content;
   infoBox.style.display = "block";
