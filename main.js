@@ -181,6 +181,7 @@ const infoButton = document.getElementById("info-button");
 const askButton = document.getElementById("ask-button");
 const addButton = document.getElementById("add-button");
 const favsButton = document.getElementById("favs-button");
+//const randomButton = document.getElementById("random-button");
 
 
 
@@ -206,7 +207,7 @@ document.addEventListener("click", function (event) {
   }
 });
 
-// Add click event listeners to the buttons
+// ☘ button 
 infoButton.addEventListener("click", function (event) {
   event.stopPropagation(); // Stop the click event from propagating to the map
   const content = `
@@ -218,7 +219,7 @@ infoButton.addEventListener("click", function (event) {
 });
 
 
-// Add click event listeners to the buttons
+// ➕ Add click event listeners to the buttons
 addButton.addEventListener("click", function (event) {
   event.stopPropagation(); // Stop the click event from propagating to the map
   const content = `
@@ -229,14 +230,14 @@ addButton.addEventListener("click", function (event) {
   openInfoBox(content);
 });
 
-// Add click event listeners to the buttons
+// 💛 button
 favsButton.addEventListener("click", function (event) {
   event.stopPropagation(); // Stop the click event from propagating to the map
   appDataArray.sort((a, b) => a.year - b.year);
   // Générer la liste à partir des données de data.js
   let list = "<ul>";
   appDataArray.forEach((data) => {
-    list += `<li>${data.titre}, ${data.year}</li>`;
+    list += `<li>${data.titre}, ${data.year}, ${data.manifesturl}</li>`;
   });
   list += "</ul>";
 
@@ -248,6 +249,8 @@ favsButton.addEventListener("click", function (event) {
   `;
   openInfoBox(content);
 });
+
+// 🎲 Add click event listeners to the buttons
 
 // Function to check if the click event is inside the info-box
 function isClickInsideInfoBox(event) {
