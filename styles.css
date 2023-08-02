@@ -4,6 +4,8 @@ html, body {
     }
 #map {
     position:fixed; top:0; bottom:0; height: 100%; width:100vw;
+    background-color: rgb(54, 126, 61);
+
 }
 .button-container {
     position: absolute;
@@ -39,10 +41,11 @@ button {
 }
 
 /* Style for the info box container */
-.info-box {
+.info-box, .liste {
     position: fixed;
     top: 50%;
     left: 50%;
+    max-width: fit-content;
     transform: translate(-50%, -50%);
     background-color: #fff;
     padding: 15px;
@@ -108,3 +111,31 @@ text-align: left;
     border-radius: 5px;
     cursor: pointer;
   }
+
+  #data-titre, #data-year, #data-manifesturl {
+    color: black;
+  } 
+
+  #data-titre {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-align: left;    }
+
+  #darkGlasses {
+    font-size: xx-large;
+    border: none;
+  }
+
+  ul {
+    list-style: none; /* Remove bullets */
+    padding: 0; /* Remove any padding */
+    margin: 0; /* Remove any margin */
+  }
+  
+  li {
+    list-style: none; /* Remove bullets */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+  }
+  

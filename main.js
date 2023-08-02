@@ -12,11 +12,11 @@ const map = L.map('map', {
   zoom: 0
 });
 
- // Define the drawnItems variable as a Leaflet FeatureGroup
- const drawnItems = new L.FeatureGroup();
+ // Define the drawndatas variable as a Leaflet FeatureGroup
+ const drawndatas = new L.FeatureGroup();
 
- // Add the drawnItems to the map
- drawnItems.addTo(map);
+ // Add the drawndatas to the map
+ drawndatas.addTo(map);
  
 
 // Function to set the start view of the map
@@ -62,6 +62,11 @@ function askForManifestUrl() {
 // Get a reference to the button element
 const manifestButton = document.getElementById("ask-button");
 
+function resetAndLoadManifest(manifestUrl) {
+  iiifLayers = {};
+  loadIIIFManifest(manifestUrl);
+}
+
 // Add a click event listener to the button
 manifestButton.addEventListener("click", function () {
   // Call the function to ask for the Manifest URL when the button is clicked
@@ -70,7 +75,7 @@ manifestButton.addEventListener("click", function () {
   // Check if the user entered a valid URL
   if (manifestUrl !== null) {
     // Now you have the user-specified URL stored in the manifestUrl variable.
-    loadIIIFManifest(manifestUrl);
+    resetAndLoadManifest(manifestUrl);
   }
 });
 
@@ -168,8 +173,8 @@ window.addEventListener('drop', handleFileDrop);
 // Fonction pour générer la liste à partir des données de data.js
 function generateListFromData(data) {
   let listHtml = '<ul>';
-  data.forEach((item) => {
-    listHtml += `<li>${item.titre} - ${item.cartographe} (${year})</li>`;
+  data.forEach((data) => {
+    listHtml += `<li>${data.titre} - ${data.cartographe} (${year})</li>`;
   });
   listHtml += '</ul>';
   return listHtml;
@@ -231,24 +236,48 @@ addButton.addEventListener("click", function (event) {
 });
 
 // 💛 button
-favsButton.addEventListener("click", function (event) {
-  event.stopPropagation(); // Stop the click event from propagating to the map
-  appDataArray.sort((a, b) => a.year - b.year);
-  // Générer la liste à partir des données de data.js
-  let list = "<ul>";
-  appDataArray.forEach((data) => {
-    list += `<li>${data.titre}, ${data.year}, ${data.manifesturl}</li>`;
-  });
-  list += "</ul>";
 
-  // Display the list in the popup
-  const content = `
-    <img src="clover_300.png" class="icon" alt="Un trèfle">
-    <h2>Nos manifestes préférés</h2>
-    <div>${list}</div>
-  `;
-  openInfoBox(content);
-});
+function resetAndLoadManifest (manifestUrl) {	
+  // Check if the firstLayer exists and if it is added to the map
+  // Get the first layer from the iiifLayers object
+  const firstLayer = iiifLayers[Object.keys(iiifLayers)[0]];
+
+  if (firstLayer && map.hasLayer(firstLayer)) {
+    // Remove the firstLayer from the map
+    map.removeLayer(firstLayer);
+    iiifLayers = {};
+    loadIIIFManifest(manifestUrl);
+  }
+  }
+
+  favsButton.addEventListener("click", function (event) {
+    event.stopPropagation(); // Stop the click event from propagating to the map
+  
+    appDataArray.sort((a, b) => a.year - b.year);
+  
+    // Générer la liste à partir des données de data.js
+    let list = "<ul>";
+    appDataArray.forEach((data) => {
+      if (Object.keys(iiifLayers).length === 0) {
+        // iiifLayers is empty, add an "Open" button
+        list += `<li><span id="data-titre">${data.titre}</span> <span id="data-year">(${data.year})</span><br><button id="darkGlasses" onclick="resetAndLoadManifest('${data.manifesturl}');">🕶</button></li>`;
+      } else {
+        // iiifLayers is not empty, show the data normally
+        list += `<li><span id="data-titre">${data.titre}</span> <span id="data-year">(${data.year})</span></li>`;
+      }
+    });
+  
+    list += "</ul>";
+  
+    // Display the list in the popup
+    const content = `
+      <img src="clover_300.png" class="icon" alt="Un trèfle">
+      <h2>Nos manifestes préférés</h2>
+      <div>${list}</div>
+    `;
+  
+    openInfoBox(content);
+  });
 
 // 🎲 Add click event listeners to the buttons
 
@@ -256,4 +285,3 @@ favsButton.addEventListener("click", function (event) {
 function isClickInsideInfoBox(event) {
   return event.target === infoBox || infoBox.contains(event.target);
 }
-

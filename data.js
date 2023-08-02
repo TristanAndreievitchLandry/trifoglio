@@ -19,7 +19,7 @@ function AppData(manifesturl, cartographe, titre, continent, year, repo) {
     ),
   
     new AppData(
-      "https://www.loc.gov/item/95684855/manifest.json",
+      "https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~293032~90065344/manifest",
       "Reichsbahnzentrale fur den Deutschen Reiseverkehr",
       "Germany, the beautiful travel country",
       "Europe",
