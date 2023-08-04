@@ -1,0 +1,150 @@
+html, body {
+        padding: 0;
+        margin: 0;
+    }
+#map {
+    position:fixed; top:0; bottom:0; height: 100%; width:100vw;
+    background-color: rgb(54, 126, 61);
+
+}
+.button-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+/* Custom button styles */
+button {
+    width: 30px; /* Same width as the Leaflet Draw controls */
+    height: 30px; /* Same height as the Leaflet Draw controls */
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 4px;
+    margin-bottom: 10px; /* Adjust the vertical spacing between buttons */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Custom button hover styles */
+  button:hover {
+    background-color: #f5f5f5; /* Add a different background color on hover */
+  }
+
+  /* Add a class for click capturing */
+.click-capture {
+  position: relative;
+}
+
+/* Style for the info box container */
+.info-box, .liste {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    max-width: fit-content;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid rgb(26, 25, 25);
+    z-index: 1000;
+    border-radius: 2em;
+    text-align: justify;
+    overflow: auto;
+    display: none;
+  }
+
+  .info-content {
+    font-family: 'Courier New', Courier, monospace;  
+  }
+
+h2 {
+text-align: center;
+}
+
+p {
+text-align: left;
+} 
+
+.icon {
+    max-width: 100%; /* Ensure the image doesn't exceed the container's width */
+    padding: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    }
+
+/* Style the pop-up container */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+  }
+  
+  /* Style the pop-up content */
+  .popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+  
+  /* Style the close button */
+  .popup-content button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #data-titre, #data-year, #data-manifesturl {
+    color: black;
+  } 
+
+  #data-titre {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-align: left;    }
+
+  #darkGlasses {
+    font-size: xx-large;
+    border: none;
+  }
+
+  ul {
+    list-style: none; /* Remove bullets */
+    padding: 0; /* Remove any padding */
+    margin: 0; /* Remove any margin */
+  }
+  
+  li {
+    list-style: none; /* Remove bullets */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+  }
+  
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
