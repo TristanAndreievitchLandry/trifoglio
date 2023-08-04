@@ -4,7 +4,6 @@ html, body {
     }
 #map {
     position:fixed; top:0; bottom:0; height: 100%; width:100vw;
-    background-color: rgb(54, 126, 61);
 
 }
 .button-container {

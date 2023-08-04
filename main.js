@@ -34,6 +34,7 @@ drawSomething(); // Initialize the Leaflet.draw plugin
 // Load saved layers from local storage
 loadFromLocalStorage();
 
+
 ////////////////
 //LEAFLET iiif//
 ////////////////
@@ -250,37 +251,7 @@ function resetAndLoadManifest (manifestUrl) {
   }
   }
 
-  favsButton.addEventListener("click", function (event) {
-    event.stopPropagation(); // Stop the click event from propagating to the map
-  
-    appDataArray.sort((a, b) => a.year - b.year);
-  
-    // Générer la liste à partir des données de data.js
-    let list = "<ul>";
-    appDataArray.forEach((data) => {
-      if (Object.keys(iiifLayers).length === 0) {
-        // iiifLayers is empty, add an "Open" button
-        list += `<li><span id="data-titre">${data.titre}</span> <span id="data-year">(${data.year})</span><br><button id="darkGlasses" onclick="resetAndLoadManifest('${data.manifesturl}');">🕶</button></li>`;
-      } else {
-        // iiifLayers is not empty, show the data normally
-        list += `<li><span id="data-titre">${data.titre}</span> <span id="data-year">(${data.year})</span></li>`;
-      }
-    });
-  
-    list += "</ul>";
-  
-    // Display the list in the popup
-    const content = `
-      <img src="clover_300.png" class="icon" alt="Un trèfle">
-      <h2>Nos manifestes préférés</h2>
-      <div>${list}</div>
-    `;
-  
-    openInfoBox(content);
-  });
-
-// 🎲 Add click event listeners to the buttons
-
+ 
 // Function to check if the click event is inside the info-box
 function isClickInsideInfoBox(event) {
   return event.target === infoBox || infoBox.contains(event.target);
