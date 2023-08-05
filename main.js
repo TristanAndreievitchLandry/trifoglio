@@ -74,7 +74,7 @@ function loadFromLocalStorage() {
 async function downloadDrawnLayers() {
   const savedLayers = drawnLayers.toGeoJSON(); // Convert the drawnItems FeatureGroup to GeoJSON
   if (!savedLayers || savedLayers.features.length === 0) {
-    alert("Dessinez d'abord quelque chose 😉");
+    alert("Dessinez d'abord quelque chose!");
     return;
   }
 
@@ -87,7 +87,7 @@ async function downloadDrawnLayers() {
   a.href = url;
   a.download = fileName;
 
-  const confirmation = confirm('Télégarger le fichier ?');
+  const confirmation = confirm('Enregistrer le fichier ?');
   if (confirmation) {
     a.click();
   }
@@ -155,7 +155,7 @@ function askForManifestUrl() {
   // Check if the URL is valid using a regular expression
   const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/;
   if (!urlRegex.test(manifestUrl)) {
-    alert('Ce manifeste est invalide.💩Essayez de nouveau.');
+    alert('Ce manifeste est invalide.Essayez de nouveau.');
     return askForManifestUrl(); // Ask again if the user input is invalid
   }
 

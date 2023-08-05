@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>Trifoglio</title>
 
     <link rel="icon" href="clover_icon.png" />
@@ -28,6 +29,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css"
     />
+    <script
+      src="https://kit.fontawesome.com/ba154ee9c3.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body class="click-capture">
@@ -40,33 +45,33 @@
     </div>
 
     <div class="button-container">
-      <button id="info-button" style="font-size: 25px" title="Info">☘</button>
+      <button id="info-button" title="Info">
+        <i class="fa-solid fa-info"></i>
+      </button>
 
       <button
         id="save-button"
         onclick="downloadDrawnLayers()"
         title="Sauvegarder"
       >
-        💾
+        <i class="fa-solid fa-floppy-disk"></i>
       </button>
 
       <button
         id="clear-button"
-        style="font-size: 25px"
         onclick="removeAllDrawnPolygons()"
         title="Effacer"
       >
-        🗑
+        <i class="fa-solid fa-trash"></i>
       </button>
 
       <button id="ask-button" style="font-size: 20px" title="Manifeste">
-        🕶
+        <i class="fa-solid fa-image"></i>
       </button>
 
-      <button id="add-button" title="+json">➕</button>
-
-      <button id="favs-button">🔒</button>
-    </div>
+      <button id="add-button" title="+json">
+        <i class="fa-solid fa-plus"></i>
+      </button>
 
     <script src="main.js"></script>
   </body>

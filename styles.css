@@ -22,8 +22,8 @@ body {
 
 /* Custom button styles */
 button {
-  width: 30px; /* Same width as the Leaflet Draw controls */
-  height: 30px; /* Same height as the Leaflet Draw controls */
+  width: 35px; /* Same width as the Leaflet Draw controls */
+  height: 35px; /* Same height as the Leaflet Draw controls */
   background-color: #fff;
   border: 2px solid #333;
   border-radius: 4px;
