@@ -1,60 +1,73 @@
-
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
+    <title>Trifoglio</title>
 
-  <title>Trifoglio</title>
-	
-  <link rel="icon" href="clover_icon.png">
+    <link rel="icon" href="clover_icon.png" />
 
-	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    
+    <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      name="viewport"
+    />
+
     <!-- scripts -->
-    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js">
-    </script>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-	<script src="leaflet-iiif.js"></script>
-  <script src="draw.js"></script>
-  <script src="saveLayer.js" async></script>
-  <script src="random.js" async></script>
-  <script type="text/javascript" src="leaflet-hash.js"></script>
-  <script src="data.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script src="leaflet-iiif.js"></script>
+    <script type="text/javascript" src="leaflet-hash.js"></script>
+    <script src="data.js"></script>
 
     <!--styles-->
-    <link href="styles.css" rel="stylesheet" type="text/css">
-    <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
-   
-</head>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css"
+    />
+  </head>
 
-<body class="click-capture">
+  <body class="click-capture">
+    <div id="map"></div>
 
-  <div id="map"></div>
-
-  <div id="infoBox" class="info-box">
-    <div id="infoContent" class="info-content">
-      <!-- Default content here -->
+    <div id="infoBox" class="info-box">
+      <div id="infoContent" class="info-content">
+        <!-- Default content here -->
+      </div>
     </div>
-  </div>
 
-  <div class="button-container">
+    <div class="button-container">
+      <button id="info-button" style="font-size: 25px" title="Info">☘</button>
 
-    <button id="info-button" style="font-size: 25px;" title="Info">☘</button>
+      <button
+        id="save-button"
+        onclick="downloadDrawnLayers()"
+        title="Sauvegarder"
+      >
+        💾
+      </button>
 
-    <button id="save-button" onclick="downloadDrawnLayers()" title="Sauvegarder">💾</button>
+      <button
+        id="clear-button"
+        style="font-size: 25px"
+        onclick="removeAllDrawnPolygons()"
+        title="Effacer"
+      >
+        🗑
+      </button>
 
-    <button id="clear-button" onclick="removeAllDrawnPolygons()" style="font-size: 25px;" title="Effacer">🗑</button>
+      <button id="ask-button" style="font-size: 20px" title="Manifeste">
+        🕶
+      </button>
 
-    <button id="ask-button" style="font-size: 20px;" title="Manifeste">🕶</button>
+      <button id="add-button" title="+json">➕</button>
 
-    <button id="add-button" title="+json">➕</button>
+      <button id="favs-button">🔒</button>
+    </div>
 
-
-  </div>
-
-<script src="main.js"></script>
-
-</body>
+    <script src="main.js"></script>
+  </body>
 </html>
