@@ -1,11 +1,25 @@
-// Remove the global declaration of drawnLayers
-let manifestUrl;
+gsap.registerPlugin(ScrollTrigger, TextPlugin, DrawSVGPlugin);
+
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+  L.map.center = [0, 0];
+};
 
 const map = L.map('map', {
   center: [0, 0],
   crs: L.CRS.Simple,
   zoom: 0,
 });
+
+loadIIIFManifest(
+  'https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json'
+);
+
+gsap.registerPlugin(ScrollTrigger, TextPlugin, DrawSVGPlugin);
+
+// Remove the global declaration of drawnLayers
+let manifestUrl;
+
 ////////////////
 //LEAFLET DRAW//
 ////////////////
@@ -321,8 +335,6 @@ addButton.addEventListener('click', function (event) {
   openInfoBox(content);
 });
 
-// 💛 button
-
 function resetAndLoadManifest(manifestUrl) {
   // Check if the firstLayer exists and if it is added to the map
   // Get the first layer from the iiifLayers object
@@ -340,3 +352,79 @@ function resetAndLoadManifest(manifestUrl) {
 function isClickInsideInfoBox(event) {
   return event.target === infoBox || infoBox.contains(event.target);
 }
+
+///////////////////////
+////STORYMAP///////////
+///////////////////////
+
+map.dragging.disable();
+map.touchZoom.disable();
+map.doubleClickZoom.disable();
+map.scrollWheelZoom.disable();
+map.boxZoom.disable();
+map.keyboard.disable();
+if (map.tap) map.tap.disable();
+document.getElementById('map').style.cursor = 'default';
+
+ScrollTrigger.create({
+  trigger: '#item1',
+  start: 'top center',
+  onEnter: () => {
+    map.flyTo([-54, 87], 4);
+    gsap.to('#text1', {
+      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
+      autoAlpha: 1,
+      ease: 'power1.in',
+      duration: 1,
+    });
+  },
+  markers: true,
+});
+
+ScrollTrigger.create({
+  trigger: '#item2',
+  start: 'top center',
+  onEnter: () => {
+    map.flyTo([-15, 75.6], 6);
+    gsap.to('#text2', {
+      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
+      autoAlpha: 1,
+      ease: 'power1.in',
+      duration: 3,
+    });
+    // Add the image reveal animation
+    gsap.to('#img2', {
+      autoAlpha: 1, // Make the image visible
+      ease: 'power1.in', // Set the ease
+      duration: 2, // Animation duration
+    });
+  },
+  markers: true,
+  onEnterBack: () => {
+    map.flyTo([-54, 87], 4);
+  },
+});
+
+ScrollTrigger.create({
+  trigger: '#item3',
+  start: 'top center',
+  onEnter: () => {
+    map.flyTo([-50, 117], 6);
+    gsap.to('#text3', {
+      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
+      autoAlpha: 1,
+      ease: 'power1.in',
+      duration: 3,
+    });
+    // Add the image reveal animation
+    gsap.to('#img3', {
+      autoAlpha: 1, // Make the image visible
+      ease: 'power1.in', // Set the ease
+      duration: 3, // Animation duration
+    });
+  },
+  markers: true,
+  onEnterBack: () => {
+    map.flyTo([-54, 87], 4);
+  },
+});

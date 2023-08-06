@@ -11,7 +11,7 @@ body {
   width: 100vw;
 }
 .button-container {
-  position: absolute;
+  position: fixed;
   top: 10px;
   right: 10px;
   z-index: 1000;
@@ -150,3 +150,82 @@ li {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
+
+.story {
+  background: rgba(0, 0, 0, 0.74);
+  padding: 40px;
+  font-family: 'Libre Baskerville', serif;
+  text-align: left;
+  color: rgb(212, 206, 206);
+  font-size: 25px;
+  line-height: 35px;
+  font-weight: normal;
+  z-index: 999;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  flex-direction: column;
+  overflow: hidden;
+  width: 30%;
+  position: relative;
+  padding: 2em;
+  border-radius: 2em;
+  margin: 2em;
+}
+
+/* Additional styles for the image inside the .intro div */
+.story .image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px; /* Add space of 20 pixels at the bottom */
+
+}
+
+/* Additional styles for the coordinates and page number paragraphs inside the .intro div */
+.story p {
+  margin: 0;
+}
+
+.typeWriter {
+  visibility: hidden;
+}
+
+.hidden {
+  visibility: hidden;
+  z-index: 999;
+  border-radius: 2em;
+  margin-bottom: 10px;
+}
+
+#spy-svg {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  visibility: hidden;
+}
+
+/* Add a media query for screens with a maximum width of 768 pixels (typical mobile devices) */
+@media only screen and (max-width: 768px) {
+  /* Adjust the styles for mobile devices here */
+
+  /* Example: Set the width of the info-box to 90% and center it horizontally */
+  .story {
+    width: auto;
+    padding: 5%;
+    margin: auto;
+  }
+
+  .typeWriter {
+    font-size: small
+  }
+
+  .story .image {
+    width: 50%;
+    height: auto;
+    margin-bottom: 30px;
+  }
+

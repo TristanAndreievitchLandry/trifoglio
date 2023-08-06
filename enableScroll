@@ -1,0 +1,26 @@
+function enableScrollTimeline() {
+  gsap.set('animationIntro', { autoAlpha: 1 });
+  const tl = gsap
+    .timeline()
+    .from('animationIntro', {
+      scale: 0,
+      transformOrigin: '50%, 50%',
+      stagger: 0.1,
+      duration: 1,
+      ease: 'power2.inOut',
+    })
+    .from(
+      '#text',
+      {
+        scale: 0,
+        transformOrigin: '50%, 50%',
+        stagger: 0.05,
+        ease: 'back',
+      },
+      '-=0.4'
+    )
+    .to('.animationIntro', { autoAlpha: 0, duration: 5 }, '<')
+    .to('main', { autoAlpha: 1 }, '<2');
+
+  gsap.create({ animation: tl });
+}
