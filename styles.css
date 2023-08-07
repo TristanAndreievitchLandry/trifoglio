@@ -11,9 +11,9 @@ body {
   width: 100vw;
 }
 .button-container {
-  position: fixed;
+  position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -21,22 +21,42 @@ body {
 }
 
 /* Custom button styles */
-button {
+#maison-button {
   width: 35px; /* Same width as the Leaflet Draw controls */
   height: 35px; /* Same height as the Leaflet Draw controls */
   background-color: #fff;
   border: 2px solid #333;
   border-radius: 4px;
   margin-bottom: 10px; /* Adjust the vertical spacing between buttons */
-  cursor: pointer;
+  cursor: crosshair;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Custom button hover styles */
-button:hover {
-  background-color: #f5f5f5; /* Add a different background color on hover */
+.container {
+  position: relative;
+  /* ... other styles ... */
+}
+
+.aura {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  opacity: 0; /* Initially hidden */
+}
+
+#next-button {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 1000;
+  width: 25vw; /* Same width as the Leaflet Draw controls */
+
+  padding: 1em;
 }
 
 /* Add a class for click capturing */
@@ -45,187 +65,96 @@ button:hover {
 }
 
 /* Style for the info box container */
-.info-box,
-.liste {
+#storyBox {
   position: fixed;
-  top: 50%;
+  top: 60%;
   left: 50%;
-  max-width: fit-content;
+  width: 90%;
+  max-height: 90%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.5em;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.7);
   padding: 15px;
-  border: 1px solid rgb(26, 25, 25);
-  z-index: 1000;
-  border-radius: 2em;
-  text-align: justify;
-  overflow: auto;
-  display: none;
-}
-
-.info-content {
-  font-family: 'Courier New', Courier, monospace;
-}
-
-h2 {
-  text-align: center;
-}
-
-p {
+  z-index: 950;
+  border-radius: 1em;
   text-align: left;
+  overflow: scroll;
 }
 
-.icon {
-  max-width: 100%; /* Ensure the image doesn't exceed the container's width */
-  padding: 5px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+#storyImage {
+  max-width: 30%; /* Adjust this value as needed to control the image size */
+  float: left;
+  margin: 0 20px 0px 0; /* Add space around the image */
+  z-index: 999;
+  border-radius: 1em;
+  padding: 1em;
 }
 
-/* Style the pop-up container */
-.popup {
-  display: none;
-  position: fixed;
-  top: 0;
+#storyContent {
+  /* Set the width of the text container to allow it to wrap around the image */
+  width: 100%; /* Adjust this value to control the width of the text container */
+}
+
+#storyContent p {
+  /* Clear the float to ensure the text does not wrap around other elements */
+  clear: both;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 9999;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
 }
 
-/* Style the pop-up content */
-.popup-content {
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Add Animation */
+.modal-content,
+#caption {
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* The Close Button */
+.close {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  text-align: center;
+  top: 40px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-/* Style the close button */
-.popup-content button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
   cursor: pointer;
 }
-
-#data-titre,
-#data-year,
-#data-manifesturl {
-  color: black;
-}
-
-#data-titre {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: bold;
-  font-size: 0.95em;
-  text-align: left;
-}
-
-#darkGlasses {
-  font-size: xx-large;
-  border: none;
-}
-
-ul {
-  list-style: none; /* Remove bullets */
-  padding: 0; /* Remove any padding */
-  margin: 0; /* Remove any margin */
-}
-
-li {
-  list-style: none; /* Remove bullets */
-  margin: 0; /* Remove any margin */
-  padding: 0; /* Remove any padding */
-}
-
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
-}
-
-.story {
-  background: rgba(0, 0, 0, 0.74);
-  padding: 40px;
-  font-family: 'Libre Baskerville', serif;
-  text-align: left;
-  color: rgb(212, 206, 206);
-  font-size: 25px;
-  line-height: 35px;
-  font-weight: normal;
-  z-index: 999;
-  display: flex;
-  justify-content: left;
-  align-items: left;
-  flex-direction: column;
-  overflow: hidden;
-  width: 30%;
-  position: relative;
-  padding: 2em;
-  border-radius: 2em;
-  margin: 2em;
-}
-
-/* Additional styles for the image inside the .intro div */
-.story .image {
-  width: 100%;
-  height: auto;
-  margin-bottom: 20px; /* Add space of 20 pixels at the bottom */
-
-}
-
-/* Additional styles for the coordinates and page number paragraphs inside the .intro div */
-.story p {
-  margin: 0;
-}
-
-.typeWriter {
-  visibility: hidden;
-}
-
-.hidden {
-  visibility: hidden;
-  z-index: 999;
-  border-radius: 2em;
-  margin-bottom: 10px;
-}
-
-#spy-svg {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
-  width: 100px;
-  height: 100px;
-  margin: 10px;
-  visibility: hidden;
-}
-
-/* Add a media query for screens with a maximum width of 768 pixels (typical mobile devices) */
-@media only screen and (max-width: 768px) {
-  /* Adjust the styles for mobile devices here */
-
-  /* Example: Set the width of the info-box to 90% and center it horizontally */
-  .story {
-    width: auto;
-    padding: 5%;
-    margin: auto;
-  }
-
-  .typeWriter {
-    font-size: small
-  }
-
-  .story .image {
-    width: 50%;
-    height: auto;
-    margin-bottom: 30px;
-  }
-

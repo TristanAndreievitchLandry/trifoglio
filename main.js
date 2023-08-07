@@ -9,7 +9,12 @@ const map = L.map('map', {
   center: [0, 0],
   crs: L.CRS.Simple,
   zoom: 0,
+  zoomControl: false,
+  attributionControl: false,
 });
+
+// Add the attribution control to the map with 'bottomleft' position
+L.control.attribution({ position: 'bottomleft' }).addTo(map);
 
 loadIIIFManifest(
   'https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json'
@@ -19,114 +24,7 @@ gsap.registerPlugin(ScrollTrigger, TextPlugin, DrawSVGPlugin);
 
 // Remove the global declaration of drawnLayers
 let manifestUrl;
-
-////////////////
-//LEAFLET DRAW//
-////////////////
-
-let drawnLayers;
-
-if (!drawnLayers) {
-  drawnLayers = new L.FeatureGroup();
-}
-
-// Initialize the Leaflet.draw plugin and load saved layers
-function drawSomething() {
-  if (drawnLayers) {
-    drawnLayers = new L.FeatureGroup();
-    map.removeLayer(drawnLayers); // Remove the existing drawnLayers from the map
-  }
-
-  map.addLayer(drawnLayers); // Add the drawnLayers to the map if it doesn't exist
-
-  const drawControl = new L.Control.Draw({
-    draw: {
-      polygon: true,
-      polyline: true,
-      rectangle: false,
-      circle: false,
-      circlemarker: false,
-      marker: true,
-    },
-    edit: {
-      featureGroup: drawnLayers,
-    },
-  }).addTo(map);
-
-  map.on('draw:created', e => {
-    const layer = e.layer;
-    drawnLayers.addLayer(layer);
-    saveToLocalStorage(layer.toGeoJSON());
-  });
-}
-
-function removeAllDrawnPolygons() {
-  drawnLayers.clearLayers();
-  // Clear the loaded GeoJSON layer, if any
-  if (loadedGeoJSONLayer) {
-    map.removeLayer(loadedGeoJSONLayer);
-  }
-
-  localStorage.removeItem('drawnLayers');
-}
-
-function saveToLocalStorage() {
-  const savedLayers = drawnLayers.toGeoJSON();
-  localStorage.setItem('drawnLayers', JSON.stringify(savedLayers));
-}
-
-// Function to load saved layers from local storage and recreate drawn layers
-function loadFromLocalStorage() {
-  const savedLayers = localStorage.getItem('drawnLayers');
-  if (savedLayers) {
-    const layersData = JSON.parse(savedLayers);
-    L.geoJSON(layersData).addTo(drawnLayers);
-  }
-}
-
-// Download drawn layers as a JSON file
-async function downloadDrawnLayers() {
-  const savedLayers = drawnLayers.toGeoJSON(); // Convert the drawnItems FeatureGroup to GeoJSON
-  if (!savedLayers || savedLayers.features.length === 0) {
-    alert("Dessinez d'abord quelque chose!");
-    return;
-  }
-
-  const jsonData = JSON.stringify(savedLayers, null, 2);
-  const blob = new Blob([jsonData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const fileName = 'mon_dessin.json';
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-
-  const confirmation = confirm('Enregistrer le fichier ?');
-  if (confirmation) {
-    a.click();
-  }
-}
-
-// Define the drawndatas variable as a Leaflet FeatureGroup
-const drawndatas = new L.FeatureGroup();
-
-// Add the drawndatas to the map
-drawndatas.addTo(map);
-
-// Function to set the start view of the map
-function setStartview() {
-  map.setView([-50, 50], 1);
-}
-
-// Event listener for the IIIF layer's 'load' event
-// This will be triggered when the IIIF layer is fully loaded
-map.on('load', () => {
-  setStartview(); // Set the start view of the map
-});
-
-drawSomething(); // Initialize the Leaflet.draw plugin
-// Load saved layers from local storage
-loadFromLocalStorage();
+let geoJSONLayer; // Declare the variable outside the functions
 
 ////////////////
 //LEAFLET iiif//
@@ -156,206 +54,181 @@ function loadIIIFManifest(manifestUrl) {
 var iiifLayers = {};
 //pour monter les tuiles iiif
 
-// Function to ask the user for the Manifest URL using a prompt
-function askForManifestUrl() {
-  const manifestUrl = prompt(
-    'Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):'
-  );
-  if (manifestUrl === null) {
-    // User clicked "Cancel" on the prompt
-    return null; // Return null to indicate that the prompt was canceled
-  }
+//////////////////////
+//STORY///////////////
+/////////////////
 
-  // Check if the URL is valid using a regular expression
-  const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/;
-  if (!urlRegex.test(manifestUrl)) {
-    alert('Ce manifeste est invalide.Essayez de nouveau.');
-    return askForManifestUrl(); // Ask again if the user input is invalid
-  }
+// Select the aura element
+const auraElement = document.querySelector('.aura');
 
-  return manifestUrl; // Return the valid URL
+// Create a blinking aura animation
+const blinkingAura = gsap.fromTo(
+  auraElement,
+  { opacity: 0.5 }, // Initial state
+  {
+    opacity: 1, // Final state (fully visible)
+    duration: 2, // Duration for one full blink cycle (in seconds)
+    repeat: -1, // Infinite repeat
+    yoyo: true, // Back and forth animation
+    ease: 'power2.inOut', // Easing function for smooth animation
+  }
+);
+
+const storyBox = document.getElementById('storyBox');
+const storyContent = document.getElementById('storyContent');
+const storyImage = document.getElementById('storyImage');
+const maisonButton = document.getElementById('maison-button');
+const nextButton = document.getElementById('next-button');
+
+// Array of story objects
+const stories = [
+  {
+    content: `<p>Cette carte de 1810 a été dessinée par Pierre Lapie</p>`,
+    imageUrl: '',
+    coords: [-82.008, 53.859],
+    zoom: 5,
+    geoJsonData: '',
+  },
+
+  {
+    content: `<p>Pierre Lapie était un <i>colonel</i>, géographe et cartographe. Il fut admis à l'École du génie en 1789. Il fut l'un des membres fondateurs de la Société de géographie de Paris.</p>`,
+    imageUrl: '',
+    coords: [],
+    zoom: 5,
+    geoJsonData: '',
+  },
+  {
+    content: `<p>On trouve sur la carte de Lapie la région perse du <span style="color: red;">Mazanderan</span></p>`,
+    imageUrl: '',
+    coords: [-56, 80.547],
+    zoom: 5,
+    geoJsonData: 'mazanderan.json',
+  },
+  {
+    content: `<p>De même que les principales villes de la région.</p>`,
+    imageUrl: '',
+    coords: [],
+    zoom: 4,
+    geoJsonData: 'villes.json',
+  },
+  {
+    content: `<p>Notre storymap nous permet d'afficher aussi des images, comme celle-ci, par Midjourney, imaginant une espionne occidentale dans la région au 19<sup>e</sup> siècle</sup></p> Le choix des images se fait collectivement.`,
+    imageUrl: 'espionne.png',
+    coords: [-56, 80.547],
+    zoom: 5,
+    geoJsonData: '',
+  },
+  {
+    content: `<p>Comprendre le corpus implique d'être capable de lire la carte de Lapie et y retrouver les endroits dont les espions parlent dans les sources.</p>`,
+    imageUrl: 'souk.png',
+    coords: [-48.75, 99.516],
+    zoom: 5,
+    geoJsonData: '',
+  },
+  {
+    content: `<p>Le défi sera de trouver une thématique qui dynamise logiquement la narration.</p>`,
+    imageUrl: 'bazar.png',
+    coords: [-33.391, 65.031],
+    zoom: 5,
+    geoJsonData: '',
+  },
+];
+
+let currentGeoJsonLayer;
+
+function loadGeoJsonData(geoJsonData) {
+  // Return a new Promise
+  return new Promise((resolve, reject) => {
+    if (geoJsonData) {
+      // Load the GeoJSON data
+      $.getJSON(geoJsonData, function (data) {
+        // Add the data to the map
+        currentGeoJsonLayer = L.geoJson(data).addTo(map);
+
+        // Resolve the Promise
+        resolve();
+      }).fail(function () {
+        // Reject the Promise if the request fails
+        reject('Failed to load GeoJSON data.');
+      });
+    } else {
+      console.log('No GeoJSON data provided.');
+
+      // Resolve the Promise immediately if no GeoJSON data was provided
+      resolve();
+    }
+  });
 }
+let currentStoryIndex = -1;
 
-// Get a reference to the button element
-const manifestButton = document.getElementById('ask-button');
-
-// Add a click event listener to the button
-manifestButton.addEventListener('click', function () {
-  // Call the function to ask for the Manifest URL when the button is clicked
-  const manifestUrl = askForManifestUrl();
-
-  // Check if the user entered a valid URL
-  if (manifestUrl !== null) {
-    // Now you have the user-specified URL stored in the manifestUrl variable.
-    loadIIIFManifest(manifestUrl);
-  }
-});
-
-////////////////
-//LEAFLET HASH//
-////////////////
-
-//Ajouter hash (Leaflet-hash lets you to add dynamic URL hashes to web pages with Leaflet maps.) Pratique pour les coords de la carte iiif
-var hash = new L.Hash(map);
-
-////////////////
-//LEAFLET DRAW//
-////////////////
-
-//en complement a draw.js
-
-// Load saved layers from local storage when the page loads
-loadFromLocalStorage();
-
-///////////////////////
-//afficher les coords//
-///////////////////////
-
-var div = document.createElement('div');
-div.id = 'coordsDiv';
-div.style.position = 'absolute';
-div.style.bottom = '0';
-div.style.left = '0';
-div.style.backgroundColor = 'white';
-div.style.zIndex = '999';
-document.getElementById('map').appendChild(div);
-
-map.on('mousemove', function (e) {
-  var lat = e.latlng.lat.toFixed(5);
-  var lon = e.latlng.lng.toFixed(5);
-
-  document.getElementById('coordsDiv').innerHTML = lat + ', ' + lon;
-});
-
-///////////////////////
-//DRAG AND DROP ///////
-///////////////////////
-// Variable to hold the loaded GeoJSON layer
-let loadedGeoJSONLayer;
-
-// Function to handle the file drop
-function handleFileDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  if (!file) {
+async function openStoryBox(content, imageUrl, coords, zoom, geoJsonData) {
+  if (currentStoryIndex < 0) {
     return;
   }
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    try {
-      // Remove the previously loaded GeoJSON layer, if any
-      if (loadedGeoJSONLayer) {
-        map.removeLayer(loadedGeoJSONLayer);
-      }
-
-      const jsonContent = JSON.parse(e.target.result);
-      // Create a new GeoJSON layer and add it to the map
-      loadedGeoJSONLayer = L.geoJSON(jsonContent).addTo(map);
-    } catch (error) {
-      console.error('Error parsing JSON file:', error);
-    }
-  };
-
-  reader.readAsText(file);
-}
-
-// Add event listeners to the entire window
-window.addEventListener('dragover', event => event.preventDefault());
-window.addEventListener('drop', handleFileDrop);
-
-///////////////////////
-//GESTION DES POP-UPS//
-///////////////////////
-
-// Fonction pour générer la liste à partir des données de data.js
-function generateListFromData(data) {
-  let listHtml = '<ul>';
-  data.forEach(data => {
-    listHtml += `<li>${data.titre} - ${data.cartographe} (${year})</li>`;
-  });
-  listHtml += '</ul>';
-  return listHtml;
-}
-
-const infoBox = document.getElementById('infoBox');
-const infoContent = document.getElementById('infoContent');
-const infoButton = document.getElementById('info-button');
-const askButton = document.getElementById('ask-button');
-const addButton = document.getElementById('add-button');
-const favsButton = document.getElementById('favs-button');
-//const randomButton = document.getElementById("random-button");
-
-function openInfoBox(content) {
-  infoContent.innerHTML = content;
-  infoBox.style.display = 'block';
-}
-
-function closeInfoBox() {
-  infoBox.style.display = 'none';
-}
-
-// Function to check if the click event is inside the info-box
-function isClickInsideInfoBox(event) {
-  return event.target === infoBox || infoBox.contains(event.target);
-}
-
-// Add a click event listener to the document
-document.addEventListener('click', function (event) {
-  // Check if the clicked element is inside the info box or the info button
+  storyContent.innerHTML = content;
+  storyImage.src = imageUrl;
   if (
-    !isClickInsideInfoBox(event) &&
-    event.target !== infoButton &&
-    event.target !== addButton
+    map &&
+    Array.isArray(coords) &&
+    coords.length === 2 &&
+    typeof coords[0] === 'number' &&
+    typeof coords[1] === 'number' &&
+    typeof zoom === 'number'
   ) {
-    closeInfoBox(); // Close the info box if clicked outside
+    map.setView(coords, zoom, {});
   }
-});
 
-// ☘ button
-infoButton.addEventListener('click', function (event) {
-  event.stopPropagation(); // Stop the click event from propagating to the map
-  const content = `
-    <img src="clover_300.png" class="icon" alt="Un trèfle">
-    <h2>Trifoglio</h2>
-    <p>Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash.draw</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="_blank">Tristan Landry</a> </p>
-  `;
-  openInfoBox(content);
-});
-
-// ➕ Add click event listeners to the buttons
-addButton.addEventListener('click', function (event) {
-  event.stopPropagation(); // Stop the click event from propagating to the map
-  const content = `
-    <img src="clover_300.png" class="icon" alt="Un trèfle">
-    <h2>Trifoglio</h2>
-    <p>Pour ajouter une couche json, simplement la glisser-déposer dans la fenêtre.</p>
-  `;
-  openInfoBox(content);
-});
-
-function resetAndLoadManifest(manifestUrl) {
-  // Check if the firstLayer exists and if it is added to the map
-  // Get the first layer from the iiifLayers object
-  const firstLayer = iiifLayers[Object.keys(iiifLayers)[0]];
-
-  if (firstLayer && map.hasLayer(firstLayer)) {
-    // Remove the firstLayer from the map
-    map.removeLayer(firstLayer);
-    iiifLayers = {};
-    loadIIIFManifest(manifestUrl);
+  // Wait for the GeoJSON data to load before proceeding
+  await loadGeoJsonData(geoJsonData);
+}
+function closeStoryBox() {
+  storyBox.style.display = 'none';
+}
+function showNextStory() {
+  // Remove the current GeoJSON layer from the map
+  if (currentGeoJsonLayer) {
+    map.removeLayer(currentGeoJsonLayer);
   }
+
+  // Increment the current story index
+  currentStoryIndex = (currentStoryIndex + 1) % stories.length;
+
+  // Open the current story box
+  const { content, imageUrl, coords, zoom, geoJsonData } =
+    stories[currentStoryIndex];
+  openStoryBox(content, imageUrl, coords, zoom, geoJsonData);
 }
 
-// Function to check if the click event is inside the info-box
-function isClickInsideInfoBox(event) {
-  return event.target === infoBox || infoBox.contains(event.target);
-}
+// story button
+nextButton.addEventListener('click', function (event) {
+  event.stopPropagation();
+  showNextStory();
+  // Apply the "breathing" effect to the button using GSAP
+  gsap.to('.breathe-button', {
+    scale: 1.2, // Scale up to 1.2
+    duration: 0.5, // Animation duration (in seconds)
+    yoyo: true, // Yoyo means back and forth animation
+    repeat: 1, // Repeat the animation once (2 times in total)
+    ease: 'power1.inOut', // Easing function for smooth animation
+  });
+});
 
-///////////////////////
-////STORYMAP///////////
-///////////////////////
+function expandImage() {
+  var modal = document.getElementById('myModal');
+  var img = document.getElementById('storyImage');
+  var modalImg = document.getElementById('img01');
+
+  modal.style.display = 'block';
+  modalImg.src = img.src;
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName('close')[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = 'none';
+  };
+}
 
 map.dragging.disable();
 map.touchZoom.disable();
@@ -365,66 +238,3 @@ map.boxZoom.disable();
 map.keyboard.disable();
 if (map.tap) map.tap.disable();
 document.getElementById('map').style.cursor = 'default';
-
-ScrollTrigger.create({
-  trigger: '#item1',
-  start: 'top center',
-  onEnter: () => {
-    map.flyTo([-54, 87], 4);
-    gsap.to('#text1', {
-      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
-      autoAlpha: 1,
-      ease: 'power1.in',
-      duration: 1,
-    });
-  },
-  markers: true,
-});
-
-ScrollTrigger.create({
-  trigger: '#item2',
-  start: 'top center',
-  onEnter: () => {
-    map.flyTo([-15, 75.6], 6);
-    gsap.to('#text2', {
-      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
-      autoAlpha: 1,
-      ease: 'power1.in',
-      duration: 3,
-    });
-    // Add the image reveal animation
-    gsap.to('#img2', {
-      autoAlpha: 1, // Make the image visible
-      ease: 'power1.in', // Set the ease
-      duration: 2, // Animation duration
-    });
-  },
-  markers: true,
-  onEnterBack: () => {
-    map.flyTo([-54, 87], 4);
-  },
-});
-
-ScrollTrigger.create({
-  trigger: '#item3',
-  start: 'top center',
-  onEnter: () => {
-    map.flyTo([-50, 117], 6);
-    gsap.to('#text3', {
-      text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor facere aliquid ratione provident maiores magnam, quasi voluptatibus incidunt voluptatem, quibusdam, quas volupta   s doloribus. Quisquam, voluptatum. Quisquam, voluptatum. Quisquam, voluptatum.',
-      autoAlpha: 1,
-      ease: 'power1.in',
-      duration: 3,
-    });
-    // Add the image reveal animation
-    gsap.to('#img3', {
-      autoAlpha: 1, // Make the image visible
-      ease: 'power1.in', // Set the ease
-      duration: 3, // Animation duration
-    });
-  },
-  markers: true,
-  onEnterBack: () => {
-    map.flyTo([-54, 87], 4);
-  },
-});

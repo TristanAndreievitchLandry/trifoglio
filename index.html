@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Trifoglio</title>
+    <title>Renseignement</title>
 
-    <link rel="icon" href="clover_icon.png" />
+    <link rel="icon" href="spy.svg" />
 
     <meta
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -17,12 +17,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script src="leaflet-iiif.js"></script>
     <script type="text/javascript" src="leaflet-hash.js"></script>
+    <script src="data.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/TextPlugin.min.js"></script>
+    <script src="TextPlugin.min.js"></script>
     <script src="DrawSVGPlugin.min.js"></script>
-
-    <script src="data.js"></script>
+    <script src="polygons.js"></script>
 
     <!--styles-->
     <link href="styles.css" rel="stylesheet" type="text/css" />
@@ -38,82 +38,33 @@
       src="https://kit.fontawesome.com/ba154ee9c3.js"
       crossorigin="anonymous"
     ></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap"
-      rel="stylesheet"
-    />
   </head>
 
   <body class="click-capture">
-    <!DOCTYPE html>
+    <div id="map"></div>
 
-    <div id="main">
-      <div id="map"></div>
+    <div id="storyBox" class="story-box">
+      <img id="storyImage" src="" alt="" onclick="expandImage()" />
+      <p id="storyContent"></p>
+    </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="img01" />
+    </div>
 
-      <div id="infoBox" class="info-box">
-        <div id="infoContent" class="info-content">
-          <!-- Default content here -->
-        </div>
-      </div>
-
-      <div id="buttons"></div>
-
-      <div class="button-container">
-        <button id="info-button" title="Info">
-          <i class="fa-solid fa-info"></i>
-        </button>
-
-        <button
-          id="save-button"
-          onclick="downloadDrawnLayers()"
-          title="Sauvegarder"
-        >
-          <i class="fa-solid fa-floppy-disk"></i>
-        </button>
-
-        <button
-          id="clear-button"
-          onclick="removeAllDrawnPolygons()"
-          title="Effacer"
-        >
-          <i class="fa-solid fa-trash"></i>
-        </button>
-
-        <button id="ask-button" title="Manifeste">
-          <i class="fa-solid fa-image"></i>
-        </button>
-
-        <button id="add-button" title="+json">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-      </div>
-
-      <div id="story">
-        <div style="height: 1000px"></div>
-
-        <div id="item1" class="story">
-          <p id="text1" class="typeWriter"></p>
-        </div>
-
-        <div style="height: 750px"></div>
-
-        <div id="item2" class="story">
-          <img id="img2" class="hidden" src="espionne.png" alt="Espionne" />
-          <p id="text2" class="typeWriter"></p>
-        </div>
-
-        <div style="height: 750px"></div>
-
-        <div id="item3" class="story">
-          <img id="img3" class="hidden" src="bazar.png" alt="Bazar" />
-          <p id="text3" class="typeWriter"></p>
-        </div>
-
-        <div style="height: 750px"></div>
+    <div class="button-container">
+      <button id="maison-button" title="Maison">
+        <i class="fa-solid fa-house"></i>
+      </button>
+    </div>
+    <div class="container">
+      <div class="aura">
+        <!-- Replace the button with an image -->
+        <img id="next-button" class="breathe-button" src="medal_no_bg.png" />
       </div>
     </div>
+
     <script src="main.js"></script>
   </body>
 </html>
