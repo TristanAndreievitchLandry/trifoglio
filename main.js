@@ -29,9 +29,9 @@ function drawSomething() {
     draw: {
       polygon: true,
       polyline: true,
-      rectangle: false,
-      circle: false,
-      circlemarker: false,
+      rectangle: true,
+      circle: true,
+      circlemarker: true,
       marker: true,
     },
     edit: {
