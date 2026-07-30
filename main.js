@@ -11,6 +11,10 @@ let osmLayer = null;
 
 let manifestCanvasKeys = [];
 let currentCanvasIndex = -1;
+let currentManifestId = null;
+let currentCanvasKey = null;
+const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
+let drawingsByCanvas = {};
 
 const manifestInput = document.getElementById('manifest-input');
 const manifestStatus = document.getElementById('manifest-status');
@@ -43,12 +47,50 @@ function updateCanvasNavigation() {
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
 }
 
+function getCanvasStorageKey(canvasKey) {
+  if (!currentManifestId || !canvasKey) {
+    return null;
+  }
+
+  return currentManifestId + '::' + canvasKey;
+}
+
+function saveDrawingsState() {
+  localStorage.setItem(DRAWINGS_STORAGE_KEY, JSON.stringify(drawingsByCanvas));
+}
+
+function saveCurrentCanvasDrawings() {
+  const storageKey = getCanvasStorageKey(currentCanvasKey);
+  if (!storageKey) {
+    return;
+  }
+
+  drawingsByCanvas[storageKey] = drawnLayers.toGeoJSON();
+  saveDrawingsState();
+}
+
+function loadDrawingsForCanvas(canvasKey) {
+  drawnLayers.clearLayers();
+
+  const storageKey = getCanvasStorageKey(canvasKey);
+  if (!storageKey) {
+    return;
+  }
+
+  const saved = drawingsByCanvas[storageKey];
+  if (saved) {
+    L.geoJSON(saved).addTo(drawnLayers);
+  }
+}
+
 function showCanvasByIndex(index) {
   if (index < 0 || index >= manifestCanvasKeys.length) {
     return;
   }
 
   if (currentCanvasIndex >= 0 && manifestCanvasKeys[currentCanvasIndex]) {
+    saveCurrentCanvasDrawings();
+
     const previousLayer = iiifLayers[manifestCanvasKeys[currentCanvasIndex]];
     if (previousLayer && map.hasLayer(previousLayer)) {
       map.removeLayer(previousLayer);
@@ -63,6 +105,8 @@ function showCanvasByIndex(index) {
   }
 
   layer.addTo(map);
+  currentCanvasKey = layerKey;
+  loadDrawingsForCanvas(layerKey);
   currentCanvasIndex = index;
   updateCanvasNavigation();
   setManifestStatus(
@@ -135,31 +179,64 @@ function drawSomething() {
   map.on('draw:created', (e) => {
     const layer = e.layer;
     drawnLayers.addLayer(layer);
-    saveToLocalStorage(layer.toGeoJSON());
+    saveToLocalStorage();
+  });
+
+  map.on('draw:edited', () => {
+    saveToLocalStorage();
+  });
+
+  map.on('draw:deleted', () => {
+    saveToLocalStorage();
   });
 }
 
 function removeAllDrawnPolygons() {
   drawnLayers.clearLayers();
+
+  const storageKey = getCanvasStorageKey(currentCanvasKey);
+  if (storageKey && drawingsByCanvas[storageKey]) {
+    delete drawingsByCanvas[storageKey];
+    saveDrawingsState();
+  }
+
   // Clear the loaded GeoJSON layer, if any
   if (loadedGeoJSONLayer) {
     map.removeLayer(loadedGeoJSONLayer);
   }
-
-  localStorage.removeItem('drawnLayers');
 }
 
 function saveToLocalStorage() {
-  const savedLayers = drawnLayers.toGeoJSON();
-  localStorage.setItem('drawnLayers', JSON.stringify(savedLayers));
+  saveCurrentCanvasDrawings();
 }
 
 // Function to load saved layers from local storage and recreate drawn layers
 function loadFromLocalStorage() {
-  const savedLayers = localStorage.getItem('drawnLayers');
-  if (savedLayers) {
-    const layersData = JSON.parse(savedLayers);
-    L.geoJSON(layersData).addTo(drawnLayers);
+  const savedByCanvas = localStorage.getItem(DRAWINGS_STORAGE_KEY);
+  if (savedByCanvas) {
+    try {
+      drawingsByCanvas = JSON.parse(savedByCanvas) || {};
+    } catch (_) {
+      drawingsByCanvas = {};
+    }
+    return;
+  }
+
+  // Compatibility path for older single-layer storage format.
+  const legacySavedLayers = localStorage.getItem('drawnLayers');
+  if (legacySavedLayers) {
+    try {
+      const layersData = JSON.parse(legacySavedLayers);
+      const legacyKey = getCanvasStorageKey(currentCanvasKey);
+      if (legacyKey) {
+        drawingsByCanvas[legacyKey] = layersData;
+        saveDrawingsState();
+      }
+    } catch (_) {
+      // Ignore invalid legacy data.
+    }
+
+    localStorage.removeItem('drawnLayers');
   }
 }
 
@@ -216,6 +293,7 @@ loadFromLocalStorage();
 function loadIIIFManifest(manifestUrl) {
   debugLog('Loading manifest', manifestUrl);
   setManifestStatus('Chargement du manifeste en cours...', null);
+  currentManifestId = manifestUrl;
 
   if (osmLayer && map.hasLayer(osmLayer)) {
     map.removeLayer(osmLayer);
@@ -387,6 +465,8 @@ var iiifLayers = {};
 //pour monter les tuiles iiif
 
 function clearIIIFLayers() {
+  saveCurrentCanvasDrawings();
+
   Object.keys(iiifLayers).forEach(function (layerName) {
     const layer = iiifLayers[layerName];
     if (layer && map.hasLayer(layer)) {
@@ -397,6 +477,7 @@ function clearIIIFLayers() {
   iiifLayers = {};
   manifestCanvasKeys = [];
   currentCanvasIndex = -1;
+  currentCanvasKey = null;
   updateCanvasNavigation();
 }
 
