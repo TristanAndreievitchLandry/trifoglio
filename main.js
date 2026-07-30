@@ -9,7 +9,7 @@ const map = L.map('map', {
 
 if (map.attributionControl) {
   map.attributionControl.setPrefix(
-    '<a href="https://leafletjs.com/">Leaflet</a>',
+    '<a href="https://leafletjs.com/">Leaflet</a> | 🇺🇦',
   );
 }
 
