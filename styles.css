@@ -174,14 +174,16 @@ button:hover {
   left: 50%;
   max-width: fit-content;
   transform: translate(-50%, -50%);
-  background-color: #fff;
+  background: linear-gradient(160deg, #1a2430 0%, #14202b 100%);
+  color: #d8e5f2;
   padding: 15px;
-  border: 1px solid rgb(26, 25, 25);
+  border: 1px solid #2e4154;
   z-index: 1000;
   border-radius: 2em;
   text-align: justify;
   overflow: auto;
   display: none;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
 .info-content {
@@ -222,10 +224,12 @@ p {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
+  background: linear-gradient(160deg, #1a2430 0%, #14202b 100%);
+  color: #d8e5f2;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid #2e4154;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
   text-align: center;
 }
 
@@ -242,7 +246,7 @@ p {
 #data-titre,
 #data-year,
 #data-manifesturl {
-  color: black;
+  color: #d8e5f2;
 }
 
 #data-titre {
@@ -255,6 +259,16 @@ p {
 #darkGlasses {
   font-size: xx-large;
   border: none;
+}
+
+#add-button {
+  background-color: #1d3a46;
+  border-color: #2f596a;
+  color: #d8f2ff;
+}
+
+#add-button:hover {
+  background-color: #265163;
 }
 
 ul {
