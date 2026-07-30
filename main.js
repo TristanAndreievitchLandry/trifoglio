@@ -7,6 +7,12 @@ const map = L.map('map', {
   zoom: 0,
 });
 
+if (map.attributionControl) {
+  map.attributionControl.setPrefix(
+    '<a href="https://leafletjs.com/">Leaflet</a>',
+  );
+}
+
 let osmLayer = null;
 
 let manifestCanvasKeys = [];
@@ -27,34 +33,7 @@ const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
 
-function ensureLeafletUkraineFlag() {
-  const attributionContainer =
-    map.attributionControl && map.attributionControl.getContainer
-      ? map.attributionControl.getContainer()
-      : null;
-
-  if (!attributionContainer) {
-    return;
-  }
-
-  const leafletLink = attributionContainer.querySelector(
-    'a[href*="leafletjs.com"]',
-  );
-  if (!leafletLink || leafletLink.querySelector('.leaflet-ua-flag')) {
-    return;
-  }
-
-  const flag = document.createElement('span');
-  flag.className = 'leaflet-ua-flag';
-  flag.textContent = ' 🇺🇦';
-  flag.setAttribute('aria-label', 'Ukraine');
-
-  leafletLink.appendChild(flag);
-}
-
 function ensureCanvasIndicator() {
-  ensureLeafletUkraineFlag();
-
   if (
     canvasIndicatorElement &&
     document.body.contains(canvasIndicatorElement)
@@ -121,7 +100,6 @@ function updateCanvasNavigation() {
 }
 
 ensureCanvasIndicator();
-ensureLeafletUkraineFlag();
 
 function getCanvasStorageKey(canvasKey) {
   if (!currentManifestId || !canvasKey) {
