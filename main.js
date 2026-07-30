@@ -7,55 +7,8 @@ const map = L.map('map', {
   zoom: 0,
 });
 
-let debugLogItems = [];
-
 function debugLog(message, details) {
-  const time = new Date().toLocaleTimeString();
-  const suffix = details ? ' | ' + details : '';
-  const line = '[' + time + '] ' + message + suffix;
-
-  debugLogItems.unshift(line);
-  debugLogItems = debugLogItems.slice(0, 8);
-
-  const debugContent = document.getElementById('debugContent');
-  if (debugContent) {
-    debugContent.textContent = debugLogItems.join('\n');
-  }
-
   console.log('[Trifoglio Debug]', message, details || '');
-}
-
-function initDebugPanel() {
-  const panel = document.createElement('div');
-  panel.id = 'debugPanel';
-  panel.style.position = 'absolute';
-  panel.style.right = '8px';
-  panel.style.bottom = '8px';
-  panel.style.zIndex = '1000';
-  panel.style.backgroundColor = 'rgba(255,255,255,0.95)';
-  panel.style.border = '1px solid #666';
-  panel.style.padding = '6px';
-  panel.style.width = '340px';
-  panel.style.maxWidth = 'calc(100% - 16px)';
-  panel.style.fontFamily = 'monospace';
-  panel.style.fontSize = '11px';
-  panel.style.lineHeight = '1.35';
-  panel.style.whiteSpace = 'pre-wrap';
-
-  const title = document.createElement('div');
-  title.textContent = 'Debug IIIF';
-  title.style.fontWeight = 'bold';
-  title.style.marginBottom = '4px';
-
-  const content = document.createElement('div');
-  content.id = 'debugContent';
-  content.textContent = 'En attente...';
-
-  panel.appendChild(title);
-  panel.appendChild(content);
-  document.getElementById('map').appendChild(panel);
-
-  debugLog('App initialized');
 }
 
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
@@ -109,9 +62,6 @@ function drawSomething() {
     draw: {
       polygon: true,
       polyline: true,
-      rectangle: true,
-      circle: true,
-      circlemarker: true,
       marker: true,
     },
     edit: {
@@ -190,8 +140,6 @@ map.on('load', () => {
   setStartview(); // Set the start view of the map
 });
 
-initDebugPanel();
-
 drawSomething(); // Initialize the Leaflet.draw plugin
 // Load saved layers from local storage
 loadFromLocalStorage();
@@ -204,6 +152,8 @@ loadFromLocalStorage();
 
 function loadIIIFManifest(manifestUrl) {
   debugLog('Loading manifest', manifestUrl);
+
+  clearIIIFLayers();
 
   function asArray(value) {
     if (!value) {
@@ -362,6 +312,17 @@ function loadIIIFManifest(manifestUrl) {
 var iiifLayers = {};
 //pour monter les tuiles iiif
 
+function clearIIIFLayers() {
+  Object.keys(iiifLayers).forEach(function (layerName) {
+    const layer = iiifLayers[layerName];
+    if (layer && map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  });
+
+  iiifLayers = {};
+}
+
 // Function to ask the user for the Manifest URL using a prompt
 function askForManifestUrl() {
   const manifestUrlInput = prompt(
@@ -451,7 +412,9 @@ div.id = 'coordsDiv';
 div.style.position = 'absolute';
 div.style.bottom = '0';
 div.style.left = '0';
-div.style.backgroundColor = 'white';
+div.style.backgroundColor = 'black';
+div.style.color = 'white';
+div.style.padding = '2px 4px';
 div.style.zIndex = '999';
 document.getElementById('map').appendChild(div);
 
@@ -573,16 +536,8 @@ addButton.addEventListener('click', function (event) {
 // 💛 button
 
 function resetAndLoadManifest(manifestUrl) {
-  // Check if the firstLayer exists and if it is added to the map
-  // Get the first layer from the iiifLayers object
-  const firstLayer = iiifLayers[Object.keys(iiifLayers)[0]];
-
-  if (firstLayer && map.hasLayer(firstLayer)) {
-    // Remove the firstLayer from the map
-    map.removeLayer(firstLayer);
-    iiifLayers = {};
-    loadIIIFManifest(manifestUrl);
-  }
+  clearIIIFLayers();
+  loadIIIFManifest(manifestUrl);
 }
 
 // Function to check if the click event is inside the info-box

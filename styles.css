@@ -2,6 +2,7 @@ html,
 body {
   padding: 0;
   margin: 0;
+  background-color: #000;
 }
 #map {
   position: fixed;
@@ -9,6 +10,11 @@ body {
   bottom: 0;
   height: 100%;
   width: 100vw;
+  background-color: #000;
+}
+
+.leaflet-container {
+  background-color: #000;
 }
 .button-container {
   position: absolute;
@@ -148,5 +154,9 @@ li {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48;
 }
