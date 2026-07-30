@@ -14,6 +14,8 @@ let currentCanvasIndex = -1;
 
 const manifestInput = document.getElementById('manifest-input');
 const manifestStatus = document.getElementById('manifest-status');
+const manifestPanel = document.getElementById('manifestPanel');
+const manifestCloseButton = document.getElementById('manifest-close-button');
 const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
@@ -449,9 +451,23 @@ function normalizeManifestUrl(inputUrl) {
 }
 
 const manifestButton = document.getElementById('ask-button');
+
+function openManifestPanel() {
+  manifestPanel.classList.remove('is-hidden');
+}
+
+function closeManifestPanel() {
+  manifestPanel.classList.add('is-hidden');
+}
+
 manifestButton.addEventListener('click', function () {
+  openManifestPanel();
   manifestInput.focus();
   manifestInput.select();
+});
+
+manifestCloseButton.addEventListener('click', function () {
+  closeManifestPanel();
 });
 
 function submitManifestFromInput() {
