@@ -7,6 +7,8 @@ const map = L.map('map', {
   zoom: 0,
 });
 
+let osmLayer = null;
+
 let manifestCanvasKeys = [];
 let currentCanvasIndex = -1;
 
@@ -213,6 +215,10 @@ function loadIIIFManifest(manifestUrl) {
   debugLog('Loading manifest', manifestUrl);
   setManifestStatus('Chargement du manifeste en cours...', null);
 
+  if (osmLayer && map.hasLayer(osmLayer)) {
+    map.removeLayer(osmLayer);
+  }
+
   clearIIIFLayers();
 
   function asArray(value) {
@@ -392,6 +398,29 @@ function clearIIIFLayers() {
   updateCanvasNavigation();
 }
 
+function showOSMAndClearIIIF() {
+  clearIIIFLayers();
+
+  if (!osmLayer) {
+    osmLayer = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+      },
+    );
+  }
+
+  if (!map.hasLayer(osmLayer)) {
+    osmLayer.addTo(map);
+  }
+
+  setManifestStatus(
+    'Fond OpenStreetMap actif. Les couches IIIF ont été retirées.',
+    'success',
+  );
+}
+
 function normalizeManifestUrl(inputUrl) {
   if (!inputUrl) {
     return null;
@@ -551,6 +580,7 @@ const infoContent = document.getElementById('infoContent');
 const infoButton = document.getElementById('info-button');
 const askButton = document.getElementById('ask-button');
 const addButton = document.getElementById('add-button');
+const osmButton = document.getElementById('osm-button');
 const favsButton = document.getElementById('favs-button');
 //const randomButton = document.getElementById("random-button");
 
@@ -600,6 +630,11 @@ addButton.addEventListener('click', function (event) {
     <p>Pour ajouter une couche json, simplement la glisser-déposer dans la fenêtre.</p>
   `;
   openInfoBox(content);
+});
+
+osmButton.addEventListener('click', function (event) {
+  event.stopPropagation();
+  showOSMAndClearIIIF();
 });
 
 // 💛 button
