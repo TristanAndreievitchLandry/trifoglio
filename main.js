@@ -664,9 +664,10 @@ function showOSMAndClearIIIF() {
 
   if (!osmLayer) {
     osmLayer = L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       {
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
         maxZoom: 19,
       },
     );
