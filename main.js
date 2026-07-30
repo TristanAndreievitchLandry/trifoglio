@@ -62,6 +62,9 @@ function drawSomething() {
     draw: {
       polygon: true,
       polyline: true,
+      rectangle: false,
+      circle: false,
+      circlemarker: false,
       marker: true,
     },
     edit: {
