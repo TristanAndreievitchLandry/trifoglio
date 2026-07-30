@@ -174,10 +174,10 @@ button:hover {
   left: 50%;
   max-width: fit-content;
   transform: translate(-50%, -50%);
-  background: linear-gradient(160deg, #1a2430 0%, #14202b 100%);
-  color: #d8e5f2;
+  background: linear-gradient(160deg, #1f3558 0%, #172b47 100%);
+  color: #e6f0ff;
   padding: 15px;
-  border: 1px solid #2e4154;
+  border: 1px solid #3e5f8b;
   z-index: 1000;
   border-radius: 2em;
   text-align: justify;
@@ -224,11 +224,11 @@ p {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(160deg, #1a2430 0%, #14202b 100%);
-  color: #d8e5f2;
+  background: linear-gradient(160deg, #1f3558 0%, #172b47 100%);
+  color: #e6f0ff;
   padding: 20px;
   border-radius: 5px;
-  border: 1px solid #2e4154;
+  border: 1px solid #3e5f8b;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
   text-align: center;
 }
@@ -246,7 +246,7 @@ p {
 #data-titre,
 #data-year,
 #data-manifesturl {
-  color: #d8e5f2;
+  color: #e6f0ff;
 }
 
 #data-titre {
@@ -262,13 +262,13 @@ p {
 }
 
 #add-button {
-  background-color: #1d3a46;
-  border-color: #2f596a;
-  color: #d8f2ff;
+  background-color: #2f4f77;
+  border-color: #527db0;
+  color: #eef5ff;
 }
 
 #add-button:hover {
-  background-color: #265163;
+  background-color: #3d6698;
 }
 
 ul {
