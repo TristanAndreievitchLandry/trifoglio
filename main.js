@@ -35,6 +35,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
+let currentOsmStyle = 'dark';
 const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
 let drawingsByCanvas = {};
 
@@ -47,6 +48,57 @@ const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
 const pageCounterValue = document.getElementById('page-counter-value');
+const osmStyleMenu = document.getElementById('osm-style-menu');
+const osmStyleSelect = document.getElementById('osm-style-select');
+
+const OSM_STYLE_DEFINITIONS = {
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    options: {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    },
+  },
+  standard: {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    },
+  },
+  hot: {
+    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    options: {
+      attribution:
+        '&copy; OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team',
+      maxZoom: 20,
+    },
+  },
+  topo: {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    options: {
+      attribution:
+        'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap',
+      maxZoom: 17,
+    },
+  },
+  cyclosm: {
+    url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+    options: {
+      attribution: '&copy; OpenStreetMap contributors, Tiles style by CyclOSM',
+      maxZoom: 20,
+    },
+  },
+  voyager: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    options: {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20,
+    },
+  },
+};
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
@@ -673,26 +725,46 @@ function clearIIIFLayers() {
   updateCanvasNavigation();
 }
 
-function showOSMAndClearIIIF() {
+function closeOsmStyleMenu() {
+  if (osmStyleMenu) {
+    osmStyleMenu.classList.add('is-hidden');
+  }
+}
+
+function toggleOsmStyleMenu() {
+  if (!osmStyleMenu) {
+    return;
+  }
+
+  osmStyleMenu.classList.toggle('is-hidden');
+}
+
+function showOSMAndClearIIIF(styleName) {
   clearIIIFLayers();
 
-  if (!osmLayer) {
-    osmLayer = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      },
-    );
+  const requestedStyle = styleName || currentOsmStyle || 'dark';
+  const style =
+    OSM_STYLE_DEFINITIONS[requestedStyle] || OSM_STYLE_DEFINITIONS.dark;
+  currentOsmStyle = OSM_STYLE_DEFINITIONS[requestedStyle]
+    ? requestedStyle
+    : 'dark';
+
+  if (osmLayer && map.hasLayer(osmLayer)) {
+    map.removeLayer(osmLayer);
   }
 
-  if (!map.hasLayer(osmLayer)) {
-    osmLayer.addTo(map);
+  osmLayer = L.tileLayer(style.url, style.options);
+
+  if (osmStyleSelect && osmStyleSelect.value !== currentOsmStyle) {
+    osmStyleSelect.value = currentOsmStyle;
   }
+
+  osmLayer.addTo(map);
 
   setManifestStatus(
-    'Fond OpenStreetMap actif. Les couches IIIF ont été retirées.',
+    'Fond OpenStreetMap (' +
+      currentOsmStyle +
+      ') actif. Les couches IIIF ont été retirées.',
     'success',
   );
 }
@@ -922,5 +994,25 @@ addButton.addEventListener('click', function (event) {
 
 osmButton.addEventListener('click', function (event) {
   event.stopPropagation();
-  showOSMAndClearIIIF();
+  showOSMAndClearIIIF(currentOsmStyle);
+  toggleOsmStyleMenu();
+});
+
+if (osmStyleSelect) {
+  osmStyleSelect.value = currentOsmStyle;
+  osmStyleSelect.addEventListener('change', function () {
+    showOSMAndClearIIIF(osmStyleSelect.value);
+  });
+}
+
+document.addEventListener('click', function (event) {
+  if (
+    osmStyleMenu &&
+    !osmStyleMenu.classList.contains('is-hidden') &&
+    event.target !== osmButton &&
+    !osmButton.contains(event.target) &&
+    !osmStyleMenu.contains(event.target)
+  ) {
+    closeOsmStyleMenu();
+  }
 });

@@ -31,6 +31,32 @@ body {
   align-items: center;
 }
 
+.osm-style-menu {
+  width: 150px;
+  margin-top: -2px;
+  margin-bottom: 10px;
+  padding: 6px;
+  background: rgba(10, 16, 26, 0.95);
+  border: 1px solid #3e5f8b;
+  border-radius: 6px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+.osm-style-menu.is-hidden {
+  display: none;
+}
+
+#osm-style-select {
+  width: 100%;
+  background: #0f1b2e;
+  border: 1px solid #4d6e99;
+  color: #e6f0ff;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 5px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
 #page-counter-button {
   cursor: default;
   background-color: #f3f7fb;

@@ -25,10 +25,7 @@
       href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="vendor/leaflet-draw/leaflet.draw.css"
-    />
+    <link rel="stylesheet" href="vendor/leaflet-draw/leaflet.draw.css" />
     <script
       src="https://kit.fontawesome.com/ba154ee9c3.js"
       crossorigin="anonymous"
@@ -99,8 +96,19 @@
       <button id="osm-button" title="OSM">
         <i class="fa-solid fa-map"></i>
       </button>
+
+      <div id="osm-style-menu" class="osm-style-menu is-hidden">
+        <select id="osm-style-select" title="Type de carte OSM">
+          <option value="dark" selected>Sombre (defaut)</option>
+          <option value="standard">OSM Standard</option>
+          <option value="hot">OSM Humanitarian</option>
+          <option value="topo">OpenTopoMap</option>
+          <option value="cyclosm">CyclOSM</option>
+          <option value="voyager">Carto Voyager</option>
+        </select>
+      </div>
     </div>
 
-    <script src="main.js?v=20260731-branch22"></script>
+    <script src="main.js?v=20260731-branch23"></script>
   </body>
 </html>
