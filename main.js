@@ -43,7 +43,9 @@ function updateCanvasNavigation() {
   const total = manifestCanvasKeys.length;
   const current = currentCanvasIndex >= 0 ? currentCanvasIndex + 1 : 0;
 
-  canvasPosition.textContent = current + ' / ' + total;
+  if (canvasPosition) {
+    canvasPosition.textContent = current + ' / ' + total;
+  }
   canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
 }
