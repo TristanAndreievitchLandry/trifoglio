@@ -14,6 +14,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
+let canvasIndicatorElement = null;
 const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
 let drawingsByCanvas = {};
 
@@ -25,6 +26,71 @@ const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
+
+function ensureLeafletUkraineFlag() {
+  const attributionContainer =
+    map.attributionControl && map.attributionControl.getContainer
+      ? map.attributionControl.getContainer()
+      : null;
+
+  if (!attributionContainer) {
+    return;
+  }
+
+  const leafletLink = attributionContainer.querySelector(
+    'a[href*="leafletjs.com"]',
+  );
+  if (!leafletLink || leafletLink.querySelector('.leaflet-ua-flag')) {
+    return;
+  }
+
+  const flag = document.createElement('span');
+  flag.className = 'leaflet-ua-flag';
+  flag.textContent = ' 🇺🇦';
+  flag.setAttribute('aria-label', 'Ukraine');
+
+  leafletLink.appendChild(flag);
+}
+
+function ensureCanvasIndicator() {
+  ensureLeafletUkraineFlag();
+
+  if (
+    canvasIndicatorElement &&
+    document.body.contains(canvasIndicatorElement)
+  ) {
+    return canvasIndicatorElement;
+  }
+
+  const existingIndicator = document.getElementById('canvas-indicator');
+  if (existingIndicator) {
+    canvasIndicatorElement = existingIndicator;
+    return canvasIndicatorElement;
+  }
+
+  const attributionContainer =
+    map.attributionControl && map.attributionControl.getContainer
+      ? map.attributionControl.getContainer()
+      : null;
+
+  if (!attributionContainer) {
+    return null;
+  }
+
+  const separator = document.createElement('span');
+  separator.className = 'canvas-indicator-separator';
+  separator.textContent = ' | ';
+
+  canvasIndicatorElement = document.createElement('span');
+  canvasIndicatorElement.id = 'canvas-indicator';
+  canvasIndicatorElement.className = 'canvas-indicator';
+  canvasIndicatorElement.textContent = '0/0';
+
+  attributionContainer.appendChild(separator);
+  attributionContainer.appendChild(canvasIndicatorElement);
+
+  return canvasIndicatorElement;
+}
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
@@ -46,9 +112,16 @@ function updateCanvasNavigation() {
   if (canvasPosition) {
     canvasPosition.textContent = current + ' / ' + total;
   }
+  const indicator = ensureCanvasIndicator();
+  if (indicator) {
+    indicator.textContent = current + '/' + total;
+  }
   canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
 }
+
+ensureCanvasIndicator();
+ensureLeafletUkraineFlag();
 
 function getCanvasStorageKey(canvasKey) {
   if (!currentManifestId || !canvasKey) {

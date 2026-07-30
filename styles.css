@@ -154,6 +154,23 @@ body {
   background-color: #e7e7e7;
 }
 
+.canvas-indicator-separator {
+  color: #8c8c8c;
+}
+
+.canvas-indicator {
+  font-size: 11px;
+  color: #9dc0e7;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.leaflet-ua-flag {
+  font-size: 11px;
+  margin-left: 2px;
+  vertical-align: baseline;
+}
+
 /* Custom button styles */
 button {
   width: 35px; /* Same width as the Leaflet Draw controls */
