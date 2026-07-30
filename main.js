@@ -7,11 +7,22 @@ const map = L.map('map', {
   zoom: 0,
 });
 
-const LEAFLET_ATTRIBUTION_PREFIX =
-  '<a href="https://leafletjs.com/">Leaflet</a> | 🇺🇦 | <span id="canvas-indicator" class="canvas-indicator">0/0</span>';
+function updateAttributionPrefix(current, total) {
+  if (!map.attributionControl) {
+    return;
+  }
+
+  map.attributionControl.setPrefix(
+    '<a href="https://leafletjs.com/">Leaflet</a> | <span class="ua-badge" aria-label="Ukraine">UA</span> | <span class="canvas-indicator">' +
+      current +
+      '/' +
+      total +
+      '</span>',
+  );
+}
 
 if (map.attributionControl) {
-  map.attributionControl.setPrefix(LEAFLET_ATTRIBUTION_PREFIX);
+  updateAttributionPrefix(0, 0);
 }
 
 let osmLayer = null;
@@ -21,7 +32,6 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
-let canvasIndicatorElement = null;
 const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
 let drawingsByCanvas = {};
 
@@ -33,28 +43,6 @@ const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
-
-function ensureCanvasIndicator() {
-  if (
-    canvasIndicatorElement &&
-    document.body.contains(canvasIndicatorElement)
-  ) {
-    return canvasIndicatorElement;
-  }
-
-  canvasIndicatorElement = document.getElementById('canvas-indicator');
-  if (canvasIndicatorElement) {
-    return canvasIndicatorElement;
-  }
-
-  if (map.attributionControl) {
-    // Re-apply prefix to restore the counter span if attribution was re-rendered.
-    map.attributionControl.setPrefix(LEAFLET_ATTRIBUTION_PREFIX);
-    canvasIndicatorElement = document.getElementById('canvas-indicator');
-  }
-
-  return canvasIndicatorElement;
-}
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
@@ -76,15 +64,10 @@ function updateCanvasNavigation() {
   if (canvasPosition) {
     canvasPosition.textContent = current + ' / ' + total;
   }
-  const indicator = ensureCanvasIndicator();
-  if (indicator) {
-    indicator.textContent = current + '/' + total;
-  }
+  updateAttributionPrefix(current, total);
   canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
 }
-
-ensureCanvasIndicator();
 
 function getCanvasStorageKey(canvasKey) {
   if (!currentManifestId || !canvasKey) {
