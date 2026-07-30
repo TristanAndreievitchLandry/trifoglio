@@ -31,6 +31,91 @@ body {
   align-items: center;
 }
 
+.manifest-panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  width: min(560px, calc(100vw - 90px));
+  background: rgba(12, 12, 12, 0.92);
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 10px;
+  color: #f1f1f1;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.manifest-panel label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.manifest-row {
+  display: flex;
+  gap: 8px;
+}
+
+#manifest-input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #4a4a4a;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.manifest-panel button {
+  width: auto;
+  min-width: 74px;
+  height: 34px;
+  margin-bottom: 0;
+  background-color: #f1f1f1;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 0 10px;
+}
+
+.manifest-status {
+  margin-top: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  background: #1b1b1b;
+  color: #cfd3d8;
+  font-size: 12px;
+}
+
+.manifest-status.success {
+  background: #122413;
+  color: #9fe6a7;
+}
+
+.manifest-status.error {
+  background: #2d1111;
+  color: #f8a4a4;
+}
+
+.canvas-nav {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#canvas-position {
+  font-size: 12px;
+  color: #e5e5e5;
+}
+
+.canvas-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 /* Custom button styles */
 button {
   width: 35px; /* Same width as the Leaflet Draw controls */

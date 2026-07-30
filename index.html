@@ -38,6 +38,25 @@
   <body class="click-capture">
     <div id="map"></div>
 
+    <div id="manifestPanel" class="manifest-panel">
+      <label for="manifest-input">Manifest IIIF</label>
+      <div class="manifest-row">
+        <input
+          id="manifest-input"
+          type="url"
+          placeholder="https://.../manifest.json"
+          spellcheck="false"
+        />
+        <button id="load-manifest-button" title="Charger">Charger</button>
+      </div>
+      <div id="manifest-status" class="manifest-status">Prêt.</div>
+      <div id="canvas-nav" class="canvas-nav">
+        <button id="canvas-prev" title="Canvas précédent">◀</button>
+        <span id="canvas-position">0 / 0</span>
+        <button id="canvas-next" title="Canvas suivant">▶</button>
+      </div>
+    </div>
+
     <div id="infoBox" class="info-box">
       <div id="infoContent" class="info-content">
         <!-- Default content here -->
@@ -74,6 +93,6 @@
       </button>
     </div>
 
-    <script src="main.js?v=20260731"></script>
+    <script src="main.js?v=20260731-branch1"></script>
   </body>
 </html>

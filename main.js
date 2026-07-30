@@ -7,8 +7,64 @@ const map = L.map('map', {
   zoom: 0,
 });
 
+let manifestCanvasKeys = [];
+let currentCanvasIndex = -1;
+
+const manifestInput = document.getElementById('manifest-input');
+const manifestStatus = document.getElementById('manifest-status');
+const loadManifestButton = document.getElementById('load-manifest-button');
+const canvasPrevButton = document.getElementById('canvas-prev');
+const canvasNextButton = document.getElementById('canvas-next');
+const canvasPosition = document.getElementById('canvas-position');
+
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
+}
+
+function setManifestStatus(message, variant) {
+  manifestStatus.textContent = message;
+  manifestStatus.classList.remove('success', 'error');
+
+  if (variant === 'success' || variant === 'error') {
+    manifestStatus.classList.add(variant);
+  }
+}
+
+function updateCanvasNavigation() {
+  const total = manifestCanvasKeys.length;
+  const current = currentCanvasIndex >= 0 ? currentCanvasIndex + 1 : 0;
+
+  canvasPosition.textContent = current + ' / ' + total;
+  canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
+  canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
+}
+
+function showCanvasByIndex(index) {
+  if (index < 0 || index >= manifestCanvasKeys.length) {
+    return;
+  }
+
+  if (currentCanvasIndex >= 0 && manifestCanvasKeys[currentCanvasIndex]) {
+    const previousLayer = iiifLayers[manifestCanvasKeys[currentCanvasIndex]];
+    if (previousLayer && map.hasLayer(previousLayer)) {
+      map.removeLayer(previousLayer);
+    }
+  }
+
+  const layerKey = manifestCanvasKeys[index];
+  const layer = iiifLayers[layerKey];
+  if (!layer) {
+    setManifestStatus('Canvas introuvable dans le manifeste.', 'error');
+    return;
+  }
+
+  layer.addTo(map);
+  currentCanvasIndex = index;
+  updateCanvasNavigation();
+  setManifestStatus(
+    'Canvas ' + (index + 1) + ' chargé: ' + layerKey,
+    'success',
+  );
 }
 
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
@@ -155,6 +211,7 @@ loadFromLocalStorage();
 
 function loadIIIFManifest(manifestUrl) {
   debugLog('Loading manifest', manifestUrl);
+  setManifestStatus('Chargement du manifeste en cours...', null);
 
   clearIIIFLayers();
 
@@ -283,12 +340,17 @@ function loadIIIFManifest(manifestUrl) {
           'No layers created',
           'manifest parsed but no image services found',
         );
+        setManifestStatus(
+          'Aucun service IIIF image trouvé dans ce manifeste.',
+          'error',
+        );
         alert('Aucun service IIIF image trouvé dans ce manifeste.');
         return;
       }
 
-      // Access the first Iiif object and add it to the map.
-      iiifLayers[layerNames[0]].addTo(map);
+      manifestCanvasKeys = layerNames;
+      currentCanvasIndex = -1;
+      showCanvasByIndex(0);
       debugLog(
         'Layer added',
         layerNames[0] + ' (' + layerNames.length + ' total)',
@@ -303,6 +365,7 @@ function loadIIIFManifest(manifestUrl) {
 
       console.error('Failed to load IIIF manifest:', details, manifestUrl);
       debugLog('Manifest load failed', details);
+      setManifestStatus('Échec du chargement: ' + details, 'error');
       alert(
         'Échec du chargement du manifeste IIIF.\n\n' +
           'Détails: ' +
@@ -324,28 +387,9 @@ function clearIIIFLayers() {
   });
 
   iiifLayers = {};
-}
-
-// Function to ask the user for the Manifest URL using a prompt
-function askForManifestUrl() {
-  const manifestUrlInput = prompt(
-    'Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):',
-  );
-  if (manifestUrlInput === null) {
-    // User clicked "Cancel" on the prompt
-    return null; // Return null to indicate that the prompt was canceled
-  }
-
-  const manifestUrl = normalizeManifestUrl(manifestUrlInput);
-  if (!manifestUrl) {
-    debugLog('Invalid manifest URL', manifestUrlInput);
-    alert('Ce manifeste est invalide.Essayez de nouveau.');
-    return askForManifestUrl(); // Ask again if the user input is invalid
-  }
-
-  debugLog('Manifest URL normalized', manifestUrl);
-
-  return manifestUrl; // Return the valid URL
+  manifestCanvasKeys = [];
+  currentCanvasIndex = -1;
+  updateCanvasNavigation();
 }
 
 function normalizeManifestUrl(inputUrl) {
@@ -375,20 +419,42 @@ function normalizeManifestUrl(inputUrl) {
   }
 }
 
-// Get a reference to the button element
 const manifestButton = document.getElementById('ask-button');
-
-// Add a click event listener to the button
 manifestButton.addEventListener('click', function () {
-  // Call the function to ask for the Manifest URL when the button is clicked
-  const manifestUrl = askForManifestUrl();
+  manifestInput.focus();
+  manifestInput.select();
+});
 
-  // Check if the user entered a valid URL
-  if (manifestUrl !== null) {
-    // Now you have the user-specified URL stored in the manifestUrl variable.
-    loadIIIFManifest(manifestUrl);
+function submitManifestFromInput() {
+  const normalizedUrl = normalizeManifestUrl(manifestInput.value);
+  if (!normalizedUrl) {
+    setManifestStatus(
+      'URL invalide. Exemple: https://.../manifest.json',
+      'error',
+    );
+    return;
+  }
+
+  manifestInput.value = normalizedUrl;
+  loadIIIFManifest(normalizedUrl);
+}
+
+loadManifestButton.addEventListener('click', submitManifestFromInput);
+manifestInput.addEventListener('keydown', function (event) {
+  if (event.key === 'Enter') {
+    submitManifestFromInput();
   }
 });
+
+canvasPrevButton.addEventListener('click', function () {
+  showCanvasByIndex(currentCanvasIndex - 1);
+});
+
+canvasNextButton.addEventListener('click', function () {
+  showCanvasByIndex(currentCanvasIndex + 1);
+});
+
+updateCanvasNavigation();
 
 ////////////////
 //LEAFLET HASH//
