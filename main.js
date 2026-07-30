@@ -1,11 +1,12 @@
 // Remove the global declaration of drawnLayers
-let manifestUrl;
 
 const map = L.map('map', {
   center: [0, 0],
   crs: L.CRS.Simple,
   zoom: 0,
 });
+
+let currentIIIFAttribution = null;
 
 function updateAttributionPrefix() {
   if (!map.attributionControl) {
@@ -34,7 +35,6 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
-let currentIIIFAttribution = null;
 const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
 let drawingsByCanvas = {};
 
@@ -854,10 +854,8 @@ function generateListFromData(data) {
 const infoBox = document.getElementById('infoBox');
 const infoContent = document.getElementById('infoContent');
 const infoButton = document.getElementById('info-button');
-const askButton = document.getElementById('ask-button');
 const addButton = document.getElementById('add-button');
 const osmButton = document.getElementById('osm-button');
-const favsButton = document.getElementById('favs-button');
 //const randomButton = document.getElementById("random-button");
 
 function openInfoBox(content) {
@@ -912,15 +910,3 @@ osmButton.addEventListener('click', function (event) {
   event.stopPropagation();
   showOSMAndClearIIIF();
 });
-
-// 💛 button
-
-function resetAndLoadManifest(manifestUrl) {
-  clearIIIFLayers();
-  loadIIIFManifest(manifestUrl);
-}
-
-// Function to check if the click event is inside the info-box
-function isClickInsideInfoBox(event) {
-  return event.target === infoBox || infoBox.contains(event.target);
-}
