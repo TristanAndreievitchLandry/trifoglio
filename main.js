@@ -6,6 +6,57 @@ const map = L.map('map', {
   crs: L.CRS.Simple,
   zoom: 0,
 });
+
+let debugLogItems = [];
+
+function debugLog(message, details) {
+  const time = new Date().toLocaleTimeString();
+  const suffix = details ? ' | ' + details : '';
+  const line = '[' + time + '] ' + message + suffix;
+
+  debugLogItems.unshift(line);
+  debugLogItems = debugLogItems.slice(0, 8);
+
+  const debugContent = document.getElementById('debugContent');
+  if (debugContent) {
+    debugContent.textContent = debugLogItems.join('\n');
+  }
+
+  console.log('[Trifoglio Debug]', message, details || '');
+}
+
+function initDebugPanel() {
+  const panel = document.createElement('div');
+  panel.id = 'debugPanel';
+  panel.style.position = 'absolute';
+  panel.style.right = '8px';
+  panel.style.bottom = '8px';
+  panel.style.zIndex = '1000';
+  panel.style.backgroundColor = 'rgba(255,255,255,0.95)';
+  panel.style.border = '1px solid #666';
+  panel.style.padding = '6px';
+  panel.style.width = '340px';
+  panel.style.maxWidth = 'calc(100% - 16px)';
+  panel.style.fontFamily = 'monospace';
+  panel.style.fontSize = '11px';
+  panel.style.lineHeight = '1.35';
+  panel.style.whiteSpace = 'pre-wrap';
+
+  const title = document.createElement('div');
+  title.textContent = 'Debug IIIF';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '4px';
+
+  const content = document.createElement('div');
+  content.id = 'debugContent';
+  content.textContent = 'En attente...';
+
+  panel.appendChild(title);
+  panel.appendChild(content);
+  document.getElementById('map').appendChild(panel);
+
+  debugLog('App initialized');
+}
 ////////////////
 //LEAFLET DRAW//
 ////////////////
@@ -110,6 +161,8 @@ map.on('load', () => {
   setStartview(); // Set the start view of the map
 });
 
+initDebugPanel();
+
 drawSomething(); // Initialize the Leaflet.draw plugin
 // Load saved layers from local storage
 loadFromLocalStorage();
@@ -121,6 +174,8 @@ loadFromLocalStorage();
 // Call the function to load the IIIF manifest with the user-specified URL
 
 function loadIIIFManifest(manifestUrl) {
+  debugLog('Loading manifest', manifestUrl);
+
   function asArray(value) {
     if (!value) {
       return [];
@@ -186,6 +241,8 @@ function loadIIIFManifest(manifestUrl) {
 
   $.getJSON(manifestUrl)
     .done(function (data) {
+      debugLog('Manifest fetched', 'ok');
+
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
 
@@ -198,6 +255,7 @@ function loadIIIFManifest(manifestUrl) {
       $.each(canvases, function (index, canvas) {
         const serviceId = getImageServiceIdFromCanvas(canvas);
         if (!serviceId) {
+          debugLog('Canvas skipped', 'no image service at index ' + index);
           return;
         }
 
@@ -209,16 +267,36 @@ function loadIIIFManifest(manifestUrl) {
       const layerNames = Object.keys(iiifLayers);
       if (layerNames.length === 0) {
         console.error('No IIIF image services found in this manifest.');
+        debugLog(
+          'No layers created',
+          'manifest parsed but no image services found',
+        );
         alert('Aucun service IIIF image trouvé dans ce manifeste.');
         return;
       }
 
       // Access the first Iiif object and add it to the map.
       iiifLayers[layerNames[0]].addTo(map);
+      debugLog(
+        'Layer added',
+        layerNames[0] + ' (' + layerNames.length + ' total)',
+      );
     })
-    .fail(function () {
-      console.error('Failed to load IIIF manifest.');
-      alert('Échec du chargement du manifeste IIIF.');
+    .fail(function (jqXHR, textStatus, errorThrown) {
+      const status =
+        jqXHR && jqXHR.status ? 'HTTP ' + jqXHR.status : 'No HTTP status';
+      const details = [status, textStatus, errorThrown]
+        .filter(Boolean)
+        .join(' - ');
+
+      console.error('Failed to load IIIF manifest:', details, manifestUrl);
+      debugLog('Manifest load failed', details);
+      alert(
+        'Échec du chargement du manifeste IIIF.\n\n' +
+          'Détails: ' +
+          details +
+          '\n\nAstuce GitHub Pages: utilisez une URL HTTPS et un serveur IIIF qui autorise CORS.',
+      );
     });
 }
 
@@ -227,22 +305,51 @@ var iiifLayers = {};
 
 // Function to ask the user for the Manifest URL using a prompt
 function askForManifestUrl() {
-  const manifestUrl = prompt(
+  const manifestUrlInput = prompt(
     'Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):',
   );
-  if (manifestUrl === null) {
+  if (manifestUrlInput === null) {
     // User clicked "Cancel" on the prompt
     return null; // Return null to indicate that the prompt was canceled
   }
 
-  // Check if the URL is valid using a regular expression
-  const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/;
-  if (!urlRegex.test(manifestUrl)) {
+  const manifestUrl = normalizeManifestUrl(manifestUrlInput);
+  if (!manifestUrl) {
+    debugLog('Invalid manifest URL', manifestUrlInput);
     alert('Ce manifeste est invalide.Essayez de nouveau.');
     return askForManifestUrl(); // Ask again if the user input is invalid
   }
 
+  debugLog('Manifest URL normalized', manifestUrl);
+
   return manifestUrl; // Return the valid URL
+}
+
+function normalizeManifestUrl(inputUrl) {
+  if (!inputUrl) {
+    return null;
+  }
+
+  let candidate = inputUrl.trim();
+  if (!candidate) {
+    return null;
+  }
+
+  // If no protocol is provided, default to HTTPS for GitHub Pages.
+  if (!/^https?:\/\//i.test(candidate)) {
+    candidate = 'https://' + candidate.replace(/^\/\//, '');
+  }
+
+  // Avoid mixed-content blocking (http manifest on https page).
+  if (/^http:\/\//i.test(candidate)) {
+    candidate = candidate.replace(/^http:\/\//i, 'https://');
+  }
+
+  try {
+    return new URL(candidate).toString();
+  } catch (_) {
+    return null;
+  }
 }
 
 // Get a reference to the button element
