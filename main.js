@@ -199,6 +199,11 @@ if (!drawnLayers) {
 
 // Initialize the Leaflet.draw plugin and load saved layers
 function drawSomething() {
+  if (!L.Control || !L.Control.Draw) {
+    debugLog('Leaflet.draw unavailable', 'Draw toolbar skipped');
+    return;
+  }
+
   if (drawnLayers && map.hasLayer(drawnLayers)) {
     map.removeLayer(drawnLayers);
   }
@@ -207,7 +212,7 @@ function drawSomething() {
 
   map.addLayer(drawnLayers); // Add the drawnLayers to the map if it doesn't exist
 
-  const drawControl = new L.Control.Draw({
+  new L.Control.Draw({
     draw: {
       polygon: true,
       polyline: true,
@@ -327,9 +332,18 @@ map.on('load', () => {
   setStartview(); // Set the start view of the map
 });
 
-drawSomething(); // Initialize the Leaflet.draw plugin
+try {
+  drawSomething(); // Initialize the Leaflet.draw plugin
+} catch (error) {
+  console.error('Leaflet.draw initialization failed:', error);
+}
+
 // Load saved layers from local storage
-loadFromLocalStorage();
+try {
+  loadFromLocalStorage();
+} catch (error) {
+  console.error('Loading saved drawings failed:', error);
+}
 
 ////////////////
 //LEAFLET iiif//
