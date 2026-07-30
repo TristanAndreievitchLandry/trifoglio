@@ -7,22 +7,18 @@ const map = L.map('map', {
   zoom: 0,
 });
 
-function updateAttributionPrefix(current, total) {
+function updateAttributionPrefix() {
   if (!map.attributionControl) {
     return;
   }
 
   map.attributionControl.setPrefix(
-    '<a href="https://leafletjs.com/">Leaflet</a> | <span class="ua-badge" aria-label="Ukraine">UA</span> | <span class="canvas-indicator">' +
-      current +
-      '/' +
-      total +
-      '</span>',
+    '<a href="https://leafletjs.com/">Leaflet</a> | <span class="ua-badge" aria-label="Ukraine">UA</span>',
   );
 }
 
 if (map.attributionControl) {
-  updateAttributionPrefix(0, 0);
+  updateAttributionPrefix();
 }
 
 let osmLayer = null;
@@ -43,6 +39,7 @@ const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
+const sidebarPageCounter = document.getElementById('sidebar-page-counter');
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
@@ -64,7 +61,9 @@ function updateCanvasNavigation() {
   if (canvasPosition) {
     canvasPosition.textContent = current + ' / ' + total;
   }
-  updateAttributionPrefix(current, total);
+  if (sidebarPageCounter) {
+    sidebarPageCounter.textContent = current + '/' + total;
+  }
   canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
 }
