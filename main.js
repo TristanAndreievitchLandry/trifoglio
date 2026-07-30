@@ -7,10 +7,11 @@ const map = L.map('map', {
   zoom: 0,
 });
 
+const LEAFLET_ATTRIBUTION_PREFIX =
+  '<a href="https://leafletjs.com/">Leaflet</a> | 🇺🇦 | <span id="canvas-indicator" class="canvas-indicator">0/0</span>';
+
 if (map.attributionControl) {
-  map.attributionControl.setPrefix(
-    '<a href="https://leafletjs.com/">Leaflet</a> | 🇺🇦',
-  );
+  map.attributionControl.setPrefix(LEAFLET_ATTRIBUTION_PREFIX);
 }
 
 let osmLayer = null;
@@ -41,32 +42,16 @@ function ensureCanvasIndicator() {
     return canvasIndicatorElement;
   }
 
-  const existingIndicator = document.getElementById('canvas-indicator');
-  if (existingIndicator) {
-    canvasIndicatorElement = existingIndicator;
+  canvasIndicatorElement = document.getElementById('canvas-indicator');
+  if (canvasIndicatorElement) {
     return canvasIndicatorElement;
   }
 
-  const attributionContainer =
-    map.attributionControl && map.attributionControl.getContainer
-      ? map.attributionControl.getContainer()
-      : null;
-
-  if (!attributionContainer) {
-    return null;
+  if (map.attributionControl) {
+    // Re-apply prefix to restore the counter span if attribution was re-rendered.
+    map.attributionControl.setPrefix(LEAFLET_ATTRIBUTION_PREFIX);
+    canvasIndicatorElement = document.getElementById('canvas-indicator');
   }
-
-  const separator = document.createElement('span');
-  separator.className = 'canvas-indicator-separator';
-  separator.textContent = ' | ';
-
-  canvasIndicatorElement = document.createElement('span');
-  canvasIndicatorElement.id = 'canvas-indicator';
-  canvasIndicatorElement.className = 'canvas-indicator';
-  canvasIndicatorElement.textContent = '0/0';
-
-  attributionContainer.appendChild(separator);
-  attributionContainer.appendChild(canvasIndicatorElement);
 
   return canvasIndicatorElement;
 }
