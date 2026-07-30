@@ -28,6 +28,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
+let currentIIIFAttribution = null;
 const DRAWINGS_STORAGE_KEY = 'drawingsByCanvas';
 let drawingsByCanvas = {};
 
@@ -43,6 +44,26 @@ const pageCounterValue = document.getElementById('page-counter-value');
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
+}
+
+function clearIIIFAttribution() {
+  if (!map.attributionControl || !currentIIIFAttribution) {
+    return;
+  }
+
+  map.attributionControl.removeAttribution(currentIIIFAttribution);
+  currentIIIFAttribution = null;
+}
+
+function setIIIFAttribution(attributionHtml) {
+  clearIIIFAttribution();
+
+  if (!map.attributionControl || !attributionHtml) {
+    return;
+  }
+
+  currentIIIFAttribution = attributionHtml;
+  map.attributionControl.addAttribution(currentIIIFAttribution);
 }
 
 function setManifestStatus(message, variant) {
@@ -370,6 +391,115 @@ function loadIIIFManifest(manifestUrl) {
     return firstService.id || firstService['@id'] || null;
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getText(value, fallbackIndex) {
+    if (!value) {
+      return null;
+    }
+
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    if (Array.isArray(value)) {
+      return value[0] || null;
+    }
+
+    if (typeof value === 'object') {
+      if (value.none && Array.isArray(value.none) && value.none[0]) {
+        return value.none[0];
+      }
+
+      const firstLang = Object.keys(value)[0];
+      if (firstLang && Array.isArray(value[firstLang]) && value[firstLang][0]) {
+        return value[firstLang][0];
+      }
+    }
+
+    if (typeof fallbackIndex === 'number') {
+      return 'Canvas ' + (fallbackIndex + 1);
+    }
+
+    return null;
+  }
+
+  function getProviderName(provider) {
+    if (!provider) {
+      return null;
+    }
+
+    return getText(provider.label);
+  }
+
+  function getProviderHomepage(provider) {
+    if (!provider) {
+      return null;
+    }
+
+    const homepage = firstItem(provider.homepage);
+    if (!homepage) {
+      return null;
+    }
+
+    return homepage.id || homepage['@id'] || null;
+  }
+
+  function buildManifestSourceAttribution(data, sourceUrl) {
+    const root = Array.isArray(data) ? data[0] : data;
+    if (!root || typeof root !== 'object') {
+      return null;
+    }
+
+    // IIIF Presentation 3: provider[].label (+ optional homepage)
+    const providers = asArray(root.provider);
+    for (const provider of providers) {
+      const name = getProviderName(provider);
+      if (!name) {
+        continue;
+      }
+
+      const homepage = getProviderHomepage(provider);
+      if (homepage) {
+        return (
+          'IIIF source: <a href="' +
+          escapeHtml(homepage) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(name) +
+          '</a>'
+        );
+      }
+
+      return 'IIIF source: ' + escapeHtml(name);
+    }
+
+    // IIIF Presentation 2 often has attribution text.
+    const attributionText = getText(root.attribution);
+    if (attributionText) {
+      return 'IIIF source: ' + escapeHtml(attributionText);
+    }
+
+    // Fallback to manifest label, then URL host.
+    const manifestLabel = getText(root.label);
+    if (manifestLabel) {
+      return 'IIIF source: ' + escapeHtml(manifestLabel);
+    }
+
+    try {
+      const source = new URL(sourceUrl);
+      return 'IIIF source: ' + escapeHtml(source.hostname);
+    } catch (_) {
+      return null;
+    }
+  }
+
   function getImageServiceIdFromCanvas(canvas) {
     if (!canvas) {
       return null;
@@ -439,6 +569,8 @@ function loadIIIFManifest(manifestUrl) {
   fetchJsonWithProxyFallback(manifestUrl)
     .done(function (data, usedProxy) {
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
+
+      setIIIFAttribution(buildManifestSourceAttribution(data, manifestUrl));
 
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
@@ -514,6 +646,7 @@ var iiifLayers = {};
 
 function clearIIIFLayers() {
   saveCurrentCanvasDrawings();
+  clearIIIFAttribution();
 
   Object.keys(iiifLayers).forEach(function (layerName) {
     const layer = iiifLayers[layerName];
