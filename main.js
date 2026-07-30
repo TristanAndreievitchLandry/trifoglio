@@ -10,6 +10,7 @@ const map = L.map('map', {
 let osmLayer = null;
 
 let manifestCanvasKeys = [];
+let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
@@ -99,6 +100,7 @@ function showCanvasByIndex(index) {
 
   const layerKey = manifestCanvasKeys[index];
   const layer = iiifLayers[layerKey];
+  const layerLabel = manifestCanvasLabels[layerKey] || layerKey;
   if (!layer) {
     setManifestStatus('Canvas introuvable dans le manifeste.', 'error');
     return;
@@ -110,7 +112,7 @@ function showCanvasByIndex(index) {
   currentCanvasIndex = index;
   updateCanvasNavigation();
   setManifestStatus(
-    'Canvas ' + (index + 1) + ' chargé: ' + layerKey,
+    'Canvas ' + (index + 1) + ' chargé: ' + layerLabel,
     'success',
   );
 }
@@ -394,12 +396,26 @@ function loadIIIFManifest(manifestUrl) {
     return [];
   }
 
+  function getCanvasUniqueKey(canvas, index) {
+    if (canvas && canvas.id) {
+      return canvas.id;
+    }
+
+    if (canvas && canvas['@id']) {
+      return canvas['@id'];
+    }
+
+    return 'canvas-' + (index + 1);
+  }
+
   fetchJsonWithProxyFallback(manifestUrl)
     .done(function (data, usedProxy) {
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
+      manifestCanvasKeys = [];
+      manifestCanvasLabels = {};
 
       // IIIF Presentation 2 uses sequences[0].canvases; Presentation 3 uses items.
       const canvases = getCanvasesFromManifest(data);
@@ -411,16 +427,18 @@ function loadIIIFManifest(manifestUrl) {
           return;
         }
 
+        const layerKey = getCanvasUniqueKey(canvas, index);
         const label = getLabel(canvas.label, index);
         const infoUrl = serviceId.replace(/\/$/, '') + '/info.json';
-        iiifLayers[label] = L.tileLayer.iiif(infoUrl, {
+        iiifLayers[layerKey] = L.tileLayer.iiif(infoUrl, {
           iiifBaseUrl: serviceId.replace(/\/$/, '') + '/',
           jsonProxyBase: JSON_PROXY_BASE_URL,
         });
+        manifestCanvasKeys.push(layerKey);
+        manifestCanvasLabels[layerKey] = label;
       });
 
-      const layerNames = Object.keys(iiifLayers);
-      if (layerNames.length === 0) {
+      if (manifestCanvasKeys.length === 0) {
         console.error('No IIIF image services found in this manifest.');
         debugLog(
           'No layers created',
@@ -434,12 +452,14 @@ function loadIIIFManifest(manifestUrl) {
         return;
       }
 
-      manifestCanvasKeys = layerNames;
       currentCanvasIndex = -1;
       showCanvasByIndex(0);
       debugLog(
         'Layer added',
-        layerNames[0] + ' (' + layerNames.length + ' total)',
+        manifestCanvasLabels[manifestCanvasKeys[0]] +
+          ' (' +
+          manifestCanvasKeys.length +
+          ' total)',
       );
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
@@ -476,6 +496,7 @@ function clearIIIFLayers() {
 
   iiifLayers = {};
   manifestCanvasKeys = [];
+  manifestCanvasLabels = {};
   currentCanvasIndex = -1;
   currentCanvasKey = null;
   updateCanvasNavigation();
