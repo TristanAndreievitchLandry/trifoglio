@@ -57,6 +57,35 @@ function initDebugPanel() {
 
   debugLog('App initialized');
 }
+
+const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
+
+function buildProxyUrl(url) {
+  return JSON_PROXY_BASE_URL + encodeURIComponent(url);
+}
+
+function fetchJsonWithProxyFallback(url) {
+  const deferred = $.Deferred();
+
+  $.getJSON(url)
+    .done(function (data) {
+      deferred.resolve(data, false);
+    })
+    .fail(function () {
+      const proxyUrl = buildProxyUrl(url);
+      debugLog('Direct JSON blocked, retry proxy', url);
+
+      $.getJSON(proxyUrl)
+        .done(function (data) {
+          deferred.resolve(data, true);
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          deferred.reject(jqXHR, textStatus, errorThrown);
+        });
+    });
+
+  return deferred.promise();
+}
 ////////////////
 //LEAFLET DRAW//
 ////////////////
@@ -183,6 +212,11 @@ function loadIIIFManifest(manifestUrl) {
     return Array.isArray(value) ? value : [value];
   }
 
+  function firstItem(value) {
+    const list = asArray(value);
+    return list.length > 0 ? list[0] : null;
+  }
+
   function getLabel(label, index) {
     if (!label) {
       return 'Canvas ' + (index + 1);
@@ -203,17 +237,20 @@ function loadIIIFManifest(manifestUrl) {
   }
 
   function getServiceId(service) {
-    if (!service) {
+    const firstService = firstItem(service);
+    if (!firstService) {
       return null;
     }
-
-    const firstService = Array.isArray(service) ? service[0] : service;
     return firstService.id || firstService['@id'] || null;
   }
 
   function getImageServiceIdFromCanvas(canvas) {
+    if (!canvas) {
+      return null;
+    }
+
     // IIIF Presentation 2: canvas.images[].resource.service
-    const p2Image = asArray(canvas.images)[0];
+    const p2Image = firstItem(canvas.images);
     if (p2Image && p2Image.resource) {
       const p2ServiceId = getServiceId(p2Image.resource.service);
       if (p2ServiceId) {
@@ -239,18 +276,37 @@ function loadIIIFManifest(manifestUrl) {
     return null;
   }
 
-  $.getJSON(manifestUrl)
-    .done(function (data) {
-      debugLog('Manifest fetched', 'ok');
+  function getCanvasesFromManifest(data) {
+    if (!data || typeof data !== 'object') {
+      return [];
+    }
+
+    const root = Array.isArray(data) ? data[0] : data;
+    if (!root || typeof root !== 'object') {
+      return [];
+    }
+
+    if (Array.isArray(root.items)) {
+      return root.items;
+    }
+
+    const firstSequence = firstItem(root.sequences);
+    if (firstSequence && Array.isArray(firstSequence.canvases)) {
+      return firstSequence.canvases;
+    }
+
+    return [];
+  }
+
+  fetchJsonWithProxyFallback(manifestUrl)
+    .done(function (data, usedProxy) {
+      debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
 
       // IIIF Presentation 2 uses sequences[0].canvases; Presentation 3 uses items.
-      const canvases =
-        (data.sequences && data.sequences[0] && data.sequences[0].canvases) ||
-        data.items ||
-        [];
+      const canvases = getCanvasesFromManifest(data);
 
       $.each(canvases, function (index, canvas) {
         const serviceId = getImageServiceIdFromCanvas(canvas);
@@ -261,7 +317,10 @@ function loadIIIFManifest(manifestUrl) {
 
         const label = getLabel(canvas.label, index);
         const infoUrl = serviceId.replace(/\/$/, '') + '/info.json';
-        iiifLayers[label] = L.tileLayer.iiif(infoUrl);
+        iiifLayers[label] = L.tileLayer.iiif(infoUrl, {
+          iiifBaseUrl: serviceId.replace(/\/$/, '') + '/',
+          jsonProxyBase: JSON_PROXY_BASE_URL,
+        });
       });
 
       const layerNames = Object.keys(iiifLayers);
