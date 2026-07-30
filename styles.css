@@ -31,18 +31,26 @@ body {
   align-items: center;
 }
 
-.sidebar-page-counter {
-  min-width: 42px;
-  margin-top: 2px;
-  padding: 3px 6px;
-  text-align: center;
-  font-size: 12px;
+#page-counter-button {
+  cursor: default;
+  background-color: #f3f7fb;
+}
+
+#page-counter-button:disabled {
+  opacity: 1;
+  color: #1a2f46;
+  border-color: #3a4d63;
+}
+
+#page-counter-button:hover {
+  background-color: #f3f7fb;
+}
+
+#page-counter-value {
+  font-size: 10px;
   font-weight: 700;
-  color: #f4f9ff;
-  background: rgba(7, 14, 26, 0.88);
-  border: 1px solid rgba(165, 202, 245, 0.78);
-  border-radius: 4px;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.2px;
+  color: #1a2f46;
 }
 
 .manifest-panel {
@@ -198,22 +206,6 @@ body {
 
 .leaflet-control-attribution a:hover {
   color: #cfe6ff !important;
-}
-
-.ua-badge {
-  display: inline-block;
-  font-weight: 800;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0.3px;
-  color: #0b1324;
-  background: linear-gradient(to bottom, #1f6fff 0 50%, #ffd53d 50% 100%);
-  padding: 2px 5px;
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
-  text-shadow: none;
-  vertical-align: middle;
 }
 
 /* Custom button styles */

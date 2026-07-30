@@ -13,7 +13,7 @@ function updateAttributionPrefix() {
   }
 
   map.attributionControl.setPrefix(
-    '<a href="https://leafletjs.com/">Leaflet</a> | <span class="ua-badge" aria-label="Ukraine">UA</span>',
+    '<a href="https://leafletjs.com/">Leaflet</a>',
   );
 }
 
@@ -39,7 +39,7 @@ const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
 const canvasPosition = document.getElementById('canvas-position');
-const sidebarPageCounter = document.getElementById('sidebar-page-counter');
+const pageCounterValue = document.getElementById('page-counter-value');
 
 function debugLog(message, details) {
   console.log('[Trifoglio Debug]', message, details || '');
@@ -61,8 +61,8 @@ function updateCanvasNavigation() {
   if (canvasPosition) {
     canvasPosition.textContent = current + ' / ' + total;
   }
-  if (sidebarPageCounter) {
-    sidebarPageCounter.textContent = current + '/' + total;
+  if (pageCounterValue) {
+    pageCounterValue.textContent = current + '/' + total;
   }
   canvasPrevButton.disabled = total <= 1 || currentCanvasIndex <= 0;
   canvasNextButton.disabled = total <= 1 || currentCanvasIndex >= total - 1;
@@ -100,7 +100,12 @@ function loadDrawingsForCanvas(canvasKey) {
 
   const saved = drawingsByCanvas[storageKey];
   if (saved) {
-    L.geoJSON(saved).addTo(drawnLayers);
+    // Add each feature directly so Leaflet.draw edit/delete can target them.
+    L.geoJSON(saved, {
+      onEachFeature: function (_feature, layer) {
+        drawnLayers.addLayer(layer);
+      },
+    });
   }
 }
 
@@ -177,10 +182,11 @@ if (!drawnLayers) {
 
 // Initialize the Leaflet.draw plugin and load saved layers
 function drawSomething() {
-  if (drawnLayers) {
-    drawnLayers = new L.FeatureGroup();
-    map.removeLayer(drawnLayers); // Remove the existing drawnLayers from the map
+  if (drawnLayers && map.hasLayer(drawnLayers)) {
+    map.removeLayer(drawnLayers);
   }
+
+  drawnLayers = new L.FeatureGroup();
 
   map.addLayer(drawnLayers); // Add the drawnLayers to the map if it doesn't exist
 
