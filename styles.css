@@ -208,6 +208,11 @@ body {
   color: #cfe6ff !important;
 }
 
+.iiif-source-attribution {
+  color: #d8e9ff;
+  font-weight: 600;
+}
+
 /* Custom button styles */
 button {
   width: 35px; /* Same width as the Leaflet Draw controls */

@@ -12,8 +12,14 @@ function updateAttributionPrefix() {
     return;
   }
 
+  const sourcePart = currentIIIFAttribution
+    ? ' | <span class="iiif-source-attribution">' +
+      currentIIIFAttribution +
+      '</span>'
+    : '';
+
   map.attributionControl.setPrefix(
-    '<a href="https://leafletjs.com/">Leaflet</a>',
+    '<a href="https://leafletjs.com/">Leaflet</a>' + sourcePart,
   );
 }
 
@@ -47,23 +53,13 @@ function debugLog(message, details) {
 }
 
 function clearIIIFAttribution() {
-  if (!map.attributionControl || !currentIIIFAttribution) {
-    return;
-  }
-
-  map.attributionControl.removeAttribution(currentIIIFAttribution);
   currentIIIFAttribution = null;
+  updateAttributionPrefix();
 }
 
 function setIIIFAttribution(attributionHtml) {
-  clearIIIFAttribution();
-
-  if (!map.attributionControl || !attributionHtml) {
-    return;
-  }
-
-  currentIIIFAttribution = attributionHtml;
-  map.attributionControl.addAttribution(currentIIIFAttribution);
+  currentIIIFAttribution = attributionHtml || null;
+  updateAttributionPrefix();
 }
 
 function setManifestStatus(message, variant) {
