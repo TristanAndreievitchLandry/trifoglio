@@ -261,16 +261,6 @@ p {
   border: none;
 }
 
-#add-button {
-  background-color: #2f4f77;
-  border-color: #527db0;
-  color: #eef5ff;
-}
-
-#add-button:hover {
-  background-color: #3d6698;
-}
-
 ul {
   list-style: none; /* Remove bullets */
   padding: 0; /* Remove any padding */
