@@ -39,7 +39,7 @@ function drawSomething() {
     },
   }).addTo(map);
 
-  map.on('draw:created', e => {
+  map.on('draw:created', (e) => {
     const layer = e.layer;
     drawnLayers.addLayer(layer);
     saveToLocalStorage(layer.toGeoJSON());
@@ -121,21 +121,104 @@ loadFromLocalStorage();
 // Call the function to load the IIIF manifest with the user-specified URL
 
 function loadIIIFManifest(manifestUrl) {
-  // Grab a IIIF manifest
+  function asArray(value) {
+    if (!value) {
+      return [];
+    }
+    return Array.isArray(value) ? value : [value];
+  }
+
+  function getLabel(label, index) {
+    if (!label) {
+      return 'Canvas ' + (index + 1);
+    }
+    if (typeof label === 'string') {
+      return label;
+    }
+    if (label.none && label.none[0]) {
+      return label.none[0];
+    }
+
+    const firstLang = Object.keys(label)[0];
+    if (firstLang && Array.isArray(label[firstLang]) && label[firstLang][0]) {
+      return label[firstLang][0];
+    }
+
+    return 'Canvas ' + (index + 1);
+  }
+
+  function getServiceId(service) {
+    if (!service) {
+      return null;
+    }
+
+    const firstService = Array.isArray(service) ? service[0] : service;
+    return firstService.id || firstService['@id'] || null;
+  }
+
+  function getImageServiceIdFromCanvas(canvas) {
+    // IIIF Presentation 2: canvas.images[].resource.service
+    const p2Image = asArray(canvas.images)[0];
+    if (p2Image && p2Image.resource) {
+      const p2ServiceId = getServiceId(p2Image.resource.service);
+      if (p2ServiceId) {
+        return p2ServiceId;
+      }
+    }
+
+    // IIIF Presentation 3: canvas.items[].items[].body.service
+    const annotationPages = asArray(canvas.items);
+    for (const page of annotationPages) {
+      const annotations = asArray(page.items);
+      for (const annotation of annotations) {
+        const bodies = asArray(annotation.body);
+        for (const body of bodies) {
+          const p3ServiceId = getServiceId(body.service);
+          if (p3ServiceId) {
+            return p3ServiceId;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
   $.getJSON(manifestUrl)
     .done(function (data) {
-      // For each image create a L.TileLayer.Iiif object and add that to an object literal for the layer control
-      $.each(data.sequences[0].canvases, function (_, val) {
-        iiifLayers[val.label] = L.tileLayer.iiif(
-          val.images[0].resource.service['@id'] + '/info.json'
-        );
+      // Reset previous layers each time a new manifest is loaded.
+      iiifLayers = {};
+
+      // IIIF Presentation 2 uses sequences[0].canvases; Presentation 3 uses items.
+      const canvases =
+        (data.sequences && data.sequences[0] && data.sequences[0].canvases) ||
+        data.items ||
+        [];
+
+      $.each(canvases, function (index, canvas) {
+        const serviceId = getImageServiceIdFromCanvas(canvas);
+        if (!serviceId) {
+          return;
+        }
+
+        const label = getLabel(canvas.label, index);
+        const infoUrl = serviceId.replace(/\/$/, '') + '/info.json';
+        iiifLayers[label] = L.tileLayer.iiif(infoUrl);
       });
 
-      // Access the first Iiif object and add it to the map
-      iiifLayers[Object.keys(iiifLayers)[0]].addTo(map);
+      const layerNames = Object.keys(iiifLayers);
+      if (layerNames.length === 0) {
+        console.error('No IIIF image services found in this manifest.');
+        alert('Aucun service IIIF image trouvé dans ce manifeste.');
+        return;
+      }
+
+      // Access the first Iiif object and add it to the map.
+      iiifLayers[layerNames[0]].addTo(map);
     })
     .fail(function () {
       console.error('Failed to load IIIF manifest.');
+      alert('Échec du chargement du manifeste IIIF.');
     });
 }
 
@@ -145,7 +228,7 @@ var iiifLayers = {};
 // Function to ask the user for the Manifest URL using a prompt
 function askForManifestUrl() {
   const manifestUrl = prompt(
-    'Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):'
+    'Entrez le manifeste URL (ex.: https://gallica.bnf.fr/iiif/ark:/12148/btv1b531025148/f1/manifest.json):',
   );
   if (manifestUrl === null) {
     // User clicked "Cancel" on the prompt
@@ -248,7 +331,7 @@ function handleFileDrop(event) {
 }
 
 // Add event listeners to the entire window
-window.addEventListener('dragover', event => event.preventDefault());
+window.addEventListener('dragover', (event) => event.preventDefault());
 window.addEventListener('drop', handleFileDrop);
 
 ///////////////////////
@@ -258,7 +341,7 @@ window.addEventListener('drop', handleFileDrop);
 // Fonction pour générer la liste à partir des données de data.js
 function generateListFromData(data) {
   let listHtml = '<ul>';
-  data.forEach(data => {
+  data.forEach((data) => {
     listHtml += `<li>${data.titre} - ${data.cartographe} (${year})</li>`;
   });
   listHtml += '</ul>';
