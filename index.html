@@ -38,10 +38,12 @@
   <body class="click-capture">
     <div id="map"></div>
 
-    <div id="manifestPanel" class="manifest-panel">
+    <div id="manifestPanel" class="manifest-panel is-hidden">
       <div class="manifest-header">
         <label for="manifest-input">Manifest IIIF</label>
-        <button id="manifest-close-button" title="Fermer">✕</button>
+        <button id="manifest-close-button" title="Fermer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
       <div class="manifest-row">
         <input
@@ -100,6 +102,6 @@
       </button>
     </div>
 
-    <script src="main.js?v=20260731-branch4"></script>
+    <script src="main.js?v=20260731-branch5"></script>
   </body>
 </html>
