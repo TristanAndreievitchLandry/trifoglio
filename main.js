@@ -201,6 +201,8 @@ function drawSomething() {
     },
     edit: {
       featureGroup: drawnLayers,
+      edit: false,
+      remove: true,
     },
   }).addTo(map);
 
