@@ -227,11 +227,12 @@ function playIntroWithGsap() {
   });
   window.gsap.set(introAura, {
     autoAlpha: 0,
-    scale: 0.68,
+    scale: 0.5,
     transformOrigin: '50% 50%',
     force3D: true,
   });
-  window.gsap.set([introLogo, introTitle], { autoAlpha: 0 });
+  window.gsap.set(introLogo, { autoAlpha: 1 });
+  window.gsap.set(introTitle, { autoAlpha: 1 });
 
   const timeline = window.gsap.timeline({
     defaults: { overwrite: 'auto' },
@@ -241,30 +242,16 @@ function playIntroWithGsap() {
   });
 
   timeline
-    .fromTo(
-      introLogo,
-      { scale: 0.35, autoAlpha: 0, transformOrigin: '50% 50%' },
-      { scale: 1.02, autoAlpha: 1, duration: 0.82, ease: 'power2.out' },
-    )
-    .fromTo(
-      introTitle,
-      { scale: 0.74, autoAlpha: 0, transformOrigin: '50% 50%' },
-      { scale: 1, autoAlpha: 1, duration: 0.66, ease: 'power1.out' },
-      '-=0.44',
-    )
-    .to(introInner, { scale: 1.14, duration: 0.18, ease: 'sine.out' })
-    .to(introInner, { scale: 0.94, duration: 0.2, ease: 'sine.inOut' })
-    .to(introInner, { scale: 1.02, duration: 0.16, ease: 'sine.out' })
-    .to(introInner, { scale: 1, duration: 0.18, ease: 'sine.out' })
-    .to({}, { duration: 0.18 })
-    .to(
-      introAura,
-      { autoAlpha: 0.78, scale: 1.92, duration: 0.42, ease: 'power2.out' },
-      '-=0.08',
-    )
+    .to({}, { duration: 1.5 })
+    .to(introAura, {
+      autoAlpha: 0.7,
+      scale: 2.4,
+      duration: 0.6,
+      ease: 'power1.out',
+    })
     .to(
       [introAura, introScreen],
-      { autoAlpha: 0, duration: 0.44, ease: 'power1.in' },
+      { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' },
       '-=0.1',
     );
 }
