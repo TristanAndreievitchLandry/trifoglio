@@ -161,9 +161,51 @@ function ensureAppShellElements() {
 
 ensureAppShellElements();
 
-function playIntroWithGsap() {
+const INTRO_STORAGE_KEY = 'trifoglioIntroSeen';
+
+function shouldPlayIntro() {
   const introScreen = document.getElementById('trf-intro-screen');
   if (!introScreen) {
+    return false;
+  }
+
+  let searchParams = null;
+  try {
+    searchParams = new URLSearchParams(window.location.search || '');
+  } catch (_) {
+    searchParams = null;
+  }
+
+  const introMode = searchParams ? searchParams.get('intro') : null;
+  if (introMode === '1' || introMode === 'true' || introMode === 'force') {
+    return true;
+  }
+
+  if (introMode === 'reset') {
+    try {
+      localStorage.removeItem(INTRO_STORAGE_KEY);
+    } catch (_) {
+      // Ignore storage access errors.
+    }
+    return true;
+  }
+
+  try {
+    if (localStorage.getItem(INTRO_STORAGE_KEY) === '1') {
+      introScreen.remove();
+      return false;
+    }
+    localStorage.setItem(INTRO_STORAGE_KEY, '1');
+  } catch (_) {
+    return true;
+  }
+
+  return true;
+}
+
+function playIntroWithGsap() {
+  const introScreen = document.getElementById('trf-intro-screen');
+  if (!introScreen || !shouldPlayIntro()) {
     return;
   }
 
@@ -270,6 +312,14 @@ function updateAttributionPrefix() {
 if (map.attributionControl) {
   updateAttributionPrefix();
 }
+
+map.on('popupopen', function (event) {
+  if (!event || !event.popup) {
+    return;
+  }
+
+  enhancePopupMediaControls(event.popup);
+});
 
 let osmLayer = null;
 
@@ -1147,6 +1197,198 @@ function escapeAnnotationHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function getMediaTypeFromUrl(value) {
+  const candidate = String(value || '').trim();
+  if (!candidate) {
+    return null;
+  }
+
+  let pathname = candidate;
+  try {
+    pathname = new URL(candidate).pathname || candidate;
+  } catch (_) {
+    pathname = candidate.split('?')[0].split('#')[0];
+  }
+
+  const normalizedPath = pathname.toLowerCase();
+  if (/\.(mp4|webm|ogv|mov|m4v)$/i.test(normalizedPath)) {
+    return 'video';
+  }
+  if (/\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(normalizedPath)) {
+    return 'audio';
+  }
+  if (/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(normalizedPath)) {
+    return 'image';
+  }
+
+  return null;
+}
+
+function enhancePopupMediaControls(popup) {
+  if (!popup || typeof popup.getElement !== 'function') {
+    return;
+  }
+
+  const popupElement = popup.getElement();
+  if (!popupElement || popupElement.__trfAudioControlsBound) {
+    return;
+  }
+
+  popupElement.__trfAudioControlsBound = true;
+
+  function syncAudioPlaybackUi(audioButton, isPlaying) {
+    if (!audioButton) {
+      return;
+    }
+
+    const icon = audioButton.querySelector('i');
+    audioButton.classList.toggle('is-playing', Boolean(isPlaying));
+    audioButton.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+    audioButton.setAttribute(
+      'aria-label',
+      isPlaying ? 'Pause audio' : 'Lire audio',
+    );
+    if (icon) {
+      icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+    }
+  }
+
+  function syncAudioVolumeUi(audioWrapper, audioElement) {
+    if (!audioWrapper || !audioElement) {
+      return;
+    }
+
+    const volumeButton = audioWrapper.querySelector('.trf-popup__audio-volume');
+    const volumeIcon = volumeButton ? volumeButton.querySelector('i') : null;
+    const volumeInput = audioWrapper.querySelector(
+      '.trf-popup__audio-volume-range',
+    );
+    const currentVolume = audioElement.muted ? 0 : audioElement.volume;
+
+    if (volumeInput) {
+      volumeInput.value = String(Math.round(currentVolume * 100));
+    }
+
+    if (!volumeButton || !volumeIcon) {
+      return;
+    }
+
+    volumeButton.classList.toggle('is-muted', currentVolume === 0);
+    volumeButton.setAttribute(
+      'aria-pressed',
+      currentVolume === 0 ? 'true' : 'false',
+    );
+    volumeIcon.className =
+      currentVolume === 0
+        ? 'fa-solid fa-volume-xmark'
+        : currentVolume < 0.5
+          ? 'fa-solid fa-volume-low'
+          : 'fa-solid fa-volume-high';
+  }
+
+  popupElement.addEventListener('click', function (event) {
+    const audioButton = event.target.closest('.trf-popup__audio-button');
+    const volumeButton = event.target.closest('.trf-popup__audio-volume');
+    if (!audioButton && !volumeButton) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const controlButton = audioButton || volumeButton;
+    const audioWrapper = controlButton.closest('.trf-popup__audio');
+    const audioElement = audioWrapper
+      ? audioWrapper.querySelector('.trf-popup__audio-element')
+      : null;
+    if (!audioElement) {
+      return;
+    }
+
+    if (volumeButton) {
+      audioElement.muted = !audioElement.muted;
+      if (!audioElement.muted && audioElement.volume === 0) {
+        audioElement.volume = 0.7;
+      }
+      syncAudioVolumeUi(audioWrapper, audioElement);
+      return;
+    }
+
+    const shouldPlay = audioElement.paused;
+    document
+      .querySelectorAll('.trf-popup__audio-element')
+      .forEach(function (media) {
+        if (media !== audioElement) {
+          media.pause();
+          media.currentTime = 0;
+          const mediaWrapper = media.closest('.trf-popup__audio');
+          const mediaButton = mediaWrapper
+            ? mediaWrapper.querySelector('.trf-popup__audio-button')
+            : null;
+          syncAudioPlaybackUi(mediaButton, false);
+          syncAudioVolumeUi(mediaWrapper, media);
+        }
+      });
+
+    if (!shouldPlay) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      syncAudioPlaybackUi(audioButton, false);
+      return;
+    }
+
+    audioElement.play().then(
+      function () {
+        syncAudioPlaybackUi(audioButton, true);
+      },
+      function () {
+        syncAudioPlaybackUi(audioButton, false);
+      },
+    );
+  });
+
+  popupElement.addEventListener('input', function (event) {
+    const volumeInput = event.target.closest('.trf-popup__audio-volume-range');
+    if (!volumeInput) {
+      return;
+    }
+
+    const audioWrapper = volumeInput.closest('.trf-popup__audio');
+    const audioElement = audioWrapper
+      ? audioWrapper.querySelector('.trf-popup__audio-element')
+      : null;
+    if (!audioElement) {
+      return;
+    }
+
+    const nextVolume = Number(volumeInput.value) / 100;
+    audioElement.volume = Math.max(0, Math.min(1, nextVolume));
+    audioElement.muted = audioElement.volume === 0;
+    syncAudioVolumeUi(audioWrapper, audioElement);
+  });
+
+  popupElement
+    .querySelectorAll('.trf-popup__audio-element')
+    .forEach(function (audioElement) {
+      const audioWrapper = audioElement.closest('.trf-popup__audio');
+      const playButton = audioWrapper
+        ? audioWrapper.querySelector('.trf-popup__audio-button')
+        : null;
+      syncAudioPlaybackUi(playButton, false);
+      if (audioWrapper) {
+        syncAudioVolumeUi(audioWrapper, audioElement);
+      }
+
+      audioElement.addEventListener('ended', function () {
+        const audioWrapper = audioElement.closest('.trf-popup__audio');
+        const audioButton = audioWrapper
+          ? audioWrapper.querySelector('.trf-popup__audio-button')
+          : null;
+        syncAudioPlaybackUi(audioButton, false);
+        audioElement.currentTime = 0;
+      });
+    });
+}
+
 function normalizeLayerProperties(layer) {
   const feature = layer && layer.feature ? layer.feature : null;
   const properties =
@@ -1488,6 +1730,17 @@ function buildAnnotationPopupHtml(properties) {
   const image = String(annotation.image || properties.image || '').trim();
   const audio = String(annotation.audio || properties.audio || '').trim();
   const video = String(annotation.video || properties.video || '').trim();
+  const inferredUrlMediaType = getMediaTypeFromUrl(url);
+  const effectiveImage = image || (inferredUrlMediaType === 'image' ? url : '');
+  const effectiveAudio = audio || (inferredUrlMediaType === 'audio' ? url : '');
+  const effectiveVideo = video || (inferredUrlMediaType === 'video' ? url : '');
+  const shouldRenderUrlLink = Boolean(
+    url &&
+    inferredUrlMediaType === null &&
+    url !== image &&
+    url !== audio &&
+    url !== video,
+  );
   const tags = Array.isArray(annotation.tags)
     ? annotation.tags.filter(Boolean)
     : String(properties.keywords || '')
@@ -1511,10 +1764,10 @@ function buildAnnotationPopupHtml(properties) {
     );
   }
 
-  if (image) {
+  if (effectiveImage) {
     rows.push(
       '<img class="trf-popup__image" src="' +
-        escapeAnnotationHtml(image) +
+        escapeAnnotationHtml(effectiveImage) +
         '" alt="' +
         escapeAnnotationHtml(title || 'annotation image') +
         '">',
@@ -1545,7 +1798,7 @@ function buildAnnotationPopupHtml(properties) {
     );
   }
 
-  if (url) {
+  if (shouldRenderUrlLink) {
     rows.push(
       '<p class="trf-popup__meta"><a href="' +
         escapeAnnotationHtml(url) +
@@ -1555,18 +1808,27 @@ function buildAnnotationPopupHtml(properties) {
     );
   }
 
-  if (audio) {
+  if (effectiveAudio) {
     rows.push(
-      '<audio class="trf-popup__media" controls src="' +
-        escapeAnnotationHtml(audio) +
-        '"></audio>',
+      '<div class="trf-popup__audio">' +
+        '<button type="button" class="trf-popup__audio-button" aria-label="Lire audio" aria-pressed="false">' +
+        '<i class="fa-solid fa-play" aria-hidden="true"></i>' +
+        '</button>' +
+        '<button type="button" class="trf-popup__audio-volume" aria-label="Volume" aria-pressed="false">' +
+        '<i class="fa-solid fa-volume-high" aria-hidden="true"></i>' +
+        '</button>' +
+        '<input class="trf-popup__audio-volume-range" type="range" min="0" max="100" value="100" aria-label="Volume">' +
+        '<audio class="trf-popup__audio-element" preload="metadata" src="' +
+        escapeAnnotationHtml(effectiveAudio) +
+        '"></audio>' +
+        '</div>',
     );
   }
 
-  if (video) {
+  if (effectiveVideo) {
     rows.push(
-      '<video class="trf-popup__media" controls src="' +
-        escapeAnnotationHtml(video) +
+      '<video class="trf-popup__media" controls playsinline preload="metadata" src="' +
+        escapeAnnotationHtml(effectiveVideo) +
         '"></video>',
     );
   }

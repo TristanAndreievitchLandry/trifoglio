@@ -920,6 +920,89 @@ p {
   margin: 6px 0;
 }
 
+.trf-popup__audio {
+  margin: 8px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trf-popup__audio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #466487;
+  border-radius: 999px;
+  background: #0f1b2e;
+  color: #e6f0ff;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+.trf-popup__audio-volume {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #466487;
+  border-radius: 999px;
+  background: #0f1b2e;
+  color: #e6f0ff;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+.trf-popup__audio-button:hover,
+.trf-popup__audio-button:focus-visible,
+.trf-popup__audio-volume:hover,
+.trf-popup__audio-volume:focus-visible {
+  background: #17314e;
+  border-color: #6f93bf;
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+.trf-popup__audio-button.is-playing {
+  background: #1d4c7d;
+  border-color: #9ac4ff;
+  color: #ffffff;
+}
+
+.trf-popup__audio-button i {
+  font-size: 14px;
+}
+
+.trf-popup__audio-volume.is-muted {
+  background: #122030;
+  border-color: #3d536f;
+  color: #9fb4d2;
+}
+
+.trf-popup__audio-volume i {
+  font-size: 13px;
+}
+
+.trf-popup__audio-volume-range {
+  width: 88px;
+  accent-color: #8bbdff;
+  cursor: pointer;
+}
+
+.trf-popup__audio-element {
+  display: none;
+}
+
 .trf-popup__metadata {
   margin: 6px 0;
   padding: 0;
