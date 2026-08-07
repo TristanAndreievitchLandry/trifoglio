@@ -57,7 +57,6 @@ function ensureAppShellElements() {
         '<input id="manifest-input" type="url" placeholder="" data-i18n-attr="placeholder:inputs.manifestPlaceholder" spellcheck="false" />' +
         '<button id="load-manifest-button" title="" data-i18n-key="buttons.load" data-i18n-attr="title:buttons.load"></button>' +
         '</div>' +
-        '<div id="manifest-status" class="manifest-status" data-i18n-key="notifications.ready"></div>' +
         '</div>',
     );
   }
@@ -343,6 +342,13 @@ const alertModalInputWrap = document.getElementById(
   'trf-alert-modal-input-wrap',
 );
 const alertModalInput = document.getElementById('trf-alert-modal-input');
+const alertModalAcceptWrap = document.getElementById(
+  'trf-alert-modal-accept-wrap',
+);
+const alertModalAcceptInput = document.getElementById('trf-alert-modal-accept');
+const alertModalAcceptLabel = document.getElementById(
+  'trf-alert-modal-accept-label',
+);
 const alertModalCancelButton = document.getElementById(
   'trf-alert-modal-cancel',
 );
@@ -367,6 +373,9 @@ function closeAppAlert(result) {
   alertModal.setAttribute('aria-hidden', 'true');
   if (alertModalInputWrap) {
     alertModalInputWrap.classList.add('is-hidden');
+  }
+  if (alertModalAcceptWrap) {
+    alertModalAcceptWrap.classList.add('is-hidden');
   }
   if (alertModalInput) {
     alertModalInput.value = '';
@@ -417,6 +426,9 @@ function showAppConfirm(message, confirmLabel, cancelLabel) {
   if (alertModalInputWrap) {
     alertModalInputWrap.classList.add('is-hidden');
   }
+  if (alertModalCloseButton) {
+    alertModalCloseButton.disabled = false;
+  }
   alertModal.classList.remove('is-hidden');
   alertModal.setAttribute('aria-hidden', 'false');
   alertModalCloseButton.focus();
@@ -445,6 +457,9 @@ function showAppPrompt(message, defaultValue, confirmLabel, cancelLabel) {
   );
   alertModalCancelButton.classList.remove('is-hidden');
   alertModalInputWrap.classList.remove('is-hidden');
+  if (alertModalCloseButton) {
+    alertModalCloseButton.disabled = false;
+  }
   alertModalInput.value = String(defaultValue || '');
   alertModal.classList.remove('is-hidden');
   alertModal.setAttribute('aria-hidden', 'false');
@@ -731,13 +746,8 @@ function setIIIFAttribution(attributionHtml) {
   updateAttributionPrefix();
 }
 
-function setManifestStatus(message, variant) {
-  manifestStatus.textContent = message;
-  manifestStatus.classList.remove('success', 'error');
-
-  if (variant === 'success' || variant === 'error') {
-    manifestStatus.classList.add(variant);
-  }
+function setManifestStatus(_message, _variant) {
+  // status bar removed
 }
 
 function updateCanvasNavigation() {
@@ -3137,7 +3147,12 @@ addButton.addEventListener('click', function (event) {
     '</h2>' +
     '<p>' +
     t('popup.import.body') +
-    '</p>';
+    '</p>' +
+    '<div class="info-box__actions">' +
+    '<button type="button" class="info-box__close-btn" onclick="document.getElementById(\'infoBox\').style.display=\'none\'">' +
+    t('buttons.ok') +
+    '</button>' +
+    '</div>';
   openInfoBox(content);
 });
 
