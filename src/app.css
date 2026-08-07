@@ -1,0 +1,23 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  padding: 1rem;
+}
+
+.map-viewport {
+  margin: 1rem 0;
+}
+
+.map-viewport__surface {
+  width: 100%;
+  min-height: 320px;
+  border: 1px dashed #9ca3af;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+}

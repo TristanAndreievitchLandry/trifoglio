@@ -1,0 +1,34 @@
+{
+  "name": "trifoglio",
+  "version": "1.0.0",
+  "description": "Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-iiif</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a> et <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a></br></br>Conception: <a href=\"https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry\" target=\"blank\">Tristan Landry</a>",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:protect": "node scripts/build-protect.js",
+    "build:protect:strict": "node scripts/build-protect.js --strict"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TristanAndreievitchLandry/trifoglio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TristanAndreievitchLandry/trifoglio/issues"
+  },
+  "homepage": "https://github.com/TristanAndreievitchLandry/trifoglio#readme",
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "svelte-i18n": "^4.0.1"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1",
+    "terser": "^5.39.2"
+  }
+}

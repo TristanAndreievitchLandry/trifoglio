@@ -1,0 +1,190 @@
+﻿{
+  "app": {
+    "title": "Trifoglio"
+  },
+  "manifest": {
+    "label": "IIIF Manifest"
+  },
+  "inputs": {
+    "manifestPlaceholder": "https://.../manifest.json"
+  },
+  "accessibility": {
+    "languageSwitcher": "Language switcher"
+  },
+  "buttons": {
+    "close": "Close",
+    "ok": "OK",
+    "load": "Load",
+    "info": "Info",
+    "save": "Save",
+    "cancel": "Cancel",
+    "finish": "Finish",
+    "manifest": "Manifest",
+    "iiifGuide": "IIIF guide",
+    "annotationTour": "Annotation tour",
+    "importJson": "Import JSON",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "currentPage": "Current page",
+    "osm": "OSM",
+    "deleteLastPoint": "Delete last point",
+    "clearAll": "Clear All",
+    "editLayers": "Edit layers",
+    "deleteLayers": "Delete layers"
+  },
+  "menus": {
+    "osm": {
+      "dark": "Dark (default)",
+      "standard": "OSM Standard",
+      "humanitarian": "OSM Humanitarian",
+      "topo": "OpenTopoMap",
+      "cyclosm": "CyclOSM",
+      "voyager": "Carto Voyager"
+    }
+  },
+  "toolbar": {
+    "draw": {
+      "cancelDrawing": "Cancel drawing",
+      "finishDrawing": "Finish drawing",
+      "deleteLastPointDrawn": "Delete last point drawn"
+    },
+    "edit": {
+      "saveChanges": "Save changes",
+      "cancelEditing": "Cancel editing, discards all changes",
+      "clearAllLayers": "Clear all layers",
+      "noLayersToEdit": "No layers to edit",
+      "noLayersToDelete": "No layers to delete"
+    }
+  },
+  "draw": {
+    "buttons": {
+      "polyline": "Draw a polyline",
+      "polygon": "Draw a polygon",
+      "rectangle": "Draw a rectangle",
+      "circle": "Draw a circle",
+      "marker": "Draw a marker",
+      "circlemarker": "Draw a circlemarker"
+    },
+    "tooltip": {
+      "circleStart": "Click and drag to draw circle.",
+      "circleMarkerStart": "Click map to place circle marker.",
+      "markerStart": "Click map to place marker.",
+      "polygonStart": "Click to start drawing shape.",
+      "polygonContinue": "Click to continue drawing shape.",
+      "polygonEnd": "Click first point to close this shape.",
+      "polylineStart": "Click to start drawing line.",
+      "polylineContinue": "Click to continue drawing line.",
+      "polylineEnd": "Click last point to finish line.",
+      "rectangleStart": "Click and drag to draw rectangle.",
+      "simpleShapeEnd": "Release mouse to finish drawing.",
+      "editText": "Drag handles, or marker to edit feature.",
+      "editSubtext": "Click cancel to undo changes.",
+      "removeText": "Click on a feature to remove"
+    },
+    "radius": "Radius",
+    "errors": {
+      "shapeEdgesCannotCross": "<strong>Error:</strong> shape edges cannot cross!"
+    }
+  },
+  "popup": {
+    "common": {
+      "imageAlt": "A clover",
+      "svelteLogoAlt": "Svelte logo"
+    },
+    "info": {
+      "body": "Trifoglio is an application for exploring, annotating, and analyzing any document available through the International Image Interoperability Framework (IIIF), including historical maps, artworks, manuscripts, photographs, botanical plates, and other digitized collections.<br><br>Users can load IIIF resources by providing a IIIF manifest URL, then create annotations directly on the document using markers, lines, polygons, and other geometric shapes. Annotations are stored locally in the browser and can also be exported as JSON for sharing or later reuse.<br><br>The application is built with <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a>, and <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>The project is available on <a href=\"https://github.com/TristanAndreievitchLandry/trifoglio\" target=\"_blank\">GitHub</a>.",
+      "madeWith": "Made with Svelte"
+    },
+    "import": {
+      "body": "To import a JSON layer, simply drag and drop it into the window."
+    }
+  },
+  "annotationEditor": {
+    "title": "Annotation editor",
+    "fieldTitle": "Title",
+    "fieldDescription": "Description",
+    "fieldDate": "Date",
+    "fieldAuthor": "Author",
+    "fieldKeywords": "Keywords (comma-separated)",
+    "fieldOrder": "Order",
+    "fieldUrl": "URL",
+    "fieldImage": "Image URL",
+    "fieldAudio": "Audio URL",
+    "fieldVideo": "Video URL",
+    "lineColor": "Line / stroke color",
+    "markerColor": "Marker color",
+    "fillColor": "Fill color",
+    "fillOpacity": "Fill opacity",
+    "customFields": "Custom fields",
+    "customFieldKey": "Field name",
+    "customFieldValue": "Field value",
+    "addField": "Add field",
+    "save": "Save annotation",
+    "cancel": "Cancel",
+    "editHint": "Double-click to edit this annotation"
+  },
+  "settings": {
+    "osmMapStyle": "OSM map style"
+  },
+  "errors": {
+    "drawSomethingFirst": "Draw something first!",
+    "invalidManifestUrl": "Invalid URL. Example: https://.../manifest.json",
+    "manifestLoadTitle": "IIIF manifest loading failed.",
+    "detailsLabel": "Details: ",
+    "httpStatusPrefix": "HTTP ",
+    "noHttpStatus": "No HTTP status"
+  },
+  "notifications": {
+    "ready": "Ready.",
+    "canvasNotFound": "Canvas not found in manifest.",
+    "canvasLoaded": "Canvas {{index}} loaded: {{label}}",
+    "loadingManifest": "Loading manifest...",
+    "noIiifService": "No IIIF image service found in this manifest.",
+    "loadingFailed": "Load failed: {{details}}",
+    "osmActive": "OpenStreetMap background ({{style}}) active. IIIF layers were removed."
+  },
+  "viewer": {
+    "leaflet": "Leaflet",
+    "iiifSource": "IIIF source",
+    "canvasFallback": "Canvas {{index}}",
+    "canvasKeyFallback": "canvas-{{index}}"
+  },
+  "dialogs": {
+    "saveFileConfirm": "Save file?",
+    "saveFileNamePrompt": "GeoJSON file name"
+  },
+  "files": {
+    "drawingExport": "my_drawing.json"
+  },
+  "hints": {
+    "githubPagesCors": "GitHub Pages tip: use an HTTPS URL and an IIIF server that allows CORS."
+  },
+  "attribution": {
+    "osmCarto": "&copy; OpenStreetMap contributors &copy; CARTO",
+    "osmStandard": "&copy; OpenStreetMap contributors",
+    "osmHot": "&copy; OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team",
+    "osmTopo": "Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap",
+    "osmCyclosm": "&copy; OpenStreetMap contributors, Tiles style by CyclOSM"
+  },
+  "search": {},
+  "features": {},
+  "data": {
+    "continents": {
+      "europe": "Europe"
+    },
+    "sources": {
+      "bnf": "BNF",
+      "davidRumsey": "David Rumsey",
+      "loc": "LOC"
+    },
+    "cartographers": {
+      "pierreLapie": "Pierre Lapie",
+      "reichsbahnzentrale": "Reichsbahnzentrale fur den Deutschen Reiseverkehr"
+    },
+    "titles": {
+      "persiaMap": "Carte de la Perse, de la Turquie d'Asie et d'une partie de la Tartarie Indépendante",
+      "germanyTravel": "Germany, the beautiful travel country",
+      "sherbrooke": "Bird's eye view of Sherbrooke, P.Q."
+    }
+  }
+}
