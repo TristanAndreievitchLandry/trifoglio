@@ -1715,6 +1715,34 @@ function applyLayerStyleFromProperties(layer, properties) {
   }
 }
 
+function getAnnotationPopupOptions(layer) {
+  const baseOptions = {
+    maxWidth: 360,
+    minWidth: 220,
+    autoPan: true,
+    keepInView: true,
+    autoPanPaddingTopLeft: [20, 20],
+    autoPanPaddingBottomRight: [20, 20],
+    offset: [0, -18],
+  };
+
+  if (layer instanceof L.Marker) {
+    return {
+      ...baseOptions,
+      offset: [0, -24],
+    };
+  }
+
+  if (layer instanceof L.Circle || layer instanceof L.CircleMarker) {
+    return {
+      ...baseOptions,
+      offset: [0, -16],
+    };
+  }
+
+  return baseOptions;
+}
+
 function buildAnnotationPopupHtml(properties) {
   const annotation =
     properties.annotation && typeof properties.annotation === 'object'
@@ -1886,14 +1914,7 @@ function applyPropertiesToLayer(layer, properties) {
 
   const popupHtml = buildAnnotationPopupHtml(properties);
   if (popupHtml) {
-    layer.bindPopup(popupHtml, {
-      maxWidth: 360,
-      minWidth: 220,
-      autoPan: true,
-      keepInView: true,
-      autoPanPaddingTopLeft: [20, 20],
-      autoPanPaddingBottomRight: [20, 20],
-    });
+    layer.bindPopup(popupHtml, getAnnotationPopupOptions(layer));
   } else {
     layer.unbindPopup();
   }

@@ -1,6 +1,12 @@
 # trifoglio
 
-Cette application permet aux utilisateurs de charger des couches de carte à partir de services IIIF (International Image Interoperability Framework) en utilisant des URL de manifeste IIIF. Les utilisateurs peuvent également dessiner et sauvegarder des formes géométriques (polygones, lignes, marqueurs) sur la carte. Les dessins sont sauvegardés localement dans le navigateur à l'aide du stockage local, mais ils peuvent aussi être téléchargés en format json. L'application utilise <a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="blank">Tristan Landry</a>
+Trifoglio is a Svelte application for exploring, annotating, and analyzing any document available through the International Image Interoperability Framework (IIIF), including historical maps, artworks, manuscripts, photographs, botanical plates, and other digitized collections.
+
+Users can load IIIF resources by providing a IIIF manifest URL, then create annotations directly on the document using markers, lines, polygons, and other geometric shapes. Annotations are stored locally in the browser and can also be exported as JSON for sharing or later reuse.
+
+The application uses
+<a href="https://leafletjs.com/" target="_blank">Leaflet</a>, <a href="https://github.com/mejackreed/Leaflet-IIIF" target="_blank">Leaflet-iiif</a>, <a href="https://github.com/Leaflet/Leaflet.draw" target="_blank">Leaflet.draw</a> et <a href="https://github.com/mlevans/leaflet-hash" target="_blank">Leaflet-hash</a></br></br>Conception: <a href="https://www.usherbrooke.ca/histoire/departement/personnel/personnel-enseignant/tristan-landry" target="blank">Tristan Landry</a>
+The project is available on <a href="https://github.com/TristanAndreievitchLandry/trifoglio" target="blank">GitHub</a>.
 
 ## Build protegee (minifiee + obfusquee)
 
