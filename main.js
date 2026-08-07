@@ -165,8 +165,6 @@ function ensureAppShellElements() {
 
 ensureAppShellElements();
 
-const INTRO_STORAGE_KEY = 'trifoglioIntroSeen';
-
 function shouldPlayIntro() {
   const introScreen = document.getElementById('trf-intro-screen');
   if (!introScreen) {
@@ -187,20 +185,10 @@ function shouldPlayIntro() {
 
   if (introMode === 'reset') {
     try {
-      localStorage.removeItem(INTRO_STORAGE_KEY);
+      localStorage.removeItem('trifoglioIntroSeen');
     } catch (_) {
       // Ignore storage access errors.
     }
-    return true;
-  }
-
-  try {
-    if (localStorage.getItem(INTRO_STORAGE_KEY) === '1') {
-      introScreen.remove();
-      return false;
-    }
-    localStorage.setItem(INTRO_STORAGE_KEY, '1');
-  } catch (_) {
     return true;
   }
 
