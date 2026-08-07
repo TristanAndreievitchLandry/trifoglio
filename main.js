@@ -30,9 +30,13 @@ function ensureAppShellElements() {
     document.body.insertAdjacentHTML(
       'beforeend',
       '<div id="language-switcher" class="language-switcher" aria-label="" data-i18n-attr="aria-label:accessibility.languageSwitcher">' +
-        '<button type="button" class="language-switcher__item" data-locale="fr">FR</button>' +
+        '<button type="button" class="language-switcher__item" data-locale="de">DE</button>' +
         '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
         '<button type="button" class="language-switcher__item" data-locale="en">EN</button>' +
+        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+        '<button type="button" class="language-switcher__item" data-locale="es">ES</button>' +
+        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+        '<button type="button" class="language-switcher__item" data-locale="fr">FR</button>' +
         '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
         '<button type="button" class="language-switcher__item" data-locale="it">IT</button>' +
         '</div>',
@@ -1443,6 +1447,11 @@ function normalizeLayerProperties(layer) {
     annotation.order || properties.order,
     10,
   );
+  const fallbackOrder = getLayerOrderPosition(layer);
+  const resolvedOrder =
+    Number.isInteger(propertyOrder) && propertyOrder >= 1
+      ? propertyOrder
+      : fallbackOrder;
 
   return {
     title: title,
@@ -1461,10 +1470,7 @@ function normalizeLayerProperties(layer) {
       Number.isFinite(fillOpacity) && fillOpacity >= 0 && fillOpacity <= 1
         ? String(fillOpacity)
         : '0.35',
-    order:
-      Number.isInteger(propertyOrder) && propertyOrder >= 1
-        ? String(propertyOrder)
-        : '',
+    order: String(resolvedOrder),
     customFields: customFields,
   };
 }
@@ -1711,7 +1717,15 @@ function applyLayerStyleFromProperties(layer, properties) {
   }
 
   if (layer instanceof L.Marker) {
-    layer.setIcon(createMarkerIcon(properties.markerColor || color));
+    const markerColor = properties.markerColor || color;
+    layer.setIcon(createMarkerIcon(markerColor));
+
+    if (typeof layer.getElement === 'function') {
+      const iconElement = layer.getElement();
+      if (iconElement) {
+        iconElement.style.setProperty('--marker-color', markerColor);
+      }
+    }
   }
 }
 
@@ -2022,9 +2036,6 @@ function ensureAnnotationEditor(forceRefresh) {
     t('annotationEditor.lineColor') +
     '<input name="lineColor" type="color"></label>' +
     '<label>' +
-    t('annotationEditor.markerColor') +
-    '<input name="markerColor" type="color"></label>' +
-    '<label>' +
     t('annotationEditor.fillColor') +
     '<input name="fillColor" type="color"></label>' +
     '<label>' +
@@ -2150,7 +2161,9 @@ function openAnnotationEditor(layer) {
   form.elements.audio.value = normalized.audio;
   form.elements.video.value = normalized.video;
   form.elements.lineColor.value = normalized.lineColor;
-  form.elements.markerColor.value = normalized.markerColor;
+  if (form.elements.markerColor) {
+    form.elements.markerColor.value = normalized.markerColor || '#d32f2f';
+  }
   form.elements.fillColor.value = normalized.fillColor;
   form.elements.fillOpacity.value = normalized.fillOpacity;
 
@@ -2209,13 +2222,13 @@ function drawSomething() {
       polygon: true,
       polyline: true,
       rectangle: true,
-      circle: false,
-      circlemarker: false,
-      marker: true,
+      circle: true,
+      circlemarker: true,
+      marker: false,
     },
     edit: {
       featureGroup: drawnLayers,
-      edit: false,
+      edit: true,
       remove: true,
     },
   });
@@ -2228,8 +2241,8 @@ function drawSomething() {
 
   map.on('draw:created', (e) => {
     const layer = e.layer;
-    initializeLayerAnnotation(layer);
     drawnLayers.addLayer(layer);
+    initializeLayerAnnotation(layer);
     openAnnotationEditor(layer);
     saveToLocalStorage();
     updateAnnotationTourCounterDisplay();
@@ -2238,6 +2251,17 @@ function drawSomething() {
   map.on('draw:edited', (e) => {
     e.layers.eachLayer(function (layer) {
       initializeLayerAnnotation(layer);
+      if (layer instanceof L.Marker && layer.getElement) {
+        const iconElement = layer.getElement();
+        if (iconElement) {
+          const markerColor =
+            (layer.feature &&
+              layer.feature.properties &&
+              layer.feature.properties.markerColor) ||
+            '#d32f2f';
+          iconElement.style.setProperty('--marker-color', markerColor);
+        }
+      }
     });
     saveToLocalStorage();
   });
@@ -2693,6 +2717,7 @@ function loadIIIFManifest(manifestUrl) {
         iiifLayers[layerKey] = L.tileLayer.iiif(infoUrl, {
           iiifBaseUrl: serviceId.replace(/\/$/, '') + '/',
           jsonProxyBase: JSON_PROXY_BASE_URL,
+          tileProxyBase: JSON_PROXY_BASE_URL,
         });
         manifestCanvasKeys.push(layerKey);
         manifestCanvasLabels[layerKey] = label;

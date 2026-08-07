@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "locale": "es"
+  },
+  "app": {
+    "title": "Trifoglio"
+  },
+  "manifest": {
+    "label": "Manifiesto IIIF"
+  },
+  "inputs": {
+    "manifestPlaceholder": "https://.../manifest.json"
+  },
+  "accessibility": {
+    "languageSwitcher": "Selector de idioma"
+  },
+  "buttons": {
+    "close": "Cerrar",
+    "ok": "Aceptar",
+    "load": "Cargar",
+    "info": "Información",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "finish": "Finalizar",
+    "manifest": "Manifiesto",
+    "iiifGuide": "Guía IIIF",
+    "annotationTour": "Recorrido de anotaciones",
+    "importJson": "Importar JSON",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "currentPage": "Página actual",
+    "osm": "OSM",
+    "deleteLastPoint": "Eliminar el último punto",
+    "clearAll": "Borrar todo",
+    "editLayers": "Editar capas",
+    "deleteLayers": "Eliminar capas"
+  },
+  "menus": {
+    "osm": {
+      "dark": "Oscuro (predeterminado)",
+      "standard": "OSM estándar",
+      "humanitarian": "OSM humanitario",
+      "topo": "OpenTopoMap",
+      "cyclosm": "CyclOSM",
+      "voyager": "Carto Voyager"
+    }
+  },
+  "toolbar": {
+    "draw": {
+      "cancelDrawing": "Cancelar dibujo",
+      "finishDrawing": "Terminar dibujo",
+      "deleteLastPointDrawn": "Eliminar el último punto dibujado"
+    },
+    "edit": {
+      "saveChanges": "Guardar cambios",
+      "cancelEditing": "Cancelar edición y descartar todos los cambios",
+      "clearAllLayers": "Borrar todas las capas",
+      "noLayersToEdit": "No hay capas para editar",
+      "noLayersToDelete": "No hay capas para eliminar"
+    }
+  },
+  "draw": {
+    "buttons": {
+      "polyline": "Dibujar una polilínea",
+      "polygon": "Dibujar un polígono",
+      "rectangle": "Dibujar un rectángulo",
+      "circle": "Dibujar un círculo",
+      "marker": "Colocar un marcador",
+      "circlemarker": "Colocar un marcador circular"
+    },
+    "tooltip": {
+      "circleStart": "Haz clic y arrastra para dibujar un círculo.",
+      "circleMarkerStart": "Haz clic en el mapa para colocar un marcador circular.",
+      "markerStart": "Haz clic en el mapa para colocar un marcador.",
+      "polygonStart": "Haz clic para comenzar a dibujar la forma.",
+      "polygonContinue": "Haz clic para continuar dibujando la forma.",
+      "polygonEnd": "Haz clic en el primer punto para cerrar esta forma.",
+      "polylineStart": "Haz clic para comenzar la línea.",
+      "polylineContinue": "Haz clic para continuar la línea.",
+      "polylineEnd": "Haz clic en el último punto para terminar la línea.",
+      "rectangleStart": "Haz clic y arrastra para dibujar un rectángulo.",
+      "simpleShapeEnd": "Suelta el ratón para terminar el dibujo.",
+      "editText": "Arrastra los controles o el marcador para editar la característica.",
+      "editSubtext": "Haz clic en cancelar para deshacer los cambios.",
+      "removeText": "Haz clic en una característica para eliminarla"
+    },
+    "radius": "Radio",
+    "errors": {
+      "shapeEdgesCannotCross": "<strong>Error:</strong> ¡los bordes de la forma no pueden cruzarse!"
+    }
+  },
+  "popup": {
+    "common": {
+      "imageAlt": "Un trébol",
+      "svelteLogoAlt": "Logotipo de Svelte"
+    },
+    "info": {
+      "body": "Trifoglio es una aplicación para explorar, anotar y analizar cualquier documento disponible a través del International Image Interoperability Framework (IIIF), incluidos mapas históricos, obras de arte, manuscritos, fotografías, láminas botánicas y otras colecciones digitalizadas.<br><br>Los usuarios pueden cargar recursos IIIF proporcionando una URL de manifiesto IIIF y, a continuación, crear anotaciones directamente en el documento utilizando marcadores, líneas, polígonos y otras formas geométricas. Las anotaciones se almacenan localmente en el navegador y también se pueden exportar como JSON para compartirlas o reutilizarlas más tarde.<br><br>La aplicación está construida con <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a> y <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>El proyecto está disponible en <a href=\"https://github.com/TristanAndreievitchLandry/trifoglio\" target=\"_blank\">GitHub</a>.",
+      "madeWith": "Hecho con Svelte"
+    },
+    "import": {
+      "body": "Para importar una capa JSON, simplemente arrástrala y suéltala en la ventana."
+    }
+  },
+  "annotationEditor": {
+    "title": "Editor de anotaciones",
+    "fieldTitle": "Título",
+    "fieldDescription": "Descripción",
+    "fieldDate": "Fecha",
+    "fieldAuthor": "Autor",
+    "fieldKeywords": "Palabras clave (separadas por comas)",
+    "fieldOrder": "Orden",
+    "fieldUrl": "URL",
+    "fieldImage": "URL de la imagen",
+    "fieldAudio": "URL de audio",
+    "fieldVideo": "URL de vídeo",
+    "lineColor": "Color de línea / trazo",
+    "markerColor": "Color del marcador",
+    "fillColor": "Color de relleno",
+    "fillOpacity": "Opacidad de relleno",
+    "customFields": "Campos personalizados",
+    "customFieldKey": "Nombre del campo",
+    "customFieldValue": "Valor del campo",
+    "addField": "Añadir campo",
+    "save": "Guardar anotación",
+    "cancel": "Cancelar",
+    "editHint": "Haz doble clic para editar esta anotación"
+  },
+  "settings": {
+    "osmMapStyle": "Estilo del mapa OSM"
+  },
+  "errors": {
+    "drawSomethingFirst": "¡Primero dibuja algo!",
+    "invalidManifestUrl": "URL no válida. Ejemplo: https://.../manifest.json",
+    "manifestLoadTitle": "No se pudo cargar el manifiesto IIIF.",
+    "detailsLabel": "Detalles: ",
+    "httpStatusPrefix": "HTTP ",
+    "noHttpStatus": "Sin estado HTTP"
+  },
+  "notifications": {
+    "ready": "Listo.",
+    "canvasNotFound": "No se encontró el lienzo en el manifiesto.",
+    "canvasLoaded": "Lienzo {{index}} cargado: {{label}}",
+    "loadingManifest": "Cargando manifiesto...",
+    "noIiifService": "No se encontró ningún servicio de imagen IIIF en este manifiesto.",
+    "loadingFailed": "Error al cargar: {{details}}",
+    "osmActive": "Fondo de OpenStreetMap ({{style}}) activo. Se eliminaron las capas IIIF."
+  },
+  "viewer": {
+    "leaflet": "Leaflet",
+    "iiifSource": "Fuente IIIF",
+    "canvasFallback": "Lienzo {{index}}",
+    "canvasKeyFallback": "canvas-{{index}}"
+  },
+  "dialogs": {
+    "saveFileConfirm": "¿Guardar archivo?",
+    "saveFileNamePrompt": "Nombre del archivo GeoJSON"
+  },
+  "files": {
+    "drawingExport": "mi_dibujo.json"
+  },
+  "hints": {
+    "githubPagesCors": "Consejo para GitHub Pages: usa una URL HTTPS y un servidor IIIF que permita CORS."
+  },
+  "attribution": {
+    "osmCarto": "&copy; Colaboradores de OpenStreetMap &copy; CARTO",
+    "osmStandard": "&copy; Colaboradores de OpenStreetMap",
+    "osmHot": "&copy; Colaboradores de OpenStreetMap, estilo de teselas de Humanitarian OpenStreetMap Team",
+    "osmTopo": "Datos del mapa: &copy; Colaboradores de OpenStreetMap, SRTM | Estilo del mapa: &copy; OpenTopoMap",
+    "osmCyclosm": "&copy; Colaboradores de OpenStreetMap, estilo de teselas de CyclOSM"
+  },
+  "search": {},
+  "features": {},
+  "data": {
+    "continents": {
+      "europe": "Europa"
+    },
+    "sources": {
+      "bnf": "BNF",
+      "davidRumsey": "David Rumsey",
+      "loc": "LOC"
+    },
+    "cartographers": {
+      "pierreLapie": "Pierre Lapie",
+      "reichsbahnzentrale": "Reichsbahnzentrale fur den Deutschen Reiseverkehr"
+    },
+    "titles": {
+      "persiaMap": "Mapa de Persia, Turquía Asiática y una parte de la Tartaria independiente",
+      "germanyTravel": "Alemania, el hermoso país de viaje",
+      "sherbrooke": "Vista aérea de Sherbrooke, P.Q."
+    }
+  }
+}

@@ -1,7 +1,7 @@
 (function () {
   const DEFAULT_LOCALE = 'fr';
   const FALLBACK_LOCALE = 'en';
-  const SUPPORTED_LOCALES = ['en', 'fr', 'it'];
+  const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr', 'it'];
   const STORAGE_KEY = 'appLocale';
 
   let activeLocale = DEFAULT_LOCALE;
@@ -154,12 +154,13 @@
   }
 
   function detectInitialLocale() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      return saved;
+    try {
+      localStorage.setItem(STORAGE_KEY, DEFAULT_LOCALE);
+    } catch (_) {
+      // Ignore storage access errors.
     }
 
-    return navigator.language || DEFAULT_LOCALE;
+    return DEFAULT_LOCALE;
   }
 
   window.$t = translate;

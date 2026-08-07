@@ -1,9 +1,9 @@
 import { init, locale, register, waitLocale } from 'svelte-i18n';
 
-export const DEFAULT_LOCALE = 'en';
+export const DEFAULT_LOCALE = 'fr';
 export const FALLBACK_LOCALE = 'en';
 
-const SUPPORTED_LOCALES = ['en', 'fr', 'it'];
+const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr', 'it'];
 
 let isInitialized = false;
 
@@ -19,7 +19,9 @@ function normalizeLocale(inputLocale) {
 }
 
 function registerLocales() {
+  register('de', () => import('./de.json'));
   register('en', () => import('./en.json'));
+  register('es', () => import('./es.json'));
   register('fr', () => import('./fr.json'));
   register('it', () => import('./it.json'));
 }

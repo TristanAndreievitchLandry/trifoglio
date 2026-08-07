@@ -14,6 +14,7 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     setMaxBounds: false,
     iiifBaseUrl: null,
     jsonProxyBase: null,
+    tileProxyBase: null,
   },
 
   initialize: function (url, options) {
@@ -38,6 +39,13 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     this._infoUrl = url;
     this._baseUrl = this._templateUrl();
     this._getInfo();
+  },
+  _getProxyUrl: function (url) {
+    if (!url || !this.options.tileProxyBase) {
+      return url;
+    }
+
+    return this.options.tileProxyBase + encodeURIComponent(url);
   },
   getTileUrl: function (coords) {
     var _this = this,
@@ -88,7 +96,7 @@ L.TileLayer.Iiif = L.TileLayer.extend({
       }
 
       // Reset tile sizes to handle non 256x256 IIIF tiles
-      _this.on('tileload', function (tile, url) {
+      _this.on('tileload', function (tile) {
         var height = tile.tile.naturalHeight,
           width = tile.tile.naturalWidth;
 
@@ -97,6 +105,29 @@ L.TileLayer.Iiif = L.TileLayer.extend({
 
         tile.tile.style.width = width + 'px';
         tile.tile.style.height = height + 'px';
+      });
+
+      _this.on('tileerror', function (event) {
+        var tileElement = event && event.tile ? event.tile : null;
+        var target = tileElement && tileElement.tile ? tileElement.tile : null;
+        if (!target || !target.src) {
+          return;
+        }
+
+        var currentUrl = target.currentSrc || target.src;
+        var attempt = parseInt(
+          target.getAttribute('data-trf-tile-attempt') || '0',
+          10,
+        );
+        var isAlreadyProxied =
+          currentUrl.indexOf(_this.options.tileProxyBase || '') !== -1;
+
+        if (attempt >= 1 || !_this.options.tileProxyBase || isAlreadyProxied) {
+          return;
+        }
+
+        target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
+        target.src = _this._getProxyUrl(currentUrl);
       });
     });
   },
