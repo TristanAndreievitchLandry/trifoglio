@@ -67,3 +67,19 @@ Cette évolution préserverait le format JSON actuellement utilisé par Trifogli
 
 Cette fonctionnalité constitue une **orientation future** plutôt qu'une composante nécessaire du fonctionnement actuel de Trifoglio.
 ////////////////////////
+
+## Passage de Vanilla JS à Svelte
+
+Trifoglio évolue d’un prototype basé sur Vanilla JavaScript vers une architecture Svelte afin de mieux soutenir son développement à long terme.
+
+Ce changement ne modifie pas le rôle de Leaflet ou d’IIIF : **Leaflet demeure le moteur de visualisation et d’interaction cartographique, tandis que Svelte devient la couche applicative qui orchestre l’interface, l’état et les fonctionnalités de Trifoglio.**
+
+Cette évolution apporte plusieurs avantages :
+
+- **Une meilleure gestion de l’état** : manifeste IIIF, couche active, annotations, outils, pop-ups, langue et données exportées peuvent être gérés de manière réactive et cohérente.
+- **Une architecture modulaire** : les différentes fonctionnalités peuvent être organisées en composants indépendants et réutilisables.
+- **Une interface plus évolutive** : l'ajout de formulaires, panneaux, éditeurs de pop-ups, médias et outils devient plus simple sans complexifier un fichier JavaScript central.
+- **Une internationalisation facilitée** : l’interface peut être structurée dès maintenant pour prendre en charge le français, l’anglais et l’italien.
+- **Une meilleure préparation aux développements futurs** : comptes utilisateurs, projets, collaboration, persistance des annotations, bases de données et nouvelles fonctions d’export peuvent être ajoutés progressivement.
+
+Le passage à Svelte constitue donc une **évolution architecturale plutôt qu’un simple changement de technologie**. Il prépare Trifoglio à passer d’un viewer IIIF enrichi d’outils d’annotation à une véritable plateforme de visualisation, d’annotation et de partage de documents patrimoniaux.
