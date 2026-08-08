@@ -25,6 +25,24 @@ const ANNOTATION_TOUR_BUTTON_HTML =
   '<span id="annotation-tour-counter" class="annotation-tour-counter">0/0</span>' +
   '</button>';
 
+// Temporary UI switch: set to true to re-enable the OSM tool.
+const OSM_TOOL_ENABLED = false;
+const OSM_BUTTON_HTML = OSM_TOOL_ENABLED
+  ? '<button id="osm-button" title="" data-i18n-attr="title:buttons.osm"><i class="fa-solid fa-map"></i></button>'
+  : '';
+const OSM_STYLE_MENU_HTML = OSM_TOOL_ENABLED
+  ? '<div id="osm-style-menu" class="osm-style-menu is-hidden">' +
+    '<select id="osm-style-select" title="" data-i18n-attr="title:settings.osmMapStyle">' +
+    '<option value="dark" selected data-i18n-key="menus.osm.dark"></option>' +
+    '<option value="standard" data-i18n-key="menus.osm.standard"></option>' +
+    '<option value="hot" data-i18n-key="menus.osm.humanitarian"></option>' +
+    '<option value="topo" data-i18n-key="menus.osm.topo"></option>' +
+    '<option value="cyclosm" data-i18n-key="menus.osm.cyclosm"></option>' +
+    '<option value="voyager" data-i18n-key="menus.osm.voyager"></option>' +
+    '</select>' +
+    '</div>'
+  : '';
+
 function ensureAppShellElements() {
   if (!document.getElementById('language-switcher')) {
     document.body.insertAdjacentHTML(
@@ -85,18 +103,9 @@ function ensureAppShellElements() {
         '<button id="canvas-prev" title="" data-i18n-attr="title:buttons.previousPage"><i class="fa-solid fa-arrow-left"></i></button>' +
         '<button id="canvas-next" title="" data-i18n-attr="title:buttons.nextPage"><i class="fa-solid fa-arrow-right"></i></button>' +
         '<button id="page-counter-button" title="" data-i18n-attr="title:buttons.currentPage" disabled><span id="page-counter-value">0/0</span></button>' +
-        '<button id="osm-button" title="" data-i18n-attr="title:buttons.osm"><i class="fa-solid fa-map"></i></button>' +
+        OSM_BUTTON_HTML +
         ANNOTATION_TOUR_BUTTON_HTML +
-        '<div id="osm-style-menu" class="osm-style-menu is-hidden">' +
-        '<select id="osm-style-select" title="" data-i18n-attr="title:settings.osmMapStyle">' +
-        '<option value="dark" selected data-i18n-key="menus.osm.dark"></option>' +
-        '<option value="standard" data-i18n-key="menus.osm.standard"></option>' +
-        '<option value="hot" data-i18n-key="menus.osm.humanitarian"></option>' +
-        '<option value="topo" data-i18n-key="menus.osm.topo"></option>' +
-        '<option value="cyclosm" data-i18n-key="menus.osm.cyclosm"></option>' +
-        '<option value="voyager" data-i18n-key="menus.osm.voyager"></option>' +
-        '</select>' +
-        '</div>' +
+        OSM_STYLE_MENU_HTML +
         '</div>',
     );
   }
@@ -356,29 +365,78 @@ const pageCounterValue = document.getElementById('page-counter-value');
 const osmStyleMenu = document.getElementById('osm-style-menu');
 const osmStyleSelect = document.getElementById('osm-style-select');
 let modalResolver = null;
+let lastFocusedElementBeforeAlert = null;
+
+function getAlertModalFocusTarget() {
+  if (
+    lastFocusedElementBeforeAlert &&
+    typeof lastFocusedElementBeforeAlert.focus === 'function' &&
+    lastFocusedElementBeforeAlert.isConnected &&
+    !alertModal.contains(lastFocusedElementBeforeAlert)
+  ) {
+    return lastFocusedElementBeforeAlert;
+  }
+
+  if (manifestButton && typeof manifestButton.focus === 'function') {
+    return manifestButton;
+  }
+
+  return null;
+}
 
 function closeAppAlert(result) {
   if (!alertModal) {
     return;
   }
 
-  alertModal.classList.add('is-hidden');
-  alertModal.setAttribute('aria-hidden', 'true');
-  if (alertModalInputWrap) {
-    alertModalInputWrap.classList.add('is-hidden');
-  }
-  if (alertModalAcceptWrap) {
-    alertModalAcceptWrap.classList.add('is-hidden');
-  }
-  if (alertModalInput) {
-    alertModalInput.value = '';
+  const activeElement = document.activeElement;
+  const focusTarget = getAlertModalFocusTarget();
+  const focusShouldMove =
+    activeElement &&
+    typeof activeElement.blur === 'function' &&
+    alertModal.contains(activeElement);
+
+  // Remove the modal subtree from the focus navigation tree before hiding it.
+  alertModal.inert = true;
+
+  if (focusShouldMove) {
+    activeElement.blur();
+
+    if (focusTarget) {
+      focusTarget.focus({ preventScroll: true });
+    }
   }
 
-  if (typeof modalResolver === 'function') {
-    const resolve = modalResolver;
-    modalResolver = null;
-    resolve(result);
+  function finalizeHide() {
+    alertModal.classList.add('is-hidden');
+    alertModal.setAttribute('aria-hidden', 'true');
+    if (alertModalInputWrap) {
+      alertModalInputWrap.classList.add('is-hidden');
+    }
+    if (alertModalAcceptWrap) {
+      alertModalAcceptWrap.classList.add('is-hidden');
+    }
+    if (alertModalInput) {
+      alertModalInput.value = '';
+    }
+
+    lastFocusedElementBeforeAlert = null;
+
+    if (typeof modalResolver === 'function') {
+      const resolve = modalResolver;
+      modalResolver = null;
+      resolve(result);
+    }
   }
+
+  if (focusTarget) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(finalizeHide);
+    });
+    return;
+  }
+
+  requestAnimationFrame(finalizeHide);
 }
 
 function showAppAlert(message) {
@@ -386,6 +444,7 @@ function showAppAlert(message) {
     return;
   }
 
+  lastFocusedElementBeforeAlert = document.activeElement;
   modalResolver = null;
   alertModalMessage.textContent = String(message || '');
   alertModalCloseButton.textContent = t('buttons.ok');
@@ -395,6 +454,7 @@ function showAppAlert(message) {
   if (alertModalInputWrap) {
     alertModalInputWrap.classList.add('is-hidden');
   }
+  alertModal.inert = false;
   alertModal.classList.remove('is-hidden');
   alertModal.setAttribute('aria-hidden', 'false');
   alertModalCloseButton.focus();
@@ -410,6 +470,7 @@ function showAppConfirm(message, confirmLabel, cancelLabel) {
     return Promise.resolve(false);
   }
 
+  lastFocusedElementBeforeAlert = document.activeElement;
   alertModalMessage.textContent = String(message || '');
   alertModalCloseButton.textContent = String(confirmLabel || t('buttons.ok'));
   alertModalCancelButton.textContent = String(
@@ -422,6 +483,7 @@ function showAppConfirm(message, confirmLabel, cancelLabel) {
   if (alertModalCloseButton) {
     alertModalCloseButton.disabled = false;
   }
+  alertModal.inert = false;
   alertModal.classList.remove('is-hidden');
   alertModal.setAttribute('aria-hidden', 'false');
   alertModalCloseButton.focus();
@@ -443,6 +505,7 @@ function showAppPrompt(message, defaultValue, confirmLabel, cancelLabel) {
     return Promise.resolve(null);
   }
 
+  lastFocusedElementBeforeAlert = document.activeElement;
   alertModalMessage.textContent = String(message || '');
   alertModalCloseButton.textContent = String(confirmLabel || t('buttons.ok'));
   alertModalCancelButton.textContent = String(
@@ -454,6 +517,7 @@ function showAppPrompt(message, defaultValue, confirmLabel, cancelLabel) {
     alertModalCloseButton.disabled = false;
   }
   alertModalInput.value = String(defaultValue || '');
+  alertModal.inert = false;
   alertModal.classList.remove('is-hidden');
   alertModal.setAttribute('aria-hidden', 'false');
   alertModalInput.focus();
@@ -3205,11 +3269,13 @@ addButton.addEventListener('click', function (event) {
   openInfoBox(content);
 });
 
-osmButton.addEventListener('click', function (event) {
-  event.stopPropagation();
-  showOSMAndClearIIIF(currentOsmStyle);
-  toggleOsmStyleMenu();
-});
+if (osmButton) {
+  osmButton.addEventListener('click', function (event) {
+    event.stopPropagation();
+    showOSMAndClearIIIF(currentOsmStyle);
+    toggleOsmStyleMenu();
+  });
+}
 
 if (osmStyleSelect) {
   osmStyleSelect.value = currentOsmStyle;
@@ -3218,14 +3284,16 @@ if (osmStyleSelect) {
   });
 }
 
-document.addEventListener('click', function (event) {
-  if (
-    osmStyleMenu &&
-    !osmStyleMenu.classList.contains('is-hidden') &&
-    event.target !== osmButton &&
-    !osmButton.contains(event.target) &&
-    !osmStyleMenu.contains(event.target)
-  ) {
-    closeOsmStyleMenu();
-  }
-});
+if (osmButton && osmStyleMenu) {
+  document.addEventListener('click', function (event) {
+    if (
+      osmStyleMenu &&
+      !osmStyleMenu.classList.contains('is-hidden') &&
+      event.target !== osmButton &&
+      !osmButton.contains(event.target) &&
+      !osmStyleMenu.contains(event.target)
+    ) {
+      closeOsmStyleMenu();
+    }
+  });
+}
