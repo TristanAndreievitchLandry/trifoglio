@@ -49,12 +49,14 @@ function ensureAppShellElements() {
       '<div id="manifestPanel" class="manifest-panel is-hidden">' +
         '<div class="manifest-header">' +
         '<label for="manifest-input" data-i18n-key="manifest.label"></label>' +
-        '<button id="manifest-close-button" title="" data-i18n-attr="title:buttons.close">' +
+        '</div>' +
+        '<div class="manifest-row">' +
+        '<div class="manifest-input-wrap">' +
+        '<input id="manifest-input" type="url" placeholder="" data-i18n-attr="placeholder:inputs.manifestPlaceholder" spellcheck="false" />' +
+        '<button id="manifest-clear-button" type="button" title="Clear" aria-label="Clear manifest URL" class="is-hidden">' +
         '<i class="fa-solid fa-xmark"></i>' +
         '</button>' +
         '</div>' +
-        '<div class="manifest-row">' +
-        '<input id="manifest-input" type="url" placeholder="" data-i18n-attr="placeholder:inputs.manifestPlaceholder" spellcheck="false" />' +
         '<button id="load-manifest-button" title="" data-i18n-key="buttons.load" data-i18n-attr="title:buttons.load"></button>' +
         '</div>' +
         '</div>',
@@ -341,7 +343,7 @@ const alertModalCancelButton = document.getElementById(
 );
 const alertModalCloseButton = document.getElementById('trf-alert-modal-close');
 const languageSwitcher = document.getElementById('language-switcher');
-const manifestCloseButton = document.getElementById('manifest-close-button');
+const manifestClearButton = document.getElementById('manifest-clear-button');
 const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
 const canvasNextButton = document.getElementById('canvas-next');
@@ -2889,15 +2891,34 @@ function closeManifestPanel() {
   manifestPanel.classList.add('is-hidden');
 }
 
+function updateManifestClearButtonVisibility() {
+  if (!manifestClearButton || !manifestInput) {
+    return;
+  }
+
+  manifestClearButton.classList.toggle('is-hidden', !manifestInput.value);
+}
+
 manifestButton.addEventListener('click', function () {
   openManifestPanel();
+  updateManifestClearButtonVisibility();
   manifestInput.focus();
   manifestInput.select();
 });
 
-manifestCloseButton.addEventListener('click', function () {
-  closeManifestPanel();
-});
+if (manifestClearButton && manifestInput) {
+  manifestClearButton.addEventListener('click', function () {
+    manifestInput.value = '';
+    updateManifestClearButtonVisibility();
+    manifestInput.focus();
+  });
+
+  manifestInput.addEventListener('input', function () {
+    updateManifestClearButtonVisibility();
+  });
+
+  updateManifestClearButtonVisibility();
+}
 
 function submitManifestFromInput() {
   const normalizedUrl = normalizeManifestUrl(manifestInput.value);
@@ -2907,6 +2928,7 @@ function submitManifestFromInput() {
   }
 
   manifestInput.value = normalizedUrl;
+  updateManifestClearButtonVisibility();
   loadIIIFManifest(normalizedUrl);
 }
 
@@ -3004,6 +3026,7 @@ function handleFileDrop(event) {
         pendingImportedCanvasKey = canvasKey;
 
         manifestInput.value = manifestUrl;
+        updateManifestClearButtonVisibility();
         loadIIIFManifest(manifestUrl);
         return;
       }
