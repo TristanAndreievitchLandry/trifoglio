@@ -78,7 +78,7 @@ function ensureAppShellElements() {
       'beforeend',
       '<div class="button-container">' +
         '<button id="info-button" title="" data-i18n-attr="title:buttons.info"><i class="fa-solid fa-info"></i></button>' +
-        '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-floppy-disk"></i></button>' +
+        '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
         '<button id="ask-button" style="font-size: 20px" title="" data-i18n-attr="title:buttons.manifest"><i class="fa-solid fa-image"></i></button>' +
         IIIF_GUIDE_BUTTON_HTML +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
