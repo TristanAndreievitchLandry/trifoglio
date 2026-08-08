@@ -219,11 +219,66 @@ L.TileLayer.Iiif = L.TileLayer.extend({
         return Math.ceil(Math.log(x) / Math.LN2);
       }
 
+      function isPowerOfTwoInteger(value) {
+        if (
+          !Number.isFinite(value) ||
+          value <= 0 ||
+          Math.floor(value) !== value
+        ) {
+          return false;
+        }
+        return (value & (value - 1)) === 0;
+      }
+
+      function getScaleFactors(info) {
+        if (
+          info.tiles &&
+          info.tiles[0] &&
+          Array.isArray(info.tiles[0].scaleFactors)
+        ) {
+          return info.tiles[0].scaleFactors;
+        }
+
+        if (Array.isArray(info.scale_factors)) {
+          return info.scale_factors;
+        }
+
+        return null;
+      }
+
+      var scaleFactors = getScaleFactors(data);
+      var normalizedScaleFactors = null;
+
+      if (Array.isArray(scaleFactors) && scaleFactors.length > 0) {
+        normalizedScaleFactors = scaleFactors
+          .map(Number)
+          .filter(function (value) {
+            return value > 0 && Number.isFinite(value);
+          })
+          .sort(function (a, b) {
+            return a - b;
+          })
+          .filter(function (value, index, list) {
+            return index === 0 || value !== list[index - 1];
+          });
+      }
+
       // Calculates maximum native zoom for the layer
-      _this.maxNativeZoom = Math.max(
-        ceilLog2(_this.x / _this.options.tileSize),
-        ceilLog2(_this.y / _this.options.tileSize),
-      );
+      if (
+        normalizedScaleFactors &&
+        normalizedScaleFactors.length > 0 &&
+        normalizedScaleFactors[0] === 1 &&
+        normalizedScaleFactors.every(isPowerOfTwoInteger)
+      ) {
+        var maxScaleFactor =
+          normalizedScaleFactors[normalizedScaleFactors.length - 1];
+        _this.maxNativeZoom = Math.round(Math.log(maxScaleFactor) / Math.LN2);
+      } else {
+        _this.maxNativeZoom = Math.max(
+          ceilLog2(_this.x / _this.options.tileSize),
+          ceilLog2(_this.y / _this.options.tileSize),
+        );
+      }
 
       // Enable zooming further than native if maxZoom option supplied
       if (_this._customMaxZoom && _this.options.maxZoom > _this.maxNativeZoom) {
@@ -335,14 +390,21 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     for (var i = _this.maxNativeZoom; i >= 0; i--) {
       imageSize = this._imageSizes[i];
       if (
+        imageSize &&
         imageSize.x * tolerance < mapSize.x &&
         imageSize.y * tolerance < mapSize.y
       ) {
         return i;
       }
     }
-    // return a default zoom
-    return 2;
+
+    for (var fallback = 0; fallback <= _this.maxNativeZoom; fallback++) {
+      if (_this._imageSizes[fallback]) {
+        return fallback;
+      }
+    }
+
+    return 0;
   },
 });
 
