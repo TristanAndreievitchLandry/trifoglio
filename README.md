@@ -28,7 +28,7 @@ The app now boots through a single runtime loader:
 
 - entrypoint in HTML: src/app/entry/bootstrap.js
 - runtime scripts are loaded sequentially to preserve dependency order
-- runtime paths can be overridden with window.__TRF_RUNTIME_PATHS__ (used by protected builds)
+- runtime paths can be overridden with window.**TRF_RUNTIME_PATHS** (used by protected builds)
 
 Main source structure:
 
@@ -82,7 +82,7 @@ Copied runtime assets:
 - src/app/entry/bootstrap.js
 - LICENSE
 
-The build script also rewrites dist/index.html by injecting window.__TRF_RUNTIME_PATHS__ so bootstrap.js loads the protected scripts.
+The build script also rewrites dist/index.html by injecting window.**TRF_RUNTIME_PATHS** so bootstrap.js loads the protected scripts.
 
 ## i18n Notes
 
@@ -97,6 +97,35 @@ The project keeps an npm override for a transitive esbuild issue via svelte-i18n
 
 - override: esbuild@^0.25.0
 - goal: keep current svelte-i18n while avoiding moderate npm audit findings
+
+## Third-Party Resource Attribution
+
+The project uses or loads the following third-party resources:
+
+- Playfair Display, loaded from Google Fonts in index.html:
+  https://fonts.google.com/specimen/Playfair+Display
+
+- Font Awesome, loaded via the official Font Awesome Kit in index.html:
+  https://fontawesome.com/
+
+- Leaflet 1.0.2, loaded from unpkg at runtime:
+  https://leafletjs.com/
+
+- Leaflet.draw 1.0.4, vendored under src/lib/vendors/leaflet-draw:
+  https://github.com/Leaflet/Leaflet.draw
+
+- Leaflet-IIIF 1.2.1 by Jack Reed, vendored under src/lib/vendors/leaflet/plugins/leaflet-iiif.js:
+  https://github.com/mejackreed/Leaflet-IIIF
+
+- Leaflet-hash, vendored under src/lib/vendors/leaflet/plugins/leaflet-hash.js:
+  https://github.com/mlevans/leaflet-hash
+
+- GSAP 3.15.0 by GreenSock, vendored under src/lib/vendors/gsap:
+  https://gsap.com/
+  License information in the distributed file points to:
+  https://gsap.com/standard-license/
+
+When relevant, please refer to each upstream project for its current license terms, attribution requirements, and documentation.
 
 ## Disclaimer
 

@@ -9,7 +9,6 @@
     scripts: [
       'https://unpkg.com/leaflet@1.0.2/dist/leaflet.js',
       'src/lib/vendors/leaflet-draw/leaflet.draw.js',
-      'https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
       'src/lib/vendors/leaflet/plugins/leaflet-iiif.js',
       'src/lib/vendors/leaflet/plugins/leaflet-hash.js',
       'src/app/data/catalogs.js',

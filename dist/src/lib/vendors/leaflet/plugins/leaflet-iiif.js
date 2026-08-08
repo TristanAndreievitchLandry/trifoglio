@@ -35,7 +35,12 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     }
 
     options = L.setOptions(this, options);
-    this._infoDeferred = new $.Deferred();
+    this._infoPromise = new Promise(
+      function (resolve, reject) {
+        this._resolveInfo = resolve;
+        this._rejectInfo = reject;
+      }.bind(this),
+    );
     this._infoUrl = url;
     this._baseUrl = this._templateUrl();
     this._getInfo();
@@ -79,8 +84,9 @@ L.TileLayer.Iiif = L.TileLayer.extend({
   onAdd: function (map) {
     var _this = this;
 
-    // Wait for deferred to complete
-    $.when(_this._infoDeferred).done(function () {
+    // Wait for info.json to be loaded before attaching the layer.
+    _this._infoPromise
+      .then(function () {
       // Set maxZoom for map
       map._layersMaxZoom = _this.maxZoom;
 
@@ -129,7 +135,10 @@ L.TileLayer.Iiif = L.TileLayer.extend({
         target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
         target.src = _this._getProxyUrl(currentUrl);
       });
-    });
+      })
+      .catch(function (error) {
+        console.error('[Leaflet-IIIF]', error);
+      });
   },
   onRemove: function (map) {
     var _this = this;
@@ -300,16 +309,24 @@ L.TileLayer.Iiif = L.TileLayer.extend({
       _this._tierSizes = tierSizes;
       _this._imageSizes = imageSizes;
 
-      // Resolved Deferred to initiate tilelayer load
-      _this._infoDeferred.resolve();
+      _this._resolveInfo();
     }
 
     function fetchInfo(url) {
-      $.getJSON(url)
-        .done(function (data) {
+      fetch(url, { cache: 'no-cache' })
+        .then(function (response) {
+          if (!response.ok) {
+            var error = new Error('HTTP ' + response.status);
+            error.status = response.status;
+            throw error;
+          }
+
+          return response.json();
+        })
+        .then(function (data) {
           parseInfo(data);
         })
-        .fail(function (jqXHR, textStatus, errorThrown) {
+        .catch(function (error) {
           // Fallback: fetch IIIF info via proxy when CORS blocks cross-origin JSON.
           if (_this.options.jsonProxyBase && !_this._usedProxyInfoRequest) {
             _this._usedProxyInfoRequest = true;
@@ -319,7 +336,7 @@ L.TileLayer.Iiif = L.TileLayer.extend({
             return;
           }
 
-          _this._infoDeferred.reject(jqXHR, textStatus, errorThrown);
+          _this._rejectInfo(error);
         });
     }
 

@@ -35,7 +35,12 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     }
 
     options = L.setOptions(this, options);
-    this._infoDeferred = new $.Deferred();
+    this._infoPromise = new Promise(
+      function (resolve, reject) {
+        this._resolveInfo = resolve;
+        this._rejectInfo = reject;
+      }.bind(this),
+    );
     this._infoUrl = url;
     this._baseUrl = this._templateUrl();
     this._getInfo();
@@ -79,57 +84,66 @@ L.TileLayer.Iiif = L.TileLayer.extend({
   onAdd: function (map) {
     var _this = this;
 
-    // Wait for deferred to complete
-    $.when(_this._infoDeferred).done(function () {
-      // Set maxZoom for map
-      map._layersMaxZoom = _this.maxZoom;
+    // Wait for info.json to be loaded before attaching the layer.
+    _this._infoPromise
+      .then(function () {
+        // Set maxZoom for map
+        map._layersMaxZoom = _this.maxZoom;
 
-      // Call add TileLayer
-      L.TileLayer.prototype.onAdd.call(_this, map);
+        // Call add TileLayer
+        L.TileLayer.prototype.onAdd.call(_this, map);
 
-      if (_this.options.fitBounds) {
-        _this._fitBounds();
-      }
-
-      if (_this.options.setMaxBounds) {
-        _this._setMaxBounds();
-      }
-
-      // Reset tile sizes to handle non 256x256 IIIF tiles
-      _this.on('tileload', function (tile) {
-        var height = tile.tile.naturalHeight,
-          width = tile.tile.naturalWidth;
-
-        // No need to resize if tile is 256 x 256
-        if (height === 256 && width === 256) return;
-
-        tile.tile.style.width = width + 'px';
-        tile.tile.style.height = height + 'px';
-      });
-
-      _this.on('tileerror', function (event) {
-        var tileElement = event && event.tile ? event.tile : null;
-        var target = tileElement && tileElement.tile ? tileElement.tile : null;
-        if (!target || !target.src) {
-          return;
+        if (_this.options.fitBounds) {
+          _this._fitBounds();
         }
 
-        var currentUrl = target.currentSrc || target.src;
-        var attempt = parseInt(
-          target.getAttribute('data-trf-tile-attempt') || '0',
-          10,
-        );
-        var isAlreadyProxied =
-          currentUrl.indexOf(_this.options.tileProxyBase || '') !== -1;
-
-        if (attempt >= 1 || !_this.options.tileProxyBase || isAlreadyProxied) {
-          return;
+        if (_this.options.setMaxBounds) {
+          _this._setMaxBounds();
         }
 
-        target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
-        target.src = _this._getProxyUrl(currentUrl);
+        // Reset tile sizes to handle non 256x256 IIIF tiles
+        _this.on('tileload', function (tile) {
+          var height = tile.tile.naturalHeight,
+            width = tile.tile.naturalWidth;
+
+          // No need to resize if tile is 256 x 256
+          if (height === 256 && width === 256) return;
+
+          tile.tile.style.width = width + 'px';
+          tile.tile.style.height = height + 'px';
+        });
+
+        _this.on('tileerror', function (event) {
+          var tileElement = event && event.tile ? event.tile : null;
+          var target =
+            tileElement && tileElement.tile ? tileElement.tile : null;
+          if (!target || !target.src) {
+            return;
+          }
+
+          var currentUrl = target.currentSrc || target.src;
+          var attempt = parseInt(
+            target.getAttribute('data-trf-tile-attempt') || '0',
+            10,
+          );
+          var isAlreadyProxied =
+            currentUrl.indexOf(_this.options.tileProxyBase || '') !== -1;
+
+          if (
+            attempt >= 1 ||
+            !_this.options.tileProxyBase ||
+            isAlreadyProxied
+          ) {
+            return;
+          }
+
+          target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
+          target.src = _this._getProxyUrl(currentUrl);
+        });
+      })
+      .catch(function (error) {
+        console.error('[Leaflet-IIIF]', error);
       });
-    });
   },
   onRemove: function (map) {
     var _this = this;
@@ -300,16 +314,24 @@ L.TileLayer.Iiif = L.TileLayer.extend({
       _this._tierSizes = tierSizes;
       _this._imageSizes = imageSizes;
 
-      // Resolved Deferred to initiate tilelayer load
-      _this._infoDeferred.resolve();
+      _this._resolveInfo();
     }
 
     function fetchInfo(url) {
-      $.getJSON(url)
-        .done(function (data) {
+      fetch(url, { cache: 'no-cache' })
+        .then(function (response) {
+          if (!response.ok) {
+            var error = new Error('HTTP ' + response.status);
+            error.status = response.status;
+            throw error;
+          }
+
+          return response.json();
+        })
+        .then(function (data) {
           parseInfo(data);
         })
-        .fail(function (jqXHR, textStatus, errorThrown) {
+        .catch(function (error) {
           // Fallback: fetch IIIF info via proxy when CORS blocks cross-origin JSON.
           if (_this.options.jsonProxyBase && !_this._usedProxyInfoRequest) {
             _this._usedProxyInfoRequest = true;
@@ -319,7 +341,7 @@ L.TileLayer.Iiif = L.TileLayer.extend({
             return;
           }
 
-          _this._infoDeferred.reject(jqXHR, textStatus, errorThrown);
+          _this._rejectInfo(error);
         });
     }
 

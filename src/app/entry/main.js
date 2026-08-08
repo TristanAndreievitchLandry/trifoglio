@@ -1071,26 +1071,30 @@ function buildProxyUrl(url) {
 }
 
 function fetchJsonWithProxyFallback(url) {
-  const deferred = $.Deferred();
+  function fetchJson(targetUrl) {
+    return fetch(targetUrl, { cache: 'no-cache' }).then(function (response) {
+      if (!response.ok) {
+        const error = new Error('HTTP ' + response.status);
+        error.status = response.status;
+        throw error;
+      }
 
-  $.getJSON(url)
-    .done(function (data) {
-      deferred.resolve(data, false);
+      return response.json();
+    });
+  }
+
+  return fetchJson(url)
+    .then(function (data) {
+      return { data: data, usedProxy: false };
     })
-    .fail(function () {
+    .catch(function () {
       const proxyUrl = buildProxyUrl(url);
       debugLog('Direct JSON blocked, retry proxy', url);
 
-      $.getJSON(proxyUrl)
-        .done(function (data) {
-          deferred.resolve(data, true);
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-          deferred.reject(jqXHR, textStatus, errorThrown);
-        });
+      return fetchJson(proxyUrl).then(function (data) {
+        return { data: data, usedProxy: true };
+      });
     });
-
-  return deferred.promise();
 }
 
 function switchMapCrs(nextCrs, center, zoom) {
@@ -2686,7 +2690,9 @@ function loadIIIFManifest(manifestUrl) {
   }
 
   fetchJsonWithProxyFallback(manifestUrl)
-    .done(function (data, usedProxy) {
+    .then(function (result) {
+      const data = result.data;
+      const usedProxy = result.usedProxy;
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
       setIIIFAttribution(buildManifestSourceAttribution(data, manifestUrl));
@@ -2699,7 +2705,7 @@ function loadIIIFManifest(manifestUrl) {
       // IIIF Presentation 2 uses sequences[0].canvases; Presentation 3 uses items.
       const canvases = getCanvasesFromManifest(data);
 
-      $.each(canvases, function (index, canvas) {
+      canvases.forEach(function (canvas, index) {
         const serviceId = getImageServiceIdFromCanvas(canvas);
         if (!serviceId) {
           debugLog('Canvas skipped', 'no image service at index ' + index);
@@ -2764,12 +2770,12 @@ function loadIIIFManifest(manifestUrl) {
           ' total)',
       );
     })
-    .fail(function (jqXHR, textStatus, errorThrown) {
+    .catch(function (error) {
       const status =
-        jqXHR && jqXHR.status
-          ? t('errors.httpStatusPrefix') + jqXHR.status
+        error && error.status
+          ? t('errors.httpStatusPrefix') + error.status
           : t('errors.noHttpStatus');
-      const details = [status, textStatus, errorThrown]
+      const details = [status, error && error.message]
         .filter(Boolean)
         .join(' - ');
 
