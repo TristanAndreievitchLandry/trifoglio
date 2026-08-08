@@ -49,6 +49,9 @@ function ensureAppShellElements() {
       '<div id="manifestPanel" class="manifest-panel is-hidden">' +
         '<div class="manifest-header">' +
         '<label for="manifest-input" data-i18n-key="manifest.label"></label>' +
+        '<button id="manifest-close-button" type="button" title="" data-i18n-attr="title:buttons.close" aria-label="Close manifest modal">' +
+        '<i class="fa-solid fa-xmark"></i>' +
+        '</button>' +
         '</div>' +
         '<div class="manifest-row">' +
         '<div class="manifest-input-wrap">' +
@@ -343,6 +346,7 @@ const alertModalCancelButton = document.getElementById(
 );
 const alertModalCloseButton = document.getElementById('trf-alert-modal-close');
 const languageSwitcher = document.getElementById('language-switcher');
+const manifestCloseButton = document.getElementById('manifest-close-button');
 const manifestClearButton = document.getElementById('manifest-clear-button');
 const loadManifestButton = document.getElementById('load-manifest-button');
 const canvasPrevButton = document.getElementById('canvas-prev');
@@ -2904,6 +2908,31 @@ manifestButton.addEventListener('click', function () {
   updateManifestClearButtonVisibility();
   manifestInput.focus();
   manifestInput.select();
+});
+
+if (manifestCloseButton) {
+  manifestCloseButton.addEventListener('click', function () {
+    closeManifestPanel();
+  });
+}
+
+document.addEventListener('click', function (event) {
+  if (!manifestPanel || manifestPanel.classList.contains('is-hidden')) {
+    return;
+  }
+
+  if (
+    event.target === manifestButton ||
+    manifestButton.contains(event.target)
+  ) {
+    return;
+  }
+
+  if (manifestPanel.contains(event.target)) {
+    return;
+  }
+
+  closeManifestPanel();
 });
 
 if (manifestClearButton && manifestInput) {

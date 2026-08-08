@@ -357,6 +357,29 @@ body {
   margin-bottom: 0;
 }
 
+#manifest-close-button {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  margin-bottom: 0;
+  padding: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1;
+  background: transparent;
+  border-color: #4d6e99;
+  color: #e6f0ff;
+}
+
+#manifest-close-button:hover {
+  background: #173052;
+  border-color: #78a0d3;
+}
+
+#manifest-close-button i {
+  pointer-events: none;
+}
+
 .manifest-row {
   display: flex;
   gap: 8px;
