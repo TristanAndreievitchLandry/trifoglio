@@ -69,11 +69,34 @@ function buildIndex(scriptMap) {
   const sourceIndexPath = path.join(projectRoot, 'index.html');
   let html = fs.readFileSync(sourceIndexPath, 'utf8');
 
-  html = html
-    .replace(/\bi18n-runtime\.js\b/g, scriptMap['i18n-runtime.js'])
-    .replace(/\bdata\.js\b/g, scriptMap['data.js'])
-    .replace(/main\.js\?v=[^"']+/g, scriptMap['main.js'])
-    .replace(/\bmain\.js\b/g, scriptMap['main.js']);
+  const runtimePaths = {
+    styles: [
+      'src/app/styles/app.css',
+      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.css',
+      'src/lib/vendors/leaflet-draw/leaflet.draw.css',
+    ],
+    scripts: [
+      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.js',
+      'src/lib/vendors/leaflet-draw/leaflet.draw.js',
+      'https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
+      'src/lib/vendors/leaflet/plugins/leaflet-iiif.js',
+      'src/lib/vendors/leaflet/plugins/leaflet-hash.js',
+      scriptMap['src/app/data/catalogs.js'],
+      scriptMap['src/app/entry/i18n-runtime.js'] + '?v=20260807-fr-default',
+      'src/lib/vendors/gsap/gsap.min.js',
+      scriptMap['src/app/entry/main.js'] + '?v=20260807-fr-default',
+    ],
+  };
+
+  const runtimeConfigTag =
+    '<script>window.__TRF_RUNTIME_PATHS__=' +
+    JSON.stringify(runtimePaths) +
+    ';</script>';
+
+  html = html.replace(
+    '<script src="src/app/entry/bootstrap.js"></script>',
+    runtimeConfigTag + '<script src="src/app/entry/bootstrap.js"></script>',
+  );
 
   fs.writeFileSync(path.join(distDir, 'index.html'), html, 'utf8');
 }
@@ -84,14 +107,11 @@ async function run() {
   await ensureDist();
 
   const copyList = [
-    'assets',
-    'vendor',
+    'src/app/assets',
+    'src/lib/vendors',
     'src/lib/i18n',
-    'styles.css',
-    'leaflet-hash.js',
-    'leaflet-iiif.js',
-    'clover_300.png',
-    'clover_icon.png',
+    'src/app/styles/app.css',
+    'src/app/entry/bootstrap.js',
     'LICENSE',
   ];
 
@@ -102,9 +122,9 @@ async function run() {
   });
 
   const output = await Promise.all([
-    minifyAndObfuscate('main.js', { strict }),
-    minifyAndObfuscate('i18n-runtime.js', { strict }),
-    minifyAndObfuscate('data.js', { strict: false }),
+    minifyAndObfuscate('src/app/entry/main.js', { strict }),
+    minifyAndObfuscate('src/app/entry/i18n-runtime.js', { strict }),
+    minifyAndObfuscate('src/app/data/catalogs.js', { strict: false }),
   ]);
 
   const scriptMap = output.reduce((acc, item) => {
