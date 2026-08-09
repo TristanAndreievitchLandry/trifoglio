@@ -216,6 +216,31 @@ function ensureAppShellElements() {
 ensureAppShellElements();
 fetchWeatherForCurrentLocation();
 
+let weatherRefreshTimer = null;
+
+function startWeatherRefreshLoop() {
+  if (weatherRefreshTimer) {
+    return;
+  }
+
+  weatherRefreshTimer = window.setInterval(
+    function () {
+      fetchWeatherForCurrentLocation();
+    },
+    15 * 60 * 1000,
+  );
+}
+
+function stopWeatherRefreshLoop() {
+  if (weatherRefreshTimer) {
+    window.clearInterval(weatherRefreshTimer);
+    weatherRefreshTimer = null;
+  }
+}
+
+window.addEventListener('beforeunload', stopWeatherRefreshLoop);
+startWeatherRefreshLoop();
+
 function shouldPlayIntro() {
   const introScreen = document.getElementById('trf-intro-screen');
   if (!introScreen) {

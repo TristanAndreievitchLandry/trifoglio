@@ -1,6 +1,6 @@
 # Trifoglio Architecture
 
-This folder captures architecture decisions for evolving Trifoglio into a generic IIIF document annotation platform.
+This folder captures architecture decisions for evolving Trifoglio into a generic IIIF document feature platform.
 
 ## Scope
 
@@ -17,7 +17,7 @@ This folder captures architecture decisions for evolving Trifoglio into a generi
 - Project Module: project lifecycle and global state
 - Document IIIF Module: manifest/canvas loading and normalization
 - Viewer Module: Leaflet adapters for map and raster layers
-- Feature Module: lifecycle for graphical user annotations
+- Feature Module: lifecycle for graphical user features
 - Layer Module: grouping, ordering, visibility, lock and color semantics
 - Metadata Module: free key/value properties and optional schema profiles
 - Style Module: feature/layer visual style and inheritance rules

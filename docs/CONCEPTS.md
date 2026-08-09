@@ -1,12 +1,14 @@
 # Concepts Trifoglio
 
-## Annotation
+## Feature
 
-Dans Trifoglio, une annotation designe tout objet graphique ajoute par l'utilisateur sur le document IIIF.
+Dans Trifoglio, une Feature designe tout objet graphique ajoute par l'utilisateur sur le document IIIF.
 
-Convention de nommage dans le code: le terme Feature remplace annotation.
+Feature est le terme canonique du modele et du code.
 
-Une annotation peut etre:
+Le mot annotation peut encore apparaitre dans certains textes, dans l'interface ou dans de l'ancien code, mais il doit etre compris comme un alias historique de Feature.
+
+Une Feature peut etre:
 
 - un marqueur (Marker)
 - une ligne (Polyline)
@@ -16,14 +18,14 @@ Une annotation peut etre:
 - un cercle de rayon (CircleMarker si utilise)
 - toute future geometrie Leaflet Draw
 
-Une annotation est composee de deux parties:
+Une Feature est composee de deux parties:
 
 1. une geometrie Leaflet
 2. des proprietes (metadonnees)
 
 Les proprietes ne dependent jamais du type de geometrie.
 
-Toutes les annotations, quel que soit leur type, peuvent posseder:
+Toutes les Features, quel que soit leur type, peuvent posseder:
 
 - un titre
 - une description
@@ -43,12 +45,12 @@ Il contient:
 - le manifeste IIIF
 - l'etat du visualiseur
 - les calques
-- les annotations
+- les Features
 - les preferences du projet
 
 ## Couche (Layer)
 
-Une couche est un groupe logique d'annotations.
+Une couche est un groupe logique de Features.
 
 Elle ne contient aucune logique metier.
 
@@ -60,7 +62,7 @@ Elle permet uniquement:
 - colorer
 - ordonner
 
-des annotations.
+des Features.
 
 ## Metadonnee
 
@@ -78,13 +80,20 @@ Le logiciel ne fait aucune hypothese sur leur signification.
 
 ## Positionnement de la plateforme
 
-Trifoglio est une plateforme generique permettant d'explorer, d'annoter et d'analyser tout document compatible avec IIIF.
+Trifoglio est une plateforme generique permettant d'explorer, de decrire, d'organiser et d'analyser tout document compatible avec IIIF au moyen de Features.
 
 Le logiciel n'est pas specialise pour une discipline.
 
 Les cartes anciennes, les oeuvres d'art, les manuscrits, les herbiers, les photographies ou les objets de musee sont simplement des cas d'utilisation differents.
 
 L'architecture ne doit contenir aucune hypothese propre a une discipline.
+
+## Terminologie pratique
+
+- Feature : terme de reference pour le domaine, le code et l'architecture.
+- Annotation : terme tolere seulement comme synonyme historique ou pedagogique.
+- Layer : groupe logique de Features.
+- Metadata : proprietes descriptives associees a une Feature.
 
 ## References architecture
 

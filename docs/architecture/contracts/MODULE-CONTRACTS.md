@@ -8,6 +8,8 @@ This document defines the scaffold-level public contracts for each module.
 - Methods listed below are public API boundaries.
 - Methods are intentionally behavior-free at scaffold stage.
 - Emitted events follow the EventBus contract.
+- Feature is the canonical domain term.
+- Annotation remains a legacy implementation term in some current module names and method names.
 
 ## ProjectManager
 
@@ -53,29 +55,35 @@ Emitted events:
 - viewer:canvasChanged
 - viewer:stateChanged
 
-## AnnotationManager
+## Feature Manager
+
+Current implementation name: AnnotationManager.
+
+Canonical responsibility: manage Feature lifecycle, geometry, properties, and selection.
 
 Public methods:
 
 - initialize
-- createAnnotation
-- updateAnnotationGeometry
-- updateAnnotationProperties
-- deleteAnnotation
-- selectAnnotation
+- createFeature (current implementation: createAnnotation)
+- updateFeatureGeometry (current implementation: updateAnnotationGeometry)
+- updateFeatureProperties (current implementation: updateAnnotationProperties)
+- deleteFeature (current implementation: deleteAnnotation)
+- selectFeature (current implementation: selectAnnotation)
 - clearSelection
-- listAnnotations
+- listFeatures (current implementation: listAnnotations)
 - attachLayer
 - detachLayer
 - destroy
 
 Emitted events:
 
-- annotation:created
-- annotation:updated
-- annotation:deleted
-- annotation:selected
-- annotation:deselected
+- feature:created
+- feature:updated
+- feature:deleted
+- feature:selected
+- feature:deselected
+
+Legacy event naming may still use the annotation:\* prefix in transitional code paths.
 
 ## LayerManager
 
@@ -88,8 +96,8 @@ Public methods:
 - setLayerVisibility
 - setLayerLock
 - setLayerColor
-- addAnnotation
-- removeAnnotation
+- addFeature (current implementation: addAnnotation)
+- removeFeature (current implementation: removeAnnotation)
 - deleteLayer
 - listLayers
 - destroy
@@ -127,7 +135,7 @@ Emitted events:
 Public methods:
 
 - initialize
-- bindToAnnotation
+- bindToFeature (current implementation: bindToAnnotation)
 - openPopup
 - closePopup
 - updatePopupContent
@@ -150,7 +158,7 @@ Public methods:
 - updateStyle
 - deleteStyle
 - applyStyleToLayer
-- applyStyleToAnnotation
+- applyStyleToFeature (current implementation: applyStyleToAnnotation)
 - resolveEffectiveStyle
 - listStyles
 - destroy
@@ -169,8 +177,8 @@ Public methods:
 - initialize
 - importProject
 - exportProject
-- importAnnotations
-- exportAnnotations
+- importFeatures (current implementation: importAnnotations)
+- exportFeatures (current implementation: exportAnnotations)
 - registerConnector
 - unregisterConnector
 - listConnectors
@@ -211,7 +219,7 @@ Public methods:
 
 - initialize
 - indexProject
-- searchAnnotations
+- searchFeatures (current implementation: searchAnnotations)
 - searchMetadata
 - filterByLayer
 - clearFilters
