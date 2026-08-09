@@ -44,21 +44,58 @@ const OSM_STYLE_MENU_HTML = OSM_TOOL_ENABLED
   : '';
 
 function ensureAppShellElements() {
-  if (!document.getElementById('language-switcher')) {
-    document.body.insertAdjacentHTML(
-      'beforeend',
-      '<div id="language-switcher" class="language-switcher" aria-label="" data-i18n-attr="aria-label:accessibility.languageSwitcher">' +
-        '<button type="button" class="language-switcher__item" data-locale="de">DE</button>' +
-        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
-        '<button type="button" class="language-switcher__item" data-locale="en">EN</button>' +
-        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
-        '<button type="button" class="language-switcher__item" data-locale="es">ES</button>' +
-        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
-        '<button type="button" class="language-switcher__item" data-locale="fr">FR</button>' +
-        '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
-        '<button type="button" class="language-switcher__item" data-locale="it">IT</button>' +
-        '</div>',
+  let topbar = document.getElementById('app-shell-topbar');
+  if (!topbar) {
+    topbar = document.createElement('div');
+    topbar.id = 'app-shell-topbar';
+    topbar.className = 'app-shell__topbar';
+    document.body.appendChild(topbar);
+  }
+
+  let topbarActions = topbar.querySelector('.app-shell__topbar-actions');
+  if (!topbarActions) {
+    topbarActions = document.createElement('div');
+    topbarActions.className = 'app-shell__topbar-actions';
+    topbar.appendChild(topbarActions);
+  }
+
+  let languageSwitcher = document.getElementById('language-switcher');
+  if (!languageSwitcher) {
+    languageSwitcher = document.createElement('div');
+    languageSwitcher.id = 'language-switcher';
+    languageSwitcher.className = 'language-switcher';
+    languageSwitcher.setAttribute('aria-label', '');
+    languageSwitcher.setAttribute(
+      'data-i18n-attr',
+      'aria-label:accessibility.languageSwitcher',
     );
+    languageSwitcher.innerHTML =
+      '<button type="button" class="language-switcher__item" data-locale="de">DE</button>' +
+      '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+      '<button type="button" class="language-switcher__item" data-locale="en">EN</button>' +
+      '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+      '<button type="button" class="language-switcher__item" data-locale="es">ES</button>' +
+      '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+      '<button type="button" class="language-switcher__item" data-locale="fr">FR</button>' +
+      '<span class="language-switcher__sep" aria-hidden="true">|</span>' +
+      '<button type="button" class="language-switcher__item" data-locale="it">IT</button>';
+    topbarActions.appendChild(languageSwitcher);
+  } else if (languageSwitcher.parentElement !== topbarActions) {
+    topbarActions.appendChild(languageSwitcher);
+  }
+
+  let weatherIndicator = document.getElementById('weather-indicator');
+  if (!weatherIndicator) {
+    weatherIndicator = document.createElement('div');
+    weatherIndicator.id = 'weather-indicator';
+    weatherIndicator.className = 'weather-indicator';
+    weatherIndicator.title = 'Météo locale';
+    weatherIndicator.innerHTML =
+      '<span class="weather-indicator__icon" aria-hidden="true">🌤️</span>' +
+      '<span class="weather-indicator__temperature">--°</span>';
+    topbarActions.appendChild(weatherIndicator);
+  } else if (weatherIndicator.parentElement !== topbarActions) {
+    topbarActions.appendChild(weatherIndicator);
   }
 
   if (!document.getElementById('manifestPanel')) {
@@ -177,6 +214,7 @@ function ensureAppShellElements() {
 }
 
 ensureAppShellElements();
+fetchWeatherForCurrentLocation();
 
 function shouldPlayIntro() {
   const introScreen = document.getElementById('trf-intro-screen');
@@ -366,6 +404,200 @@ const osmStyleMenu = document.getElementById('osm-style-menu');
 const osmStyleSelect = document.getElementById('osm-style-select');
 let modalResolver = null;
 let lastFocusedElementBeforeAlert = null;
+
+function updateWeatherIndicator(weatherData) {
+  const weatherIndicator = document.getElementById('weather-indicator');
+  if (!weatherIndicator) {
+    return;
+  }
+
+  const icon = weatherIndicator.querySelector('.weather-indicator__icon');
+  const temperature = weatherIndicator.querySelector(
+    '.weather-indicator__temperature',
+  );
+
+  if (icon) {
+    icon.textContent = weatherData?.icon || '🌤️';
+  }
+
+  if (temperature) {
+    temperature.textContent = `${weatherData?.temperature ?? '--'}°`;
+  }
+
+  if (weatherData?.title) {
+    weatherIndicator.setAttribute('title', weatherData.title);
+  }
+}
+
+function getWeatherConditionIcon(conditionText) {
+  const normalized = String(conditionText || '').toLowerCase();
+
+  if (
+    normalized.includes('neige') ||
+    normalized.includes('snow') ||
+    normalized.includes('blizzard')
+  ) {
+    return '❄️';
+  }
+
+  if (
+    normalized.includes('orage') ||
+    normalized.includes('storm') ||
+    normalized.includes('thunder')
+  ) {
+    return '⛈️';
+  }
+
+  if (
+    normalized.includes('pluie') ||
+    normalized.includes('rain') ||
+    normalized.includes('showers')
+  ) {
+    return '🌧️';
+  }
+
+  if (normalized.includes('couvert') || normalized.includes('cloud')) {
+    return '☁️';
+  }
+
+  if (
+    normalized.includes('soleil') ||
+    normalized.includes('sun') ||
+    normalized.includes('ensoleillé')
+  ) {
+    return '☀️';
+  }
+
+  return '🌤️';
+}
+
+function fetchWeatherForCurrentLocation() {
+  if (!navigator.geolocation) {
+    updateWeatherIndicator({
+      icon: '🌤️',
+      temperature: '--',
+      title: 'Météo locale indisponible',
+    });
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      const latitude = position?.coords?.latitude;
+      const longitude = position?.coords?.longitude;
+
+      if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+        updateWeatherIndicator({
+          icon: '🌤️',
+          temperature: '--',
+          title: 'Météo locale indisponible',
+        });
+        return;
+      }
+
+      fetch(
+        'https://api.weather.gc.ca/collections/citypageweather-realtime/items?lang=fr&f=json&limit=100',
+        { headers: { Accept: 'application/geo+json' } },
+      )
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Weather API error');
+          }
+          return response.json();
+        })
+        .then(function (payload) {
+          const features = Array.isArray(payload && payload.features)
+            ? payload.features
+            : [];
+          let closestFeature = null;
+          let closestDistance = Infinity;
+
+          features.forEach(function (feature) {
+            const coordinates =
+              feature && feature.geometry && feature.geometry.coordinates;
+            if (!Array.isArray(coordinates) || coordinates.length < 2) {
+              return;
+            }
+
+            const featureLongitude = Number(coordinates[0]);
+            const featureLatitude = Number(coordinates[1]);
+            if (
+              !Number.isFinite(featureLongitude) ||
+              !Number.isFinite(featureLatitude)
+            ) {
+              return;
+            }
+
+            const distance = Math.hypot(
+              longitude - featureLongitude,
+              latitude - featureLatitude,
+            );
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestFeature = feature;
+            }
+          });
+
+          if (!closestFeature) {
+            throw new Error('No weather station found');
+          }
+
+          const properties = closestFeature.properties || {};
+          const currentConditions = properties.currentConditions || {};
+          const conditionText =
+            currentConditions &&
+            currentConditions.condition &&
+            currentConditions.condition.fr
+              ? currentConditions.condition.fr
+              : currentConditions &&
+                  currentConditions.condition &&
+                  currentConditions.condition.en
+                ? currentConditions.condition.en
+                : '';
+          const temperatureValue =
+            Number(
+              currentConditions &&
+                currentConditions.temperature &&
+                currentConditions.temperature.value &&
+                currentConditions.temperature.value.fr,
+            ) ||
+            Number(
+              currentConditions &&
+                currentConditions.temperature &&
+                currentConditions.temperature.value &&
+                currentConditions.temperature.value.en,
+            );
+
+          updateWeatherIndicator({
+            icon: getWeatherConditionIcon(conditionText),
+            temperature: Number.isFinite(temperatureValue)
+              ? Math.round(temperatureValue)
+              : '--',
+            title: `${properties.name || 'Météo locale'} · ${conditionText || 'Conditions actuelles'}`,
+          });
+        })
+        .catch(function () {
+          updateWeatherIndicator({
+            icon: '🌤️',
+            temperature: '--',
+            title: 'Météo locale indisponible',
+          });
+        });
+    },
+    function () {
+      updateWeatherIndicator({
+        icon: '🌤️',
+        temperature: '--',
+        title: 'Météo locale indisponible',
+      });
+    },
+    {
+      enableHighAccuracy: false,
+      maximumAge: 15 * 60 * 1000,
+      timeout: 10000,
+    },
+  );
+}
 
 function getAlertModalFocusTarget() {
   if (
@@ -3221,9 +3453,11 @@ infoButton.addEventListener('click', function (event) {
     '<span class="info-footer__text">' +
     t('popup.info.madeWith') +
     '</span>' +
+    '<span class="info-footer__logo-wrap" data-tooltip="&quot;Frameworks are not tools for organizing your code. They are tools for organizing your mind.&quot; — Rich Harris">' +
     '<img src="src/app/assets/svelte-logo.svg" class="info-footer__logo" alt="' +
     t('popup.common.svelteLogoAlt') +
     '">' +
+    '</span>' +
     '</div>';
   openInfoBox(content);
 });
