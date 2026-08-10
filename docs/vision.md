@@ -87,7 +87,7 @@ Le passage à Svelte constitue donc une **évolution architecturale plutôt qu�
 ///////////////////////////
 les trois choses les plus intéressantes à tester ensuite seraient :
 
-météo → API externe + état réactif ;
+météo → API externe + état réactif ;✔️
 pop-up d'annotation → état + formulaire + Leaflet ;
 sauvegarde d'annotations dans une API SvelteKit → frontend → backend → PostgreSQL.
 ///////////////////
