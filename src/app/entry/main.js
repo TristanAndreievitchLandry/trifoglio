@@ -454,15 +454,25 @@ function updateWeatherIndicator(weatherData) {
   }
 }
 
-function getWeatherConditionIcon(conditionText) {
+function getWeatherConditionIcon(conditionText, period) {
   const normalized = String(conditionText || '').toLowerCase();
+  const normalizedPeriod = String(period || '').toLowerCase();
+  const now = new Date();
+  const hour = now.getHours();
+  const isNight =
+    normalizedPeriod.includes('night') ||
+    normalizedPeriod.includes('nuit') ||
+    normalizedPeriod.includes('soir') ||
+    normalizedPeriod.includes('evening') ||
+    hour >= 20 ||
+    hour < 6;
 
   if (
     normalized.includes('neige') ||
     normalized.includes('snow') ||
     normalized.includes('blizzard')
   ) {
-    return '❄️';
+    return isNight ? '🌨️' : '❄️';
   }
 
   if (
@@ -470,7 +480,7 @@ function getWeatherConditionIcon(conditionText) {
     normalized.includes('storm') ||
     normalized.includes('thunder')
   ) {
-    return '⛈️';
+    return isNight ? '🌩️' : '⛈️';
   }
 
   if (
@@ -478,11 +488,11 @@ function getWeatherConditionIcon(conditionText) {
     normalized.includes('rain') ||
     normalized.includes('showers')
   ) {
-    return '🌧️';
+    return isNight ? '🌧️' : '🌦️';
   }
 
   if (normalized.includes('couvert') || normalized.includes('cloud')) {
-    return '☁️';
+    return isNight ? '☁️' : '☁️';
   }
 
   if (
@@ -490,10 +500,10 @@ function getWeatherConditionIcon(conditionText) {
     normalized.includes('sun') ||
     normalized.includes('ensoleillé')
   ) {
-    return '☀️';
+    return isNight ? '🌙' : '☀️';
   }
 
-  return '🌤️';
+  return isNight ? '🌙' : '🌤️';
 }
 
 function fetchWeatherForCurrentLocation() {
@@ -578,7 +588,37 @@ function fetchWeatherForCurrentLocation() {
                   currentConditions.condition &&
                   currentConditions.condition.en
                 ? currentConditions.condition.en
-                : '';
+                : currentConditions &&
+                    currentConditions.condition &&
+                    currentConditions.condition.value
+                  ? currentConditions.condition.value
+                  : currentConditions &&
+                      currentConditions.condition &&
+                      currentConditions.condition.name
+                    ? currentConditions.condition.name
+                    : '';
+          const periodText =
+            currentConditions &&
+            currentConditions.period &&
+            currentConditions.period.fr
+              ? currentConditions.period.fr
+              : currentConditions &&
+                  currentConditions.period &&
+                  currentConditions.period.en
+                ? currentConditions.period.en
+                : currentConditions &&
+                    currentConditions.period &&
+                    currentConditions.period.value
+                  ? currentConditions.period.value
+                  : currentConditions &&
+                      currentConditions.period &&
+                      currentConditions.period.name
+                    ? currentConditions.period.name
+                    : currentConditions && currentConditions.dayNight
+                      ? currentConditions.dayNight
+                      : currentConditions && currentConditions.periodName
+                        ? currentConditions.periodName
+                        : '';
           const temperatureValue =
             Number(
               currentConditions &&
@@ -591,10 +631,25 @@ function fetchWeatherForCurrentLocation() {
                 currentConditions.temperature &&
                 currentConditions.temperature.value &&
                 currentConditions.temperature.value.en,
+            ) ||
+            Number(
+              currentConditions &&
+                currentConditions.temperature &&
+                currentConditions.temperature.value,
+            ) ||
+            Number(
+              currentConditions &&
+                currentConditions.temperature &&
+                currentConditions.temperature.fr,
+            ) ||
+            Number(
+              currentConditions &&
+                currentConditions.temperature &&
+                currentConditions.temperature.en,
             );
 
           updateWeatherIndicator({
-            icon: getWeatherConditionIcon(conditionText),
+            icon: getWeatherConditionIcon(conditionText, periodText),
             temperature: Number.isFinite(temperatureValue)
               ? Math.round(temperatureValue)
               : '--',
