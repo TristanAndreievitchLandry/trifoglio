@@ -20,6 +20,30 @@
 
   const runtime = window.__TRF_RUNTIME_PATHS__ || defaultRuntime;
 
+  function getScriptFallback(src) {
+    if (!src) {
+      return null;
+    }
+
+    const queryIndex = src.indexOf('?');
+    const query = queryIndex >= 0 ? src.slice(queryIndex) : '';
+    const cleanSrc = queryIndex >= 0 ? src.slice(0, queryIndex) : src;
+
+    if (cleanSrc === 'src/app/data/catalogs.js') {
+      return 'catalogs.min.js' + query;
+    }
+
+    if (cleanSrc === 'src/app/entry/i18n-runtime.js') {
+      return 'i18n-runtime.min.js' + query;
+    }
+
+    if (cleanSrc === 'src/app/entry/main.js') {
+      return 'main.min.js' + query;
+    }
+
+    return null;
+  }
+
   function ensureStyle(href) {
     if (!href) {
       return;
@@ -45,6 +69,8 @@
         resolve();
         return;
       }
+
+      const fallbackSrc = getScriptFallback(src);
 
       const existing = document.querySelector(
         'script[data-trf-script="' + src + '"]',
@@ -73,6 +99,15 @@
         resolve();
       });
       script.addEventListener('error', function () {
+        if (fallbackSrc && fallbackSrc !== src) {
+          loadScriptSequentially(fallbackSrc)
+            .then(resolve)
+            .catch(function () {
+              reject(new Error('Failed to load script: ' + src));
+            });
+          return;
+        }
+
         reject(new Error('Failed to load script: ' + src));
       });
       document.body.appendChild(script);
