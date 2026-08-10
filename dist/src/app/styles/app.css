@@ -1259,7 +1259,10 @@ p {
 }
 
 .trf-annotation-flash-path {
-  animation: trf-annotation-aura-path 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 1;
+  animation: trf-annotation-aura-path 1.35s cubic-bezier(0.2, 0.7, 0.2, 1) 1;
+  stroke-width: var(--trf-flash-stroke-width, 5px) !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @keyframes trf-annotation-aura-path {
@@ -1269,16 +1272,16 @@ p {
   }
 
   38% {
-    filter: drop-shadow(0 0 7px rgba(178, 226, 255, 0.98))
-      drop-shadow(0 0 18px rgba(140, 207, 255, 0.96))
-      drop-shadow(0 0 32px rgba(117, 196, 255, 0.88));
+    filter: drop-shadow(0 0 12px rgba(178, 226, 255, 0.99))
+      drop-shadow(0 0 28px rgba(140, 207, 255, 0.98))
+      drop-shadow(0 0 46px rgba(117, 196, 255, 0.92));
     opacity: 1;
   }
 
   60% {
-    filter: drop-shadow(0 0 5px rgba(180, 226, 255, 0.94))
-      drop-shadow(0 0 13px rgba(140, 207, 255, 0.82))
-      drop-shadow(0 0 24px rgba(117, 196, 255, 0.65));
+    filter: drop-shadow(0 0 8px rgba(180, 226, 255, 0.96))
+      drop-shadow(0 0 20px rgba(140, 207, 255, 0.88))
+      drop-shadow(0 0 36px rgba(117, 196, 255, 0.74));
     opacity: 1;
   }
 

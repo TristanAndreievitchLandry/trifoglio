@@ -1993,6 +1993,27 @@ function flashAnnotationLayer(layer) {
   }
 
   if (layer._path) {
+    const pathElement = layer._path;
+    const inlineStrokeWidth = Number(pathElement.getAttribute('stroke-width'));
+    const styleStrokeWidth = Number(pathElement.style.strokeWidth);
+    const computedStrokeWidth = Number(
+      window.getComputedStyle(pathElement).strokeWidth.replace('px', ''),
+    );
+    const baseStrokeWidth =
+      (Number.isFinite(inlineStrokeWidth) && inlineStrokeWidth > 0
+        ? inlineStrokeWidth
+        : 0) ||
+      (Number.isFinite(styleStrokeWidth) && styleStrokeWidth > 0
+        ? styleStrokeWidth
+        : 0) ||
+      (Number.isFinite(computedStrokeWidth) && computedStrokeWidth > 0
+        ? computedStrokeWidth
+        : 2);
+    pathElement.style.setProperty(
+      '--trf-flash-stroke-width',
+      String(baseStrokeWidth + 3) + 'px',
+    );
+
     layer._path.classList.remove('trf-annotation-flash-path');
     // Force reflow to replay animation.
     void layer._path.offsetWidth;
@@ -2004,8 +2025,9 @@ function flashAnnotationLayer(layer) {
     layer.__trfFlashTimeoutId = setTimeout(function () {
       if (layer._path) {
         layer._path.classList.remove('trf-annotation-flash-path');
+        layer._path.style.removeProperty('--trf-flash-stroke-width');
       }
-    }, 950);
+    }, 1350);
   }
 
   if (layer._icon) {
@@ -2020,7 +2042,7 @@ function flashAnnotationLayer(layer) {
       if (layer._icon) {
         layer._icon.classList.remove('trf-annotation-flash-marker');
       }
-    }, 950);
+    }, 1350);
   }
 }
 
