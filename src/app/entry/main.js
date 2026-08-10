@@ -2047,12 +2047,17 @@ function flashAnnotationLayer(layer) {
 }
 
 function focusAnnotationLayer(layer) {
-  if (!layer) {
+  if (!layer || !map) {
     return;
   }
 
   const isSimpleCrs = map.options.crs === MAP_CRS_SIMPLE;
   const maxZoom = isSimpleCrs ? 3 : 16;
+  const pointFocusZoom = isSimpleCrs ? 2 : 15;
+
+  if (typeof map.stop === 'function') {
+    map.stop();
+  }
 
   if (typeof layer.getBounds === 'function') {
     const bounds = layer.getBounds();
@@ -2065,7 +2070,11 @@ function focusAnnotationLayer(layer) {
     }
   } else if (typeof layer.getLatLng === 'function') {
     const latLng = layer.getLatLng();
-    const targetZoom = Math.min(maxZoom, map.getZoom() + 1);
+    const currentZoom =
+      typeof map.getZoom === 'function' && Number.isFinite(map.getZoom())
+        ? Number(map.getZoom())
+        : pointFocusZoom;
+    const targetZoom = Math.min(maxZoom, Math.max(pointFocusZoom, currentZoom));
     map.flyTo(latLng, targetZoom, {
       animate: true,
       duration: 0.8,

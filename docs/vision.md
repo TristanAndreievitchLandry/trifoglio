@@ -91,3 +91,17 @@ météo → API externe + état réactif ;✔️
 pop-up d'annotation → état + formulaire + Leaflet ;
 sauvegarde d'annotations dans une API SvelteKit → frontend → backend → PostgreSQL.
 ///////////////////
+
+### Évolution technique : SvelteKit et TypeScript
+
+Trifoglio évoluera progressivement d'une architecture JavaScript/Svelte vers **SvelteKit**, puis **TypeScript**.
+
+Le passage à **SvelteKit** constitue d'abord une évolution architecturale : il permettra de mieux organiser l'application, de préparer l'intégration d'une API, l'authentification et, à terme, un stockage partagé des annotations dans **PostgreSQL/PostGIS**.
+
+**TypeScript sera introduit ensuite progressivement**, sans réécriture complète du projet. Les modules les plus importants seront typés en priorité : données IIIF, annotations GeoJSON, métadonnées, médias, utilisateurs et échanges avec l'API.
+
+Cette combinaison permettra à Trifoglio de conserver la simplicité de son interface actuelle tout en fournissant une base plus robuste et maintenable pour les développements futurs, notamment les contributions collaboratives, les projets étudiants et le stockage centralisé des annotations.
+
+**Ordre de migration prévu :**
+
+`JavaScript → Svelte → SvelteKit → TypeScript → API/PostgreSQL/PostGIS`
