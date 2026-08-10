@@ -34,6 +34,12 @@ jobs:
       - name: Build protected site
         run: npm run build:protect
 
+      - name: Verify dist contents
+        run: |
+          ls -la dist
+          echo '---'
+          find dist -maxdepth 2 -type f | sort | head -50
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
