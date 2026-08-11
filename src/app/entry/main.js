@@ -1,5 +1,30 @@
 // Remove the global declaration of drawnLayers
 
+function initializeViewportForIntro() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (typeof history !== 'undefined' && 'scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
+  window.scrollTo(0, 0);
+}
+
+function registerBeforeUnloadScrollReset() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.addEventListener('beforeunload', function () {
+    window.scrollTo(0, 0);
+  });
+}
+
+initializeViewportForIntro();
+registerBeforeUnloadScrollReset();
+
 const map = L.map('map', {
   center: [0, 0],
   crs: L.CRS.Simple,
@@ -286,51 +311,80 @@ function playIntroWithGsap() {
     return;
   }
 
-  introScreen.classList.remove('is-hidden');
-  introScreen.setAttribute('aria-hidden', 'false');
+  function startIntroAnimation() {
+    introScreen.classList.remove('is-hidden');
+    introScreen.setAttribute('aria-hidden', 'false');
 
-  if (!window.gsap || typeof window.gsap.timeline !== 'function') {
-    setTimeout(function () {
-      introScreen.remove();
-    }, 1700);
+    if (!window.gsap || typeof window.gsap.timeline !== 'function') {
+      setTimeout(function () {
+        introScreen.remove();
+      }, 1700);
+      return;
+    }
+
+    window.gsap.set(introScreen, { autoAlpha: 1 });
+    window.gsap.set(introInner, {
+      transformOrigin: '50% 50%',
+      scale: 1,
+      force3D: true,
+    });
+    window.gsap.set(introAura, {
+      autoAlpha: 0,
+      scale: 0.5,
+      transformOrigin: '50% 50%',
+      force3D: true,
+    });
+    window.gsap.set(introLogo, { autoAlpha: 1 });
+    window.gsap.set(introTitle, { autoAlpha: 1 });
+
+    const timeline = window.gsap.timeline({
+      defaults: { overwrite: 'auto' },
+      onComplete: function () {
+        introScreen.remove();
+      },
+    });
+
+    timeline
+      .to({}, { duration: 1.5 })
+      .to(introAura, {
+        autoAlpha: 0.7,
+        scale: 2.4,
+        duration: 0.6,
+        ease: 'power1.out',
+      })
+      .to(
+        [introAura, introScreen],
+        { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' },
+        '-=0.1',
+      );
+  }
+
+  if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+    const fontWaitTimeoutMs = 1200;
+    let started = false;
+    const startOnce = function () {
+      if (started) {
+        return;
+      }
+
+      started = true;
+      startIntroAnimation();
+    };
+
+    const timeoutId = window.setTimeout(startOnce, fontWaitTimeoutMs);
+    document.fonts.ready
+      .then(function () {
+        window.clearTimeout(timeoutId);
+        startOnce();
+      })
+      .catch(function () {
+        window.clearTimeout(timeoutId);
+        startOnce();
+      });
     return;
   }
 
-  window.gsap.set(introScreen, { autoAlpha: 1 });
-  window.gsap.set(introInner, {
-    transformOrigin: '50% 50%',
-    scale: 1,
-    force3D: true,
-  });
-  window.gsap.set(introAura, {
-    autoAlpha: 0,
-    scale: 0.5,
-    transformOrigin: '50% 50%',
-    force3D: true,
-  });
-  window.gsap.set(introLogo, { autoAlpha: 1 });
-  window.gsap.set(introTitle, { autoAlpha: 1 });
-
-  const timeline = window.gsap.timeline({
-    defaults: { overwrite: 'auto' },
-    onComplete: function () {
-      introScreen.remove();
-    },
-  });
-
-  timeline
-    .to({}, { duration: 1.5 })
-    .to(introAura, {
-      autoAlpha: 0.7,
-      scale: 2.4,
-      duration: 0.6,
-      ease: 'power1.out',
-    })
-    .to(
-      [introAura, introScreen],
-      { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' },
-      '-=0.1',
-    );
+  startIntroAnimation();
 }
 
 playIntroWithGsap();

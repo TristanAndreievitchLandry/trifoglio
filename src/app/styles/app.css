@@ -180,7 +180,9 @@ body {
 
 .trf-intro-screen__logo {
   width: clamp(68px, 10vw, 96px);
-  height: auto;
+  height: clamp(68px, 10vw, 96px);
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
   opacity: 0;
   position: relative;
   z-index: 1;
@@ -192,6 +194,8 @@ body {
   font-family: 'Playfair Display', 'Times New Roman', serif;
   font-size: clamp(24px, 4.3vw, 40px);
   font-weight: 700;
+  line-height: 1.1;
+  min-height: 1.1em;
   letter-spacing: 0.04em;
   text-transform: none;
   color: #eff7ff;
