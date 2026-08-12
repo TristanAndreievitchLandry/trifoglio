@@ -694,10 +694,40 @@ button:hover {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
+.info-box__close-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #4d6e99;
+  background: #0f1b2e;
+  color: #e6f0ff;
+  font-size: 15px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.info-box__close-icon:hover,
+.info-box__close-icon:focus-visible {
+  background: #173052;
+  border-color: #78a0d3;
+  color: #ffffff;
+}
+
+.info-box__close-icon i {
+  pointer-events: none;
+}
+
 .info-content {
   font-family: 'Courier New', Courier, monospace;
-  padding: 6px;
+  padding: 34px 6px 6px;
   max-height: calc(84vh - 24px);
+  box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;

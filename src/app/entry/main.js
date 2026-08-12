@@ -149,7 +149,12 @@ function ensureAppShellElements() {
   if (!document.getElementById('infoBox')) {
     document.body.insertAdjacentHTML(
       'beforeend',
-      '<div id="infoBox" class="info-box"><div id="infoContent" class="info-content"></div></div>',
+      '<div id="infoBox" class="info-box">' +
+        '<button id="info-box-close-button" class="info-box__close-icon" type="button" aria-label="Close info modal">' +
+        '<i class="fa-solid fa-xmark" aria-hidden="true"></i>' +
+        '</button>' +
+        '<div id="infoContent" class="info-content"></div>' +
+        '</div>',
     );
   }
 
@@ -3568,6 +3573,7 @@ function generateListFromData(data) {
 
 const infoBox = document.getElementById('infoBox');
 const infoContent = document.getElementById('infoContent');
+const infoBoxCloseButton = document.getElementById('info-box-close-button');
 const infoButton = document.getElementById('info-button');
 const iiifGuideButton = document.getElementById('iiif-guide-button');
 const addButton = document.getElementById('add-button');
@@ -3584,6 +3590,17 @@ function closeInfoBox() {
   infoBox.style.display = 'none';
 }
 
+function isInfoBoxOpen() {
+  return Boolean(infoBox && infoBox.style.display === 'block');
+}
+
+if (infoBoxCloseButton) {
+  infoBoxCloseButton.addEventListener('click', function (event) {
+    event.stopPropagation();
+    closeInfoBox();
+  });
+}
+
 // Function to check if the click event is inside the info-box
 function isClickInsideInfoBox(event) {
   return event.target === infoBox || infoBox.contains(event.target);
@@ -3598,6 +3615,12 @@ document.addEventListener('click', function (event) {
     event.target !== addButton
   ) {
     closeInfoBox(); // Close the info box if clicked outside
+  }
+});
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && isInfoBoxOpen()) {
+    closeInfoBox();
   }
 });
 
