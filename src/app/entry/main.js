@@ -3641,7 +3641,7 @@ infoButton.addEventListener('click', function (event) {
     '<span class="info-footer__text">' +
     t('popup.info.madeWith') +
     '</span>' +
-    '<span class="info-footer__logo-wrap" data-tooltip="&quot;Frameworks are not tools for organizing your code. They are tools for organizing your mind.&quot; — Rich Harris">' +
+    '<span class="info-footer__logo-wrap" data-tooltip="&quot;Frameworks are not tools for organizing your code. They are tools for organizing your mind.&quot;&#10;- Rich Harris">' +
     '<img src="src/app/assets/svelte-logo.svg" class="info-footer__logo" alt="' +
     t('popup.common.svelteLogoAlt') +
     '">' +
