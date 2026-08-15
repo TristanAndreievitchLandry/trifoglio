@@ -1205,6 +1205,37 @@ p {
   max-height: min(56vh, 420px);
   overflow: auto;
   color: #e6f0ff !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(181, 212, 252, 0.58) transparent;
+}
+
+.leaflet-container .leaflet-popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaflet-container .leaflet-popup-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.leaflet-container .leaflet-popup-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(206, 230, 255, 0.76) 0%,
+    rgba(147, 189, 238, 0.52) 100%
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.leaflet-container .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(225, 241, 255, 0.88) 0%,
+    rgba(170, 206, 247, 0.7) 100%
+  );
+  border: 1px solid transparent;
+  background-clip: content-box;
 }
 
 .leaflet-popup-tip-container {
