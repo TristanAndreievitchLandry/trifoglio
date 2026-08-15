@@ -113,6 +113,7 @@ body {
   z-index: 2002;
   display: inline-flex;
   align-items: center;
+  margin-left: -6px;
   gap: 6px;
   padding: 7px 9px;
   border: 1px solid #5b7aa2;
@@ -259,6 +260,31 @@ body {
   margin-top: 42px;
 }
 
+.leaflet-top.leaflet-left .leaflet-bar,
+.leaflet-top.leaflet-left .leaflet-draw-actions {
+  background: rgba(12, 20, 32, 0.97);
+  border: 1px solid #5b7aa2;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  box-sizing: border-box;
+}
+
+.leaflet-top.leaflet-left .leaflet-bar a {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-bottom-color: rgba(91, 122, 162, 0.45);
+  box-sizing: border-box;
+}
+
+.leaflet-top.leaflet-left .leaflet-bar {
+  width: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
 .button-container {
   position: absolute;
   top: 10px;
@@ -271,6 +297,17 @@ body {
 
 .button-container button {
   position: relative;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.button-container button:focus-visible {
+  outline: none;
+  border-color: #78a0d3;
 }
 
 #iiif-guide-button {
@@ -278,12 +315,12 @@ body {
 }
 
 #annotation-tour-button {
-  border-color: #5d7aa3;
-  background: linear-gradient(160deg, #f8fbff 0%, #e3eefc 100%);
+  border-color: #5b7aa2;
+  background: rgba(12, 20, 32, 0.97);
 }
 
 #annotation-tour-button i {
-  color: #173455;
+  color: #ffffff;
   font-size: 14px;
 }
 
@@ -308,13 +345,13 @@ body {
 
 #annotation-tour-button:hover,
 #annotation-tour-button:focus-visible {
-  background: linear-gradient(160deg, #ffffff 0%, #edf4ff 100%);
-  border-color: #456a98;
+  background: #173052;
+  border-color: #78a0d3;
 }
 
 #annotation-tour-button:hover i,
 #annotation-tour-button:focus-visible i {
-  color: #0f2741;
+  color: #ffffff;
 }
 
 .iiif-mini-logo-svg {
@@ -324,16 +361,16 @@ body {
 }
 
 .iiif-mini-logo-svg__blue {
-  fill: #171717;
+  fill: #f5f9ff;
 }
 
 .iiif-mini-logo-svg__red {
-  fill: #171717;
+  fill: #9fe6ff;
 }
 
 #iiif-guide-button:hover .iiif-mini-logo-svg,
 #iiif-guide-button:focus-visible .iiif-mini-logo-svg {
-  filter: brightness(1.35) grayscale(1);
+  filter: brightness(1.15);
 }
 
 .button-container button[data-tooltip]:hover::after,
@@ -411,24 +448,24 @@ body {
 
 #page-counter-button {
   cursor: default;
-  background-color: #f3f7fb;
+  background-color: rgba(12, 20, 32, 0.97);
 }
 
 #page-counter-button:disabled {
-  opacity: 1;
-  color: #1a2f46;
-  border-color: #3a4d63;
+  opacity: 0.75;
+  color: #ffffff;
+  border-color: #5b7aa2;
 }
 
 #page-counter-button:hover {
-  background-color: #f3f7fb;
+  background-color: rgba(12, 20, 32, 0.97);
 }
 
 #page-counter-value {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.2px;
-  color: #1a2f46;
+  color: #ffffff;
 }
 
 .manifest-panel {
@@ -590,12 +627,12 @@ body {
 #canvas-next:disabled {
   opacity: 0.35;
   cursor: default;
-  background-color: #e7e7e7;
+  background-color: rgba(12, 20, 32, 0.97);
 }
 
 #canvas-prev:disabled:hover,
 #canvas-next:disabled:hover {
-  background-color: #e7e7e7;
+  background-color: rgba(12, 20, 32, 0.97);
 }
 
 .canvas-indicator-separator {
@@ -652,8 +689,9 @@ body {
 button {
   width: 35px; /* Same width as the Leaflet Draw controls */
   height: 35px; /* Same height as the Leaflet Draw controls */
-  background-color: #fff;
-  border: 2px solid #333;
+  background-color: rgba(12, 20, 32, 0.97);
+  border: 1px solid #5b7aa2;
+  color: #ffffff;
   border-radius: 4px;
   margin-bottom: 10px; /* Adjust the vertical spacing between buttons */
   cursor: pointer;
@@ -664,7 +702,14 @@ button {
 
 /* Custom button hover styles */
 button:hover {
-  background-color: #f5f5f5; /* Add a different background color on hover */
+  background-color: #173052; /* Keep dark theme while giving hover feedback */
+  border-color: #78a0d3;
+}
+
+.leaflet-control-zoom a,
+.leaflet-draw-toolbar a,
+.leaflet-draw-actions a {
+  filter: invert(1);
 }
 
 /* Add a class for click capturing */
