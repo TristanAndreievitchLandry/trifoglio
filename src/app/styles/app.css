@@ -676,11 +676,11 @@ button:hover {
 .info-box,
 .liste {
   position: fixed;
-  top: 50%;
+  top: 20px;
   left: 50%;
   width: min(560px, 88vw);
-  max-height: 84vh;
-  transform: translate(-50%, -50%);
+  max-height: calc(100vh - 40px);
+  transform: translateX(-50%);
   background: linear-gradient(160deg, #1f3558 0%, #172b47 100%);
   color: #e6f0ff;
   padding: 12px;
@@ -725,7 +725,7 @@ button:hover {
 
 .info-content {
   font-family: 'Courier New', Courier, monospace;
-  padding: 34px 6px 6px;
+  padding: 0 6px 6px;
   max-height: calc(84vh - 24px);
   box-sizing: border-box;
   overflow-y: auto;
@@ -809,19 +809,20 @@ button:hover {
 }
 
 h2 {
+  margin: 6px 0 12px;
   text-align: center;
 }
 
 p {
+  margin-top: 0;
   text-align: left;
 }
 
 .icon {
   max-width: 100%; /* Ensure the image doesn't exceed the container's width */
-  padding: 5px;
+  padding: 0;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 
 .info-footer {

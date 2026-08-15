@@ -3582,8 +3582,23 @@ const annotationTourButton = document.getElementById('annotation-tour-button');
 //const randomButton = document.getElementById("random-button");
 
 function openInfoBox(content) {
+  if (!infoContent || !infoBox) {
+    return;
+  }
+
   infoContent.innerHTML = content;
+  infoBox.scrollTop = 0;
+  infoBox.scrollLeft = 0;
+  infoContent.scrollTop = 0;
+  infoContent.scrollLeft = 0;
   infoBox.style.display = 'block';
+
+  window.requestAnimationFrame(function () {
+    infoBox.scrollTop = 0;
+    infoBox.scrollLeft = 0;
+    infoContent.scrollTop = 0;
+    infoContent.scrollLeft = 0;
+  });
 }
 
 function closeInfoBox() {

@@ -1,20 +1,23 @@
 (function () {
   // Runtime manifest for app-owned and vendor resources.
+  const runtimeStamp = '20260815-top-info-modal';
+
   const defaultRuntime = {
     styles: [
-      'src/app/styles/app.css',
-      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.css',
-      'src/lib/vendors/leaflet-draw/leaflet.draw.css',
+      'src/app/styles/app.css?v=' + runtimeStamp,
+      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.css?v=' + runtimeStamp,
+      'src/lib/vendors/leaflet-draw/leaflet.draw.css?v=' + runtimeStamp,
     ],
     scripts: [
-      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.js',
-      'src/lib/vendors/leaflet-draw/leaflet.draw.js',
-      'src/lib/vendors/leaflet/plugins/leaflet-iiif.js',
-      'src/lib/vendors/leaflet/plugins/leaflet-hash.js',
-      'src/app/data/catalogs.js',
-      'src/app/entry/i18n-runtime.js?v=20260807-fr-default',
-      'src/lib/vendors/gsap/gsap.min.js',
-      'src/app/entry/main.js?v=20260807-fr-default',
+      'https://unpkg.com/leaflet@1.0.2/dist/leaflet.js?v=' + runtimeStamp,
+      'src/lib/vendors/leaflet-draw/leaflet.draw.js?v=' + runtimeStamp,
+      'src/lib/vendors/leaflet/plugins/leaflet-iiif.js?v=' + runtimeStamp,
+      'src/lib/vendors/leaflet/plugins/leaflet-hash.js?v=' + runtimeStamp,
+      'src/app/data/catalogs.js?v=' + runtimeStamp,
+      'src/app/entry/i18n-runtime.js?v=20260807-fr-default&cache=' +
+        runtimeStamp,
+      'src/lib/vendors/gsap/gsap.min.js?v=' + runtimeStamp,
+      'src/app/entry/main.js?v=20260807-fr-default&cache=' + runtimeStamp,
     ],
   };
 
