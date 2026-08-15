@@ -90,6 +90,7 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Schlagwörter",
     "common": {
       "imageAlt": "Ein Kleeblatt",
       "svelteLogoAlt": "Svelte-Logo"

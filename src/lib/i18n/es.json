@@ -90,6 +90,7 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Palabras clave",
     "common": {
       "imageAlt": "Un trébol",
       "svelteLogoAlt": "Logotipo de Svelte"

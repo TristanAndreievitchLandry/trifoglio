@@ -2294,7 +2294,7 @@ function buildAnnotationPopupHtml(properties) {
   if (tags.length > 0) {
     rows.push(
       '<p class="trf-popup__meta"><strong>' +
-        escapeAnnotationHtml(t('annotationEditor.fieldKeywords')) +
+        escapeAnnotationHtml(t('popup.annotationKeywordsLabel')) +
         ':</strong> ' +
         escapeAnnotationHtml(tags.join(', ')) +
         '</p>',

@@ -87,6 +87,7 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Keywords",
     "common": {
       "imageAlt": "A clover",
       "svelteLogoAlt": "Svelte logo"

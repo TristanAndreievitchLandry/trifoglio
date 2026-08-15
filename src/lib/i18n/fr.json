@@ -90,6 +90,7 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Mots-clés",
     "common": {
       "imageAlt": "Un trèfle",
       "svelteLogoAlt": "Logo Svelte"
