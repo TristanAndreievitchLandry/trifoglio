@@ -50,6 +50,11 @@ const ANNOTATION_TOUR_BUTTON_HTML =
   '<span id="annotation-tour-counter" class="annotation-tour-counter">0/0</span>' +
   '</button>';
 
+const KEYWORD_LEGEND_BUTTON_HTML =
+  '<button id="keyword-legend-button" type="button" title="" data-i18n-attr="title:buttons.keywordLegend" onclick="toggleKeywordLegendPanel(); return false;">' +
+  '<i class="fa-solid fa-tags"></i>' +
+  '</button>';
+
 // Temporary UI switch: set to true to re-enable the OSM tool.
 const OSM_TOOL_ENABLED = false;
 const OSM_BUTTON_HTML = OSM_TOOL_ENABLED
@@ -172,12 +177,20 @@ function ensureAppShellElements() {
         '<button id="page-counter-button" title="" data-i18n-attr="title:buttons.currentPage" disabled><span id="page-counter-value">0/0</span></button>' +
         OSM_BUTTON_HTML +
         ANNOTATION_TOUR_BUTTON_HTML +
+        KEYWORD_LEGEND_BUTTON_HTML +
         OSM_STYLE_MENU_HTML +
         '</div>',
     );
   }
 
   const buttonContainer = document.querySelector('.button-container');
+  if (buttonContainer) {
+    buttonContainer.style.position = 'fixed';
+    buttonContainer.style.zIndex = '6000';
+    buttonContainer.style.top = '10px';
+    buttonContainer.style.right = '10px';
+  }
+
   const askButton = document.getElementById('ask-button');
   if (
     buttonContainer &&
@@ -207,6 +220,39 @@ function ensureAppShellElements() {
       'beforeend',
       '<span id="annotation-tour-counter" class="annotation-tour-counter">0/0</span>',
     );
+  }
+
+  if (
+    annotationTourButton &&
+    !document.getElementById('keyword-legend-button')
+  ) {
+    annotationTourButton.insertAdjacentHTML(
+      'afterend',
+      KEYWORD_LEGEND_BUTTON_HTML,
+    );
+  }
+
+  if (!document.getElementById('keyword-legend-panel')) {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<div id="keyword-legend-panel" class="keyword-legend-panel is-hidden" aria-hidden="true">' +
+        '<div class="keyword-legend-panel__header">' +
+        '<h3 class="keyword-legend-panel__title" data-i18n-key="legend.title"></h3>' +
+        '<button id="keyword-legend-close" type="button" class="keyword-legend-panel__close" data-i18n-attr="title:buttons.close" aria-label="Close keyword legend" onclick="setKeywordLegendPanelVisibility(false); return false;">' +
+        '<i class="fa-solid fa-xmark" aria-hidden="true"></i>' +
+        '</button>' +
+        '</div>' +
+        '<div id="keyword-legend-content" class="keyword-legend-panel__content"></div>' +
+        '</div>',
+    );
+  }
+
+  const keywordLegendPanel = document.getElementById('keyword-legend-panel');
+  if (keywordLegendPanel) {
+    keywordLegendPanel.style.position = 'fixed';
+    keywordLegendPanel.style.zIndex = '6500';
+    keywordLegendPanel.style.right = '16px';
+    keywordLegendPanel.style.bottom = '16px';
   }
 
   if (!document.getElementById('trf-alert-modal')) {
@@ -455,6 +501,11 @@ let drawingsByCanvas = {};
 let drawControl = null;
 let drawEventsBound = false;
 let annotationTourCursor = -1;
+let keywordLegendState = {
+  hiddenKeywords: new Set(),
+  initialized: false,
+  visible: false,
+};
 
 const manifestInput = document.getElementById('manifest-input');
 const manifestStatus = document.getElementById('manifest-status');
@@ -512,6 +563,243 @@ function updateWeatherIndicator(weatherData) {
     weatherIndicator.setAttribute('title', weatherData.title);
   }
 }
+
+function getAnnotationKeywords(annotation, properties) {
+  const annotationTags = Array.isArray(annotation?.tags)
+    ? annotation.tags
+    : typeof properties?.keywords === 'string'
+      ? properties.keywords.split(',')
+      : [];
+
+  return Array.from(
+    new Set(
+      annotationTags
+        .map(function (entry) {
+          return String(entry || '').trim();
+        })
+        .filter(Boolean),
+    ),
+  );
+}
+
+function getLayerKeywords(layer) {
+  const feature = layer && layer.feature ? layer.feature : null;
+  const properties =
+    feature && feature.properties && typeof feature.properties === 'object'
+      ? feature.properties
+      : {};
+  const annotation =
+    properties.annotation && typeof properties.annotation === 'object'
+      ? properties.annotation
+      : {};
+
+  return getAnnotationKeywords(annotation, properties);
+}
+
+function getKeywordLegendEntries() {
+  if (!drawnLayers || typeof drawnLayers.eachLayer !== 'function') {
+    return [];
+  }
+
+  const entriesByKey = new Map();
+
+  drawnLayers.eachLayer(function (layer) {
+    getLayerKeywords(layer).forEach(function (keyword) {
+      const key = String(keyword || '')
+        .trim()
+        .toLowerCase();
+      if (!key) {
+        return;
+      }
+
+      if (!entriesByKey.has(key)) {
+        entriesByKey.set(key, {
+          key: key,
+          label: keyword,
+          layers: [],
+        });
+      }
+
+      const entry = entriesByKey.get(key);
+      if (entry.layers.indexOf(layer) === -1) {
+        entry.layers.push(layer);
+      }
+    });
+  });
+
+  return Array.from(entriesByKey.values()).sort(function (a, b) {
+    return a.label.localeCompare(b.label, undefined, { sensitivity: 'base' });
+  });
+}
+
+function getKeywordLegendElements() {
+  return {
+    button: document.getElementById('keyword-legend-button'),
+    panel: document.getElementById('keyword-legend-panel'),
+    closeButton: document.getElementById('keyword-legend-close'),
+    content: document.getElementById('keyword-legend-content'),
+  };
+}
+
+function setKeywordLegendLayerVisibility(layer, visible) {
+  if (!layer) {
+    return;
+  }
+
+  const hide = !visible;
+
+  if (layer._path) {
+    layer._path.classList.toggle('trf-keyword-hidden', hide);
+  }
+
+  if (layer._icon) {
+    layer._icon.classList.toggle('trf-keyword-hidden', hide);
+  }
+
+  if (layer._shadow) {
+    layer._shadow.classList.toggle('trf-keyword-hidden', hide);
+  }
+
+  if (hide && typeof layer.closePopup === 'function') {
+    layer.closePopup();
+  }
+}
+
+function applyKeywordLegendVisibility() {
+  if (!drawnLayers || typeof drawnLayers.eachLayer !== 'function') {
+    return;
+  }
+
+  const entries = getKeywordLegendEntries();
+  const hiddenKeywords = keywordLegendState.hiddenKeywords;
+
+  if (entries.length === 0) {
+    drawnLayers.eachLayer(function (layer) {
+      setKeywordLegendLayerVisibility(layer, true);
+    });
+    return;
+  }
+
+  drawnLayers.eachLayer(function (layer) {
+    const layerKeywords = getLayerKeywords(layer).map(function (keyword) {
+      return String(keyword || '')
+        .trim()
+        .toLowerCase();
+    });
+
+    const shouldShow =
+      layerKeywords.length === 0 ||
+      layerKeywords.some(function (keyword) {
+        return !hiddenKeywords.has(keyword);
+      });
+
+    setKeywordLegendLayerVisibility(layer, shouldShow);
+  });
+}
+
+function renderKeywordLegendPanel() {
+  const elements = getKeywordLegendElements();
+  if (!elements.panel || !elements.content) {
+    return;
+  }
+
+  const entries = getKeywordLegendEntries();
+  const nextHidden = new Set(keywordLegendState.hiddenKeywords);
+  const availableKeys = new Set(
+    entries.map(function (entry) {
+      return entry.key;
+    }),
+  );
+
+  nextHidden.forEach(function (keyword) {
+    if (!availableKeys.has(keyword)) {
+      nextHidden.delete(keyword);
+    }
+  });
+
+  if (!keywordLegendState.initialized && entries.length > 0) {
+    nextHidden.clear();
+  }
+
+  keywordLegendState.hiddenKeywords = nextHidden;
+  keywordLegendState.initialized = true;
+
+  elements.content.innerHTML = '';
+
+  if (entries.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.className = 'keyword-legend-panel__empty';
+    emptyMessage.textContent = t('legend.empty');
+    elements.content.appendChild(emptyMessage);
+    applyKeywordLegendVisibility();
+    return;
+  }
+
+  entries.forEach(function (entry) {
+    const item = document.createElement('label');
+    item.className = 'keyword-legend-panel__item';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = !keywordLegendState.hiddenKeywords.has(entry.key);
+    checkbox.addEventListener('change', function () {
+      if (checkbox.checked) {
+        keywordLegendState.hiddenKeywords.delete(entry.key);
+      } else {
+        keywordLegendState.hiddenKeywords.add(entry.key);
+      }
+      applyKeywordLegendVisibility();
+    });
+
+    const labelText = document.createElement('span');
+    labelText.className = 'keyword-legend-panel__label';
+    labelText.textContent = entry.label;
+
+    const countBadge = document.createElement('span');
+    countBadge.className = 'keyword-legend-panel__count';
+    countBadge.textContent = String(entry.layers.length);
+
+    item.appendChild(checkbox);
+    item.appendChild(labelText);
+    item.appendChild(countBadge);
+    elements.content.appendChild(item);
+  });
+
+  applyKeywordLegendVisibility();
+}
+
+function setKeywordLegendPanelVisibility(visible) {
+  const elements = getKeywordLegendElements();
+  keywordLegendState.visible = Boolean(visible);
+
+  if (elements.panel) {
+    elements.panel.classList.toggle('is-hidden', !visible);
+    elements.panel.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
+
+  if (elements.button) {
+    elements.button.classList.toggle('is-active', visible);
+  }
+
+  if (visible) {
+    renderKeywordLegendPanel();
+  }
+}
+
+function toggleKeywordLegendPanel() {
+  setKeywordLegendPanelVisibility(!keywordLegendState.visible);
+}
+
+function refreshKeywordLegendPanel() {
+  renderKeywordLegendPanel();
+  if (keywordLegendState.visible) {
+    setKeywordLegendPanelVisibility(true);
+  }
+}
+
+window.toggleKeywordLegendPanel = toggleKeywordLegendPanel;
+window.setKeywordLegendPanelVisibility = setKeywordLegendPanelVisibility;
+window.refreshKeywordLegendPanel = refreshKeywordLegendPanel;
 
 function getWeatherConditionIcon(conditionText, period) {
   const normalized = String(conditionText || '').toLowerCase();
@@ -1839,14 +2127,7 @@ function normalizeLayerProperties(layer) {
   const description = annotation.text || properties.description || '';
   const author = annotation.creator || properties.author || '';
   const date = annotation.created || properties.date || '';
-  const tags = Array.isArray(annotation.tags)
-    ? annotation.tags
-    : typeof properties.keywords === 'string'
-      ? properties.keywords
-          .split(',')
-          .map((entry) => entry.trim())
-          .filter(Boolean)
-      : [];
+  const tags = getAnnotationKeywords(annotation, properties);
 
   const customFields = [];
   if (annotation.customFields && Array.isArray(annotation.customFields)) {
@@ -2248,12 +2529,7 @@ function buildAnnotationPopupHtml(properties) {
     url !== audio &&
     url !== video,
   );
-  const tags = Array.isArray(annotation.tags)
-    ? annotation.tags.filter(Boolean)
-    : String(properties.keywords || '')
-        .split(',')
-        .map((entry) => entry.trim())
-        .filter(Boolean);
+  const tags = getAnnotationKeywords(annotation, properties);
 
   const rows = [];
 
@@ -2711,6 +2987,7 @@ function drawSomething() {
     openAnnotationEditor(layer);
     saveToLocalStorage();
     updateAnnotationTourCounterDisplay();
+    refreshKeywordLegendPanel();
   });
 
   map.on('draw:edited', (e) => {
@@ -2729,17 +3006,20 @@ function drawSomething() {
       }
     });
     saveToLocalStorage();
+    refreshKeywordLegendPanel();
   });
 
   map.on('draw:deleted', () => {
     saveToLocalStorage();
     updateAnnotationTourCounterDisplay();
+    refreshKeywordLegendPanel();
   });
 }
 
 function removeAllDrawnPolygons() {
   drawnLayers.clearLayers();
   updateAnnotationTourCounterDisplay();
+  refreshKeywordLegendPanel();
 
   const storageKey = getCanvasStorageKey(currentCanvasKey);
   if (storageKey && drawingsByCanvas[storageKey]) {
@@ -2751,6 +3031,8 @@ function removeAllDrawnPolygons() {
   if (loadedGeoJSONLayer) {
     map.removeLayer(loadedGeoJSONLayer);
   }
+
+  refreshKeywordLegendPanel();
 }
 
 function saveToLocalStorage() {
@@ -2900,6 +3182,7 @@ window.addEventListener('i18n:ready', function () {
   }
   syncRightToolButtonTooltips();
   refreshAllAnnotationPopups();
+  refreshKeywordLegendPanel();
   if (manifestStatus && manifestStatus.textContent === 'notifications.ready') {
     setManifestStatus(t('notifications.ready'));
   }
@@ -3583,6 +3866,12 @@ const iiifGuideButton = document.getElementById('iiif-guide-button');
 const addButton = document.getElementById('add-button');
 const osmButton = document.getElementById('osm-button');
 const annotationTourButton = document.getElementById('annotation-tour-button');
+const keywordLegendButton = document.getElementById('keyword-legend-button');
+const keywordLegendPanel = document.getElementById('keyword-legend-panel');
+const keywordLegendCloseButton = document.getElementById(
+  'keyword-legend-close',
+);
+const keywordLegendContent = document.getElementById('keyword-legend-content');
 //const randomButton = document.getElementById("random-button");
 
 function openInfoBox(content) {
@@ -3688,7 +3977,52 @@ if (annotationTourButton) {
   });
 }
 
+if (keywordLegendButton) {
+  keywordLegendButton.addEventListener('click', function (event) {
+    event.stopPropagation();
+    toggleKeywordLegendPanel();
+  });
+}
+
+if (keywordLegendCloseButton) {
+  keywordLegendCloseButton.addEventListener('click', function (event) {
+    event.stopPropagation();
+    setKeywordLegendPanelVisibility(false);
+  });
+}
+
+if (keywordLegendPanel) {
+  keywordLegendPanel.addEventListener('click', function (event) {
+    if (event.target === keywordLegendPanel) {
+      setKeywordLegendPanelVisibility(false);
+    }
+  });
+}
+
+document.addEventListener(
+  'click',
+  function (event) {
+    const legendToggle = event.target.closest('#keyword-legend-button');
+    const legendClose = event.target.closest('#keyword-legend-close');
+
+    if (legendToggle) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleKeywordLegendPanel();
+      return;
+    }
+
+    if (legendClose) {
+      event.preventDefault();
+      event.stopPropagation();
+      setKeywordLegendPanelVisibility(false);
+    }
+  },
+  true,
+);
+
 updateAnnotationTourCounterDisplay();
+refreshKeywordLegendPanel();
 
 addButton.addEventListener('click', function (event) {
   event.stopPropagation(); // Stop the click event from propagating to the map

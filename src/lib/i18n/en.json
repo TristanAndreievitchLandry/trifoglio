@@ -22,6 +22,7 @@
     "manifest": "Manifest",
     "iiifGuide": "IIIF guide",
     "annotationTour": "Annotation tour",
+    "keywordLegend": "Keyword legend",
     "importJson": "Import JSON",
     "previousPage": "Previous page",
     "nextPage": "Next page",
@@ -55,6 +56,10 @@
       "noLayersToEdit": "No layers to edit",
       "noLayersToDelete": "No layers to delete"
     }
+  },
+  "legend": {
+    "title": "Keyword legend",
+    "empty": "No keywords found in the current annotations."
   },
   "draw": {
     "buttons": {

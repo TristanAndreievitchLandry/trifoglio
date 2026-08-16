@@ -25,6 +25,7 @@
     "manifest": "Manifiesto",
     "iiifGuide": "Guía IIIF",
     "annotationTour": "Recorrido de anotaciones",
+    "keywordLegend": "Leyenda de palabras clave",
     "importJson": "Importar JSON",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
@@ -58,6 +59,10 @@
       "noLayersToEdit": "No hay capas para editar",
       "noLayersToDelete": "No hay capas para eliminar"
     }
+  },
+  "legend": {
+    "title": "Leyenda de palabras clave",
+    "empty": "No se encontraron palabras clave en las anotaciones actuales."
   },
   "draw": {
     "buttons": {

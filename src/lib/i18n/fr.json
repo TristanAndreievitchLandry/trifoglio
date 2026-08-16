@@ -25,6 +25,7 @@
     "manifest": "Manifeste",
     "iiifGuide": "Guide IIIF",
     "annotationTour": "Parcours annotations",
+    "keywordLegend": "Légende des mots-clés",
     "importJson": "Importer JSON",
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
@@ -58,6 +59,10 @@
       "noLayersToEdit": "Aucune couche à éditer",
       "noLayersToDelete": "Aucune couche à supprimer"
     }
+  },
+  "legend": {
+    "title": "Légende des mots-clés",
+    "empty": "Aucun mot-clé trouvé dans les annotations actuelles."
   },
   "draw": {
     "buttons": {

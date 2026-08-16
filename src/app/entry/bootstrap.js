@@ -1,6 +1,6 @@
 (function () {
   // Runtime manifest for app-owned and vendor resources.
-  const runtimeStamp = '20260815-top-info-modal';
+  const runtimeStamp = '20260816-keyword-legend-fix';
 
   const defaultRuntime = {
     styles: [

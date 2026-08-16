@@ -25,6 +25,7 @@
     "manifest": "Manifest",
     "iiifGuide": "IIIF-Anleitung",
     "annotationTour": "Anmerkungs-Tour",
+    "keywordLegend": "Schlagwort-Legende",
     "importJson": "JSON importieren",
     "previousPage": "Vorherige Seite",
     "nextPage": "Nächste Seite",
@@ -58,6 +59,10 @@
       "noLayersToEdit": "Keine Ebenen zu bearbeiten",
       "noLayersToDelete": "Keine Ebenen zu löschen"
     }
+  },
+  "legend": {
+    "title": "Schlagwort-Legende",
+    "empty": "In den aktuellen Anmerkungen wurden keine Schlagwörter gefunden."
   },
   "draw": {
     "buttons": {
