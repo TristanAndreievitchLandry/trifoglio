@@ -122,7 +122,7 @@
     "addField": "Add field",
     "save": "Save annotation",
     "cancel": "Cancel",
-    "editHint": "Double-click to edit this annotation"
+    "editHint": "Double-click this annotation to edit it"
   },
   "settings": {
     "osmMapStyle": "OSM map style"

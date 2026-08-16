@@ -125,7 +125,7 @@
     "addField": "Feld hinzufügen",
     "save": "Anmerkung speichern",
     "cancel": "Abbrechen",
-    "editHint": "Doppelklicken Sie, um diese Anmerkung zu bearbeiten"
+    "editHint": "Doppelklicken Sie auf diese Anmerkung, um sie zu bearbeiten"
   },
   "settings": {
     "osmMapStyle": "OSM-Kartenstil"

@@ -125,7 +125,7 @@
     "addField": "Añadir campo",
     "save": "Guardar anotación",
     "cancel": "Cancelar",
-    "editHint": "Haz doble clic para editar esta anotación"
+    "editHint": "Haz doble clic en esta anotación para editarla"
   },
   "settings": {
     "osmMapStyle": "Estilo del mapa OSM"
