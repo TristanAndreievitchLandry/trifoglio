@@ -2155,6 +2155,10 @@ function focusNextOrderedAnnotation() {
     return;
   }
 
+  if (map && typeof map.closePopup === 'function') {
+    map.closePopup();
+  }
+
   annotationTourCursor = (annotationTourCursor + 1) % orderedLayers.length;
   updateAnnotationTourCounterDisplay();
   focusAnnotationLayer(orderedLayers[annotationTourCursor]);
