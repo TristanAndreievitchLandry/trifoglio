@@ -2128,6 +2128,9 @@ function normalizeLayerProperties(layer) {
   const author = annotation.creator || properties.author || '';
   const date = annotation.created || properties.date || '';
   const tags = getAnnotationKeywords(annotation, properties);
+  const strokeWidthValue = Number.parseFloat(
+    properties.strokeWidth || properties.weight || properties.lineWidth,
+  );
 
   const customFields = [];
   if (annotation.customFields && Array.isArray(annotation.customFields)) {
@@ -2175,6 +2178,10 @@ function normalizeLayerProperties(layer) {
     audio: annotation.audio || properties.audio || '',
     video: annotation.video || properties.video || '',
     lineColor: properties.color || properties.strokeColor || '#d32f2f',
+    lineWidth:
+      Number.isFinite(strokeWidthValue) && strokeWidthValue > 0
+        ? String(strokeWidthValue)
+        : '3',
     markerColor: properties.markerColor || properties.color || '#d32f2f',
     fillColor: properties.fillColor || properties.color || '#d32f2f',
     fillOpacity:
@@ -2209,6 +2216,11 @@ function buildAnnotationProperties(values) {
     Number.isFinite(fillOpacity) && fillOpacity >= 0 && fillOpacity <= 1
       ? fillOpacity
       : 0.35;
+  const parsedLineWidth = Number.parseFloat(values.lineWidth);
+  const normalizedLineWidth =
+    Number.isFinite(parsedLineWidth) && parsedLineWidth > 0
+      ? parsedLineWidth
+      : 3;
   const parsedOrder = Number.parseInt(values.order, 10);
   const normalizedOrder =
     Number.isInteger(parsedOrder) && parsedOrder >= 1 ? parsedOrder : 1;
@@ -2226,6 +2238,9 @@ function buildAnnotationProperties(values) {
     color: values.lineColor || '#d32f2f',
     markerColor: values.markerColor || values.lineColor || '#d32f2f',
     strokeColor: values.lineColor || '#d32f2f',
+    strokeWidth: normalizedLineWidth,
+    weight: normalizedLineWidth,
+    lineWidth: normalizedLineWidth,
     fillColor: values.fillColor || values.lineColor || '#d32f2f',
     fillOpacity: normalizedFillOpacity,
     order: normalizedOrder,
@@ -2451,13 +2466,20 @@ function applyLayerStyleFromProperties(layer, properties) {
   const fillOpacity = Number.isFinite(Number.parseFloat(properties.fillOpacity))
     ? Number.parseFloat(properties.fillOpacity)
     : 0.35;
+  const parsedLineWidth = Number.parseFloat(
+    properties.strokeWidth || properties.weight || properties.lineWidth,
+  );
+  const lineWidth =
+    Number.isFinite(parsedLineWidth) && parsedLineWidth > 0
+      ? parsedLineWidth
+      : 3;
 
   if (typeof layer.setStyle === 'function') {
     layer.setStyle({
       color: color,
       fillColor: fillColor,
       fillOpacity: fillOpacity,
-      weight: 3,
+      weight: lineWidth,
       opacity: 0.95,
     });
   }
@@ -2777,6 +2799,9 @@ function ensureAnnotationEditor(forceRefresh) {
     t('annotationEditor.lineColor') +
     '<input name="lineColor" type="color"></label>' +
     '<label>' +
+    t('annotationEditor.lineWidth') +
+    '<input name="lineWidth" type="number" min="1" max="20" step="1"></label>' +
+    '<label>' +
     t('annotationEditor.fillColor') +
     '<input name="fillColor" type="color"></label>' +
     '<label>' +
@@ -2868,6 +2893,7 @@ function ensureAnnotationEditor(forceRefresh) {
       audio: formData.get('audio') || '',
       video: formData.get('video') || '',
       lineColor: formData.get('lineColor') || '#d32f2f',
+      lineWidth: formData.get('lineWidth') || '3',
       markerColor: formData.get('markerColor') || '#d32f2f',
       fillColor: formData.get('fillColor') || '#d32f2f',
       fillOpacity: formData.get('fillOpacity') || '0.35',
@@ -2902,6 +2928,7 @@ function openAnnotationEditor(layer) {
   form.elements.audio.value = normalized.audio;
   form.elements.video.value = normalized.video;
   form.elements.lineColor.value = normalized.lineColor;
+  form.elements.lineWidth.value = normalized.lineWidth;
   if (form.elements.markerColor) {
     form.elements.markerColor.value = normalized.markerColor || '#d32f2f';
   }

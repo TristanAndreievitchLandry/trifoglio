@@ -339,6 +339,37 @@ body {
   gap: 8px;
   overflow: auto;
   padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(181, 212, 252, 0.65) transparent;
+}
+
+.keyword-legend-panel__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.keyword-legend-panel__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.keyword-legend-panel__content::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(206, 230, 255, 0.82) 0%,
+    rgba(147, 189, 238, 0.62) 100%
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.keyword-legend-panel__content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(225, 241, 255, 0.95) 0%,
+    rgba(170, 206, 247, 0.8) 100%
+  );
+  border: 1px solid transparent;
+  background-clip: content-box;
 }
 
 .keyword-legend-panel__item {
@@ -1235,6 +1266,20 @@ p {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.annotation-editor__style-grid label input[type='number'] {
+  appearance: textfield;
+}
+
+.annotation-editor__style-grid
+  label
+  input[type='number']::-webkit-inner-spin-button,
+.annotation-editor__style-grid
+  label
+  input[type='number']::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .annotation-editor__custom {

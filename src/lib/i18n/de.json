@@ -121,6 +121,7 @@
     "fieldAudio": "Audio-URL",
     "fieldVideo": "Video-URL",
     "lineColor": "Linien-/Konturfarbe",
+    "lineWidth": "Linienbreite",
     "markerColor": "Markerfarbe",
     "fillColor": "Füllfarbe",
     "fillOpacity": "Füllopacity",

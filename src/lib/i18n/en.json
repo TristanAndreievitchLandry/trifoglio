@@ -118,6 +118,7 @@
     "fieldAudio": "Audio URL",
     "fieldVideo": "Video URL",
     "lineColor": "Line / stroke color",
+    "lineWidth": "Line width",
     "markerColor": "Marker color",
     "fillColor": "Fill color",
     "fillOpacity": "Fill opacity",

@@ -121,6 +121,7 @@
     "fieldAudio": "URL de audio",
     "fieldVideo": "URL de vídeo",
     "lineColor": "Color de línea / trazo",
+    "lineWidth": "Ancho de línea",
     "markerColor": "Color del marcador",
     "fillColor": "Color de relleno",
     "fillOpacity": "Opacidad de relleno",
