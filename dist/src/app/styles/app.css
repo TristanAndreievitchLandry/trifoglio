@@ -423,7 +423,8 @@ body {
 
 .button-container,
 .annotation-tour-actions,
-.keyword-legend-actions {
+.keyword-legend-actions,
+.viewer-actions-container {
   position: fixed;
   top: 10px;
   right: 10px;
@@ -441,13 +442,15 @@ body {
 }
 
 .annotation-tour-actions,
-.keyword-legend-actions {
+.keyword-legend-actions,
+.viewer-actions-container {
   top: 0;
 }
 
 .button-container button,
 .annotation-tour-actions button,
-.keyword-legend-actions button {
+.keyword-legend-actions button,
+.viewer-actions-container button {
   position: relative;
   width: 30px;
   height: 30px;
@@ -466,19 +469,22 @@ body {
 
 .button-container button:last-of-type,
 .annotation-tour-actions button:last-of-type,
-.keyword-legend-actions button:last-of-type {
+.keyword-legend-actions button:last-of-type,
+.viewer-actions-container button:last-of-type {
   border-bottom: 0;
 }
 
 .button-container button:hover,
 .annotation-tour-actions button:hover,
-.keyword-legend-actions button:hover {
+.keyword-legend-actions button:hover,
+.viewer-actions-container button:hover {
   background: #173052;
 }
 
 .button-container button:focus-visible,
 .annotation-tour-actions button:focus-visible,
-.keyword-legend-actions button:focus-visible {
+.keyword-legend-actions button:focus-visible,
+.viewer-actions-container button:focus-visible {
   outline: none;
   border-color: #78a0d3;
 }
@@ -514,6 +520,11 @@ body {
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   pointer-events: none;
+}
+
+.keyword-legend-counter {
+  right: -8px;
+  bottom: -7px;
 }
 
 #annotation-tour-button:hover,
@@ -639,6 +650,11 @@ body {
   font-weight: 700;
   letter-spacing: 0.2px;
   color: #ffffff;
+}
+
+.viewer-page-counter#page-counter-value {
+  font-size: 9px;
+  line-height: 12px;
 }
 
 .manifest-panel {

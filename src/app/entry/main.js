@@ -172,9 +172,6 @@ function ensureAppShellElements() {
         IIIF_GUIDE_BUTTON_HTML +
         '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
-        '<button id="canvas-prev" title="" data-i18n-attr="title:buttons.previousPage"><i class="fa-solid fa-arrow-left"></i></button>' +
-        '<button id="canvas-next" title="" data-i18n-attr="title:buttons.nextPage"><i class="fa-solid fa-arrow-right"></i></button>' +
-        '<button id="page-counter-button" title="" data-i18n-attr="title:buttons.currentPage" disabled><span id="page-counter-value">0/0</span></button>' +
         OSM_BUTTON_HTML +
         OSM_STYLE_MENU_HTML +
         '</div>',
@@ -217,17 +214,36 @@ function ensureAppShellElements() {
       'beforeend',
       '<div class="keyword-legend-actions">' +
         KEYWORD_LEGEND_BUTTON_HTML +
+        '<span id="keyword-legend-counter" class="annotation-tour-counter keyword-legend-counter">0</span>' +
         '</div>',
     );
     keywordLegendActions = document.querySelector('.keyword-legend-actions');
   }
 
-  if (buttonContainer && annotationTourActions && keywordLegendActions) {
-    const secondaryTop =
-      buttonContainer.offsetTop + buttonContainer.offsetHeight + 10;
-    annotationTourActions.style.top = secondaryTop + 'px';
+  let viewerActions = document.querySelector('.viewer-actions-container');
+  if (!viewerActions) {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<div class="viewer-actions-container">' +
+        '<button id="canvas-prev" title="" data-i18n-attr="title:buttons.previousPage"><i class="fa-solid fa-arrow-left"></i></button>' +
+        '<button id="canvas-next" title="" data-i18n-attr="title:buttons.nextPage"><i class="fa-solid fa-arrow-right"></i></button>' +
+        '<span id="page-counter-value" class="annotation-tour-counter viewer-page-counter">0/0</span>' +
+        '</div>',
+    );
+    viewerActions = document.querySelector('.viewer-actions-container');
+  }
+
+  if (viewerActions && buttonContainer) {
+    viewerActions.style.top =
+      buttonContainer.offsetTop + buttonContainer.offsetHeight + 10 + 'px';
+  }
+
+  if (viewerActions && annotationTourActions && keywordLegendActions) {
+    const annotationTop =
+      viewerActions.offsetTop + viewerActions.offsetHeight + 10;
+    annotationTourActions.style.top = annotationTop + 'px';
     keywordLegendActions.style.top =
-      secondaryTop + annotationTourActions.offsetHeight + 10 + 'px';
+      annotationTop + annotationTourActions.offsetHeight + 10 + 'px';
   }
 
   if (!document.getElementById('keyword-legend-panel')) {
@@ -639,6 +655,21 @@ function getKeywordLegendElements() {
   };
 }
 
+function updateKeywordLegendCounter(entries) {
+  const legendCounter = document.getElementById('keyword-legend-counter');
+  if (!legendCounter) {
+    return;
+  }
+
+  const layersWithKeywords = new Set();
+  entries.forEach(function (entry) {
+    entry.layers.forEach(function (layer) {
+      layersWithKeywords.add(layer);
+    });
+  });
+  legendCounter.textContent = String(layersWithKeywords.size);
+}
+
 function setKeywordLegendLayerVisibility(layer, visible) {
   if (!layer) {
     return;
@@ -702,6 +733,8 @@ function renderKeywordLegendPanel() {
   }
 
   const entries = getKeywordLegendEntries();
+  updateKeywordLegendCounter(entries);
+
   const nextHidden = new Set(keywordLegendState.hiddenKeywords);
   const availableKeys = new Set(
     entries.map(function (entry) {
@@ -789,6 +822,7 @@ function toggleKeywordLegendPanel() {
 }
 
 function refreshKeywordLegendPanel() {
+  updateKeywordLegendCounter(getKeywordLegendEntries());
   renderKeywordLegendPanel();
   if (keywordLegendState.visible) {
     setKeywordLegendPanelVisibility(true);
@@ -1713,6 +1747,7 @@ function injectImportedGeoJsonFeatures(geoJson, options = {}) {
   }
 
   updateAnnotationTourCounterDisplay();
+  refreshKeywordLegendPanel();
 }
 
 function saveCurrentCanvasDrawings() {
@@ -1750,6 +1785,7 @@ function loadDrawingsForCanvas(canvasKey) {
   }
 
   updateAnnotationTourCounterDisplay();
+  refreshKeywordLegendPanel();
 }
 
 function showCanvasByIndex(index) {
@@ -2900,6 +2936,8 @@ function ensureAnnotationEditor(forceRefresh) {
 
     applyPropertiesToLayer(layer, buildAnnotationProperties(values));
     saveToLocalStorage();
+    updateAnnotationTourCounterDisplay();
+    refreshKeywordLegendPanel();
 
     overlay.classList.add('is-hidden');
     annotationEditorState.currentLayer = null;
