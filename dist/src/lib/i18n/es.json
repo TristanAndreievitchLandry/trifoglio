@@ -25,6 +25,7 @@
     "manifest": "Manifiesto",
     "iiifGuide": "Guía IIIF",
     "annotationTour": "Recorrido de anotaciones",
+    "keywordLegend": "Leyenda de palabras clave",
     "importJson": "Importar JSON",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
@@ -59,6 +60,10 @@
       "noLayersToDelete": "No hay capas para eliminar"
     }
   },
+  "legend": {
+    "title": "Leyenda de palabras clave",
+    "empty": "No se encontraron palabras clave en las anotaciones actuales."
+  },
   "draw": {
     "buttons": {
       "polyline": "Dibujar una polilínea",
@@ -90,12 +95,13 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Palabras clave",
     "common": {
       "imageAlt": "Un trébol",
       "svelteLogoAlt": "Logotipo de Svelte"
     },
     "info": {
-      "body": "Trifoglio es una aplicación para explorar, anotar y analizar cualquier documento disponible a través del International Image Interoperability Framework (IIIF), incluidos mapas históricos, obras de arte, manuscritos, fotografías, láminas botánicas y otras colecciones digitalizadas.<br><br>Los usuarios pueden cargar recursos IIIF proporcionando una URL de manifiesto IIIF y, a continuación, crear anotaciones directamente en el documento utilizando marcadores, líneas, polígonos y otras formas geométricas. Las anotaciones se almacenan localmente en el navegador y también se pueden exportar como JSON para compartirlas o reutilizarlas más tarde.<br><br>La aplicación está construida con <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a> y <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>El proyecto está disponible en <a href=\"https://github.com/TristanAndreievitchLandry/trifoglio\" target=\"_blank\">GitHub</a>.",
+      "body": "Trifoglio es una aplicación para explorar, anotar y analizar cualquier documento disponible a través del International Image Interoperability Framework (IIIF), incluidos mapas históricos, obras de arte, manuscritos, fotografías, láminas botánicas y otras colecciones digitalizadas.<br><br>Los usuarios pueden cargar recursos IIIF proporcionando una URL de manifiesto IIIF y, a continuación, crear anotaciones directamente en el documento utilizando marcadores, líneas, polígonos y otras formas geométricas. Las anotaciones se almacenan localmente en el navegador y también se pueden exportar como JSON para compartirlas o reutilizarlas más tarde.<br><br>La aplicación está construida con <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a> y <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>La tipografía usa <a href=\"https://fonts.google.com/specimen/Playfair+Display\" target=\"_blank\">Playfair Display</a> (Google Fonts), y los iconos de la interfaz son de <a href=\"https://fontawesome.com/\" target=\"_blank\">Font Awesome Free</a>.",
       "madeWith": "Hecho con Svelte"
     },
     "import": {
@@ -115,6 +121,7 @@
     "fieldAudio": "URL de audio",
     "fieldVideo": "URL de vídeo",
     "lineColor": "Color de línea / trazo",
+    "lineWidth": "Ancho de línea",
     "markerColor": "Color del marcador",
     "fillColor": "Color de relleno",
     "fillOpacity": "Opacidad de relleno",
@@ -124,7 +131,7 @@
     "addField": "Añadir campo",
     "save": "Guardar anotación",
     "cancel": "Cancelar",
-    "editHint": "Haz doble clic para editar esta anotación"
+    "editHint": "Haz doble clic en esta anotación para editarla"
   },
   "settings": {
     "osmMapStyle": "Estilo del mapa OSM"

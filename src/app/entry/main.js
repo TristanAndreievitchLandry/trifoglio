@@ -176,8 +176,6 @@ function ensureAppShellElements() {
         '<button id="canvas-next" title="" data-i18n-attr="title:buttons.nextPage"><i class="fa-solid fa-arrow-right"></i></button>' +
         '<button id="page-counter-button" title="" data-i18n-attr="title:buttons.currentPage" disabled><span id="page-counter-value">0/0</span></button>' +
         OSM_BUTTON_HTML +
-        ANNOTATION_TOUR_BUTTON_HTML +
-        KEYWORD_LEGEND_BUTTON_HTML +
         OSM_STYLE_MENU_HTML +
         '</div>',
     );
@@ -200,36 +198,36 @@ function ensureAppShellElements() {
     askButton.insertAdjacentHTML('afterend', IIIF_GUIDE_BUTTON_HTML);
   }
 
-  const osmButton = document.getElementById('osm-button');
-  if (
-    buttonContainer &&
-    osmButton &&
-    !document.getElementById('annotation-tour-button')
-  ) {
-    osmButton.insertAdjacentHTML('afterend', ANNOTATION_TOUR_BUTTON_HTML);
-  }
-
-  const annotationTourButton = document.getElementById(
-    'annotation-tour-button',
+  let annotationTourActions = document.querySelector(
+    '.annotation-tour-actions',
   );
-  if (
-    annotationTourButton &&
-    !document.getElementById('annotation-tour-counter')
-  ) {
-    annotationTourButton.insertAdjacentHTML(
+  if (!annotationTourActions) {
+    document.body.insertAdjacentHTML(
       'beforeend',
-      '<span id="annotation-tour-counter" class="annotation-tour-counter">0/0</span>',
+      '<div class="annotation-tour-actions">' +
+        ANNOTATION_TOUR_BUTTON_HTML +
+        '</div>',
     );
+    annotationTourActions = document.querySelector('.annotation-tour-actions');
   }
 
-  if (
-    annotationTourButton &&
-    !document.getElementById('keyword-legend-button')
-  ) {
-    annotationTourButton.insertAdjacentHTML(
-      'afterend',
-      KEYWORD_LEGEND_BUTTON_HTML,
+  let keywordLegendActions = document.querySelector('.keyword-legend-actions');
+  if (!keywordLegendActions) {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<div class="keyword-legend-actions">' +
+        KEYWORD_LEGEND_BUTTON_HTML +
+        '</div>',
     );
+    keywordLegendActions = document.querySelector('.keyword-legend-actions');
+  }
+
+  if (buttonContainer && annotationTourActions && keywordLegendActions) {
+    const secondaryTop =
+      buttonContainer.offsetTop + buttonContainer.offsetHeight + 10;
+    annotationTourActions.style.top = secondaryTop + 'px';
+    keywordLegendActions.style.top =
+      secondaryTop + annotationTourActions.offsetHeight + 10 + 'px';
   }
 
   if (!document.getElementById('keyword-legend-panel')) {

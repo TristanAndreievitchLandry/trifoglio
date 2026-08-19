@@ -22,6 +22,7 @@
     "manifest": "Manifest",
     "iiifGuide": "IIIF guide",
     "annotationTour": "Annotation tour",
+    "keywordLegend": "Keyword legend",
     "importJson": "Import JSON",
     "previousPage": "Previous page",
     "nextPage": "Next page",
@@ -56,6 +57,10 @@
       "noLayersToDelete": "No layers to delete"
     }
   },
+  "legend": {
+    "title": "Keyword legend",
+    "empty": "No keywords found in the current annotations."
+  },
   "draw": {
     "buttons": {
       "polyline": "Draw a polyline",
@@ -87,12 +92,13 @@
     }
   },
   "popup": {
+    "annotationKeywordsLabel": "Keywords",
     "common": {
       "imageAlt": "A clover",
       "svelteLogoAlt": "Svelte logo"
     },
     "info": {
-      "body": "Trifoglio is an application for exploring, annotating, and analyzing any document available through the International Image Interoperability Framework (IIIF), including historical maps, artworks, manuscripts, photographs, botanical plates, and other digitized collections.<br><br>Users can load IIIF resources by providing a IIIF manifest URL, then create annotations directly on the document using markers, lines, polygons, and other geometric shapes. Annotations are stored locally in the browser and can also be exported as JSON for sharing or later reuse.<br><br>The application is built with <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a>, and <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>The project is available on <a href=\"https://github.com/TristanAndreievitchLandry/trifoglio\" target=\"_blank\">GitHub</a>.",
+      "body": "Trifoglio is an application for exploring, annotating, and analyzing any document available through the International Image Interoperability Framework (IIIF), including historical maps, artworks, manuscripts, photographs, botanical plates, and other digitized collections.<br><br>Users can load IIIF resources by providing a IIIF manifest URL, then create annotations directly on the document using markers, lines, polygons, and other geometric shapes. Annotations are stored locally in the browser and can also be exported as JSON for sharing or later reuse.<br><br>The application is built with <a href=\"https://leafletjs.com/\" target=\"_blank\">Leaflet</a>, <a href=\"https://github.com/mejackreed/Leaflet-IIIF\" target=\"_blank\">Leaflet-IIIF</a>, <a href=\"https://github.com/Leaflet/Leaflet.draw\" target=\"_blank\">Leaflet.draw</a>, and <a href=\"https://github.com/mlevans/leaflet-hash\" target=\"_blank\">Leaflet-hash</a>.<br><br>Typography uses <a href=\"https://fonts.google.com/specimen/Playfair+Display\" target=\"_blank\">Playfair Display</a> (Google Fonts), and interface icons are provided by <a href=\"https://fontawesome.com/\" target=\"_blank\">Font Awesome Free</a>.",
       "madeWith": "Made with Svelte"
     },
     "import": {
@@ -112,6 +118,7 @@
     "fieldAudio": "Audio URL",
     "fieldVideo": "Video URL",
     "lineColor": "Line / stroke color",
+    "lineWidth": "Line width",
     "markerColor": "Marker color",
     "fillColor": "Fill color",
     "fillOpacity": "Fill opacity",
@@ -121,7 +128,7 @@
     "addField": "Add field",
     "save": "Save annotation",
     "cancel": "Cancel",
-    "editHint": "Double-click to edit this annotation"
+    "editHint": "Double-click this annotation to edit it"
   },
   "settings": {
     "osmMapStyle": "OSM map style"
