@@ -21,7 +21,8 @@ window.trifoglioRandomIiifManifests = [
   },
   {
     url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~333327~90/101489/manifest',
-    title: 'Carte des Vacances des régions de Montréal et des Laurentides (1948)',
+    title:
+      'Carte des Vacances des régions de Montréal et des Laurentides (1948)',
     institution: 'David Rumsey Map Collection',
   },
   {

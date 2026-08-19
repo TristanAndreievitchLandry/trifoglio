@@ -513,6 +513,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
+let lastRandomIiifUrl = null;
 const OSM_DEFAULT_CENTER = [-50, 50];
 const OSM_DEFAULT_ZOOM = 1;
 const MAP_CRS_SIMPLE = L.CRS.Simple;
@@ -3831,7 +3832,7 @@ function isUsableIiifManifest(data) {
 }
 
 async function openRandomIiifManifest() {
-  const pool = Array.isArray(window.trifoglioRandomIiifManifests)
+  let pool = Array.isArray(window.trifoglioRandomIiifManifests)
     ? window.trifoglioRandomIiifManifests.slice()
     : [];
   if (pool.length === 0) {
@@ -3839,8 +3840,21 @@ async function openRandomIiifManifest() {
     return;
   }
 
+  if (pool.length > 1 && lastRandomIiifUrl) {
+    const withoutLast = pool.filter(function (candidate) {
+      return candidate.url !== lastRandomIiifUrl;
+    });
+    if (withoutLast.length > 0) {
+      pool = withoutLast;
+    }
+  }
+
   for (let index = pool.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
+    const randomValue =
+      window.crypto && typeof window.crypto.getRandomValues === 'function'
+        ? window.crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296
+        : Math.random();
+    const swapIndex = Math.floor(randomValue * (index + 1));
     const current = pool[index];
     pool[index] = pool[swapIndex];
     pool[swapIndex] = current;
@@ -3865,6 +3879,7 @@ async function openRandomIiifManifest() {
           prefetchedResult: prefetchedResult,
           randomMetadata: candidate,
         });
+        lastRandomIiifUrl = candidate.url;
         return;
       } catch (error) {
         debugLog('Random IIIF candidate failed', candidate.url);
