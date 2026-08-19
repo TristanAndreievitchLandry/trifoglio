@@ -44,6 +44,11 @@ const IIIF_GUIDE_BUTTON_HTML =
   '</svg>' +
   '</button>';
 
+const RANDOM_IIIF_BUTTON_HTML =
+  '<button id="random-iiif-button" title="" data-i18n-attr="title:buttons.randomIiif">' +
+  '<i class="fa-solid fa-shuffle" aria-hidden="true"></i>' +
+  '</button>';
+
 const ANNOTATION_TOUR_BUTTON_HTML =
   '<button id="annotation-tour-button" title="" data-i18n-attr="title:buttons.annotationTour">' +
   '<i class="fa-solid fa-list-ol"></i>' +
@@ -170,6 +175,7 @@ function ensureAppShellElements() {
         '<button id="info-button" title="" data-i18n-attr="title:buttons.info"><i class="fa-solid fa-info"></i></button>' +
         '<button id="ask-button" style="font-size: 20px" title="" data-i18n-attr="title:buttons.manifest"><i class="fa-solid fa-image"></i></button>' +
         IIIF_GUIDE_BUTTON_HTML +
+        RANDOM_IIIF_BUTTON_HTML +
         '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
         OSM_BUTTON_HTML +
@@ -193,6 +199,11 @@ function ensureAppShellElements() {
     !document.getElementById('iiif-guide-button')
   ) {
     askButton.insertAdjacentHTML('afterend', IIIF_GUIDE_BUTTON_HTML);
+  }
+
+  const iiifGuideButton = document.getElementById('iiif-guide-button');
+  if (iiifGuideButton && !document.getElementById('random-iiif-button')) {
+    iiifGuideButton.insertAdjacentHTML('afterend', RANDOM_IIIF_BUTTON_HTML);
   }
 
   let annotationTourActions = document.querySelector(
@@ -3277,7 +3288,7 @@ try {
 
 // Call the function to load the IIIF manifest with the user-specified URL
 
-function loadIIIFManifest(manifestUrl) {
+function loadIIIFManifest(manifestUrl, options = {}) {
   switchMapCrs(MAP_CRS_SIMPLE, [-50, 50], 1);
 
   debugLog('Loading manifest', manifestUrl);
@@ -3505,13 +3516,25 @@ function loadIIIFManifest(manifestUrl) {
     return t('viewer.canvasKeyFallback', { index: index + 1 });
   }
 
-  fetchJsonWithProxyFallback(manifestUrl)
+  const manifestRequest = options.prefetchedResult
+    ? Promise.resolve(options.prefetchedResult)
+    : fetchJsonWithProxyFallback(manifestUrl);
+
+  return manifestRequest
     .then(function (result) {
       const data = result.data;
       const usedProxy = result.usedProxy;
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
-      setIIIFAttribution(buildManifestSourceAttribution(data, manifestUrl));
+      const randomMetadata = options.randomMetadata;
+      const attribution = randomMetadata
+        ? t('viewer.iiifSource') +
+          ': ' +
+          escapeHtml(randomMetadata.title) +
+          ' - ' +
+          escapeHtml(randomMetadata.institution)
+        : buildManifestSourceAttribution(data, manifestUrl);
+      setIIIFAttribution(attribution);
 
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
@@ -3587,6 +3610,10 @@ function loadIIIFManifest(manifestUrl) {
       );
     })
     .catch(function (error) {
+      if (typeof options.onFailure === 'function') {
+        options.onFailure(error);
+        throw error;
+      }
       const status =
         error && error.status
           ? t('errors.httpStatusPrefix') + error.status
@@ -3712,6 +3739,7 @@ function normalizeManifestUrl(inputUrl) {
 }
 
 const manifestButton = document.getElementById('ask-button');
+const randomIiifButton = document.getElementById('random-iiif-button');
 
 function openManifestPanel() {
   manifestPanel.classList.remove('is-hidden');
@@ -3787,7 +3815,75 @@ function submitManifestFromInput() {
   loadIIIFManifest(normalizedUrl);
 }
 
+function isUsableIiifManifest(data) {
+  const root = Array.isArray(data) ? data[0] : data;
+  if (!root || typeof root !== 'object') {
+    return false;
+  }
+
+  return (
+    (Array.isArray(root.items) && root.items.length > 0) ||
+    (Array.isArray(root.sequences) &&
+      root.sequences.some(function (sequence) {
+        return Array.isArray(sequence.canvases) && sequence.canvases.length > 0;
+      }))
+  );
+}
+
+async function openRandomIiifManifest() {
+  const pool = Array.isArray(window.trifoglioRandomIiifManifests)
+    ? window.trifoglioRandomIiifManifests.slice()
+    : [];
+  if (pool.length === 0) {
+    showAppAlert(t('errors.randomIiifUnavailable'));
+    return;
+  }
+
+  for (let index = pool.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    const current = pool[index];
+    pool[index] = pool[swapIndex];
+    pool[swapIndex] = current;
+  }
+
+  if (randomIiifButton) {
+    randomIiifButton.disabled = true;
+  }
+
+  try {
+    for (const candidate of pool) {
+      try {
+        setManifestStatus(t('notifications.randomIiifLoading'), null);
+        const prefetchedResult = await fetchJsonWithProxyFallback(
+          candidate.url,
+        );
+        if (!isUsableIiifManifest(prefetchedResult.data)) {
+          throw new Error('Manifest has no canvases');
+        }
+
+        await loadIIIFManifest(candidate.url, {
+          prefetchedResult: prefetchedResult,
+          randomMetadata: candidate,
+        });
+        return;
+      } catch (error) {
+        debugLog('Random IIIF candidate failed', candidate.url);
+      }
+    }
+
+    setManifestStatus(t('errors.randomIiifUnavailable'), 'error');
+    showAppAlert(t('errors.randomIiifUnavailable'));
+  } finally {
+    if (randomIiifButton) {
+      randomIiifButton.disabled = false;
+    }
+  }
+}
+
 loadManifestButton.addEventListener('click', submitManifestFromInput);
+if (randomIiifButton) {
+  randomIiifButton.addEventListener('click', openRandomIiifManifest);
+}
 manifestInput.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     submitManifestFromInput();

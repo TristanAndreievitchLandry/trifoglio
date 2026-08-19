@@ -82,6 +82,7 @@ function buildIndex(scriptMap) {
       'src/lib/vendors/leaflet/plugins/leaflet-iiif.js',
       'src/lib/vendors/leaflet/plugins/leaflet-hash.js',
       scriptMap['src/app/data/catalogs.js'],
+      'src/app/data/randomIiifManifests.js',
       scriptMap['src/app/entry/i18n-runtime.js'] + '?v=20260807-fr-default',
       'src/lib/vendors/gsap/gsap.min.js',
       scriptMap['src/app/entry/main.js'] + '?v=20260807-fr-default',
@@ -112,6 +113,7 @@ async function run() {
     'src/lib/i18n',
     'src/app/styles/app.css',
     'src/app/entry/bootstrap.js',
+    'src/app/data/randomIiifManifests.js',
     'LICENSE',
   ];
 

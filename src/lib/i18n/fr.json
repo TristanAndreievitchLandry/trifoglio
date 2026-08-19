@@ -24,6 +24,7 @@
     "finish": "Terminer",
     "manifest": "Manifeste",
     "iiifGuide": "Guide IIIF",
+    "randomIiif": "IIIF aléatoire",
     "annotationTour": "Parcours annotations",
     "keywordLegend": "Légende des mots-clés",
     "importJson": "Importer JSON",
@@ -140,6 +141,7 @@
     "drawSomethingFirst": "Dessinez d'abord quelque chose !",
     "invalidManifestUrl": "URL invalide. Exemple : https://.../manifest.json",
     "manifestLoadTitle": "Échec du chargement du manifeste IIIF.",
+    "randomIiifUnavailable": "Aucun manifeste IIIF aléatoire n'est disponible.",
     "detailsLabel": "Détails : ",
     "httpStatusPrefix": "HTTP ",
     "noHttpStatus": "Aucun statut HTTP"
@@ -149,6 +151,7 @@
     "canvasNotFound": "Canvas introuvable dans le manifeste.",
     "canvasLoaded": "Canvas {{index}} chargé : {{label}}",
     "loadingManifest": "Chargement du manifeste...",
+    "randomIiifLoading": "Chargement d'un manifeste IIIF aléatoire...",
     "noIiifService": "Aucun service d'image IIIF trouvé dans ce manifeste.",
     "loadingFailed": "Échec du chargement : {{details}}",
     "osmActive": "Fond OpenStreetMap ({{style}}) actif. Les couches IIIF ont été retirées."

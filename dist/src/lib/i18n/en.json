@@ -21,6 +21,7 @@
     "finish": "Finish",
     "manifest": "Manifest",
     "iiifGuide": "IIIF guide",
+    "randomIiif": "Random IIIF",
     "annotationTour": "Annotation tour",
     "keywordLegend": "Keyword legend",
     "importJson": "Import JSON",
@@ -137,6 +138,7 @@
     "drawSomethingFirst": "Draw something first!",
     "invalidManifestUrl": "Invalid URL. Example: https://.../manifest.json",
     "manifestLoadTitle": "IIIF manifest loading failed.",
+    "randomIiifUnavailable": "No Random IIIF manifest is available.",
     "detailsLabel": "Details: ",
     "httpStatusPrefix": "HTTP ",
     "noHttpStatus": "No HTTP status"
@@ -146,6 +148,7 @@
     "canvasNotFound": "Canvas not found in manifest.",
     "canvasLoaded": "Canvas {{index}} loaded: {{label}}",
     "loadingManifest": "Loading manifest...",
+    "randomIiifLoading": "Loading a random IIIF manifest...",
     "noIiifService": "No IIIF image service found in this manifest.",
     "loadingFailed": "Load failed: {{details}}",
     "osmActive": "OpenStreetMap background ({{style}}) active. IIIF layers were removed."

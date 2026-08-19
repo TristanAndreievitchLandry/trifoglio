@@ -493,6 +493,11 @@ body {
   padding: 0;
 }
 
+#random-iiif-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 #annotation-tour-button {
   border-color: #5b7aa2;
   background: rgba(12, 20, 32, 0.97);

@@ -24,6 +24,7 @@
     "finish": "Finalizar",
     "manifest": "Manifiesto",
     "iiifGuide": "Guía IIIF",
+    "randomIiif": "IIIF aleatorio",
     "annotationTour": "Recorrido de anotaciones",
     "keywordLegend": "Leyenda de palabras clave",
     "importJson": "Importar JSON",
