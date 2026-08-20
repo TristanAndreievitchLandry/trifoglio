@@ -174,12 +174,6 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Yale Center for British Art',
   },
   {
-    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b10507217r/manifest.json',
-    title:
-      "Beatus de Liébana, Commentarius in Apocalypsim, dit Beatus d'Arroyo (NAL 2290)",
-    institution: 'Gallica, Bibliothèque nationale de France',
-  },
-  {
     url: 'https://bibliotheque-numerique.chambery.fr/iiif/78147/manifest',
     title: 'Herbier de Jules Carret',
     institution: 'Camberi@, Bibliothèque numérique patrimoniale de Chambéry',
@@ -229,15 +223,5 @@ window.trifoglioRandomIiifManifests = [
     title: 'Celtic gold coin, Picts (300–0 BCE)',
     institution: 'Bibliothèque nationale de France, Gallica',
     type: 'coin',
-  },
-  {
-    url: 'https://iiif.quartexcollections.com/mcgill/iiif/ebc34f5c-2113-41db-9850-d9faab1c6a42/manifest',
-    title: 'McGill University collection object',
-    institution: 'McGill University',
-  },
-  {
-    url: 'https://iiif.quartexcollections.com/mcgill/iiif/55278938-2d8f-450f-be9c-d8e451b7060b/manifest',
-    title: 'McGill University collection object',
-    institution: 'McGill University',
   },
 ];
