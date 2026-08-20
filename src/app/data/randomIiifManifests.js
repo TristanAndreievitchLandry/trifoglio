@@ -93,11 +93,6 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Yale Center for British Art',
   },
   {
-    url: 'https://manifests.collections.yale.edu/ycba/obj/5050',
-    title: 'Vanessa Bell (nee Stephen), 1879-1961, Self-Portrait, ca. 1915',
-    institution: 'Yale Center for British Art',
-  },
-  {
     url: 'https://manifests.collections.yale.edu/ycba/obj/73253',
     title: 'Mary Beale (nee Cradock), 1633-1699, Bartholomew Beale, 1663-64',
     institution: 'Yale Center for British Art',
@@ -114,12 +109,7 @@ window.trifoglioRandomIiifManifests = [
       'Nicholas Hilliard, ca. 1547-1619, James I of England and VI of Scotland, ca. 1610',
     institution: 'Yale Center for British Art',
   },
-  {
-    url: 'https://manifests.collections.yale.edu/ycba/obj/82154',
-    title:
-      'Kehinde Wiley, born 1977, Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite, 2017',
-    institution: 'Yale Center for British Art',
-  },
+
   {
     url: 'https://manifests.collections.yale.edu/ycba/obj/12454',
     title:
@@ -136,17 +126,6 @@ window.trifoglioRandomIiifManifests = [
     url: 'https://manifests.collections.yale.edu/ycba/obj/825',
     title:
       'Arthur William Devis, 1762-1822, Portrait of an Unknown Man with an Attendant, ca. 1785',
-    institution: 'Yale Center for British Art',
-  },
-  {
-    url: 'https://manifests.collections.yale.edu/ycba/obj/67562',
-    title: 'Joscelyn Gardner, born 1961, Poinciana pulcherrima (Lilith), 2009',
-    institution: 'Yale Center for British Art',
-  },
-  {
-    url: 'https://manifests.collections.yale.edu/ycba/obj/4179',
-    title:
-      'Gwen John, 1876-1939, Girl with Large Hat and Straw-Colored Hair, ca. 1910',
     institution: 'Yale Center for British Art',
   },
   {
@@ -228,12 +207,6 @@ window.trifoglioRandomIiifManifests = [
     type: 'painting',
   },
   {
-    url: 'https://iiif.harvardartmuseums.org/manifests/object/299846',
-    title: 'Charles Sheeler, Upper Deck (1929)',
-    institution: 'Harvard Art Museums',
-    type: 'painting',
-  },
-  {
     url: 'https://iiif.harvardartmuseums.org/manifests/object/209698',
     title: 'Gong Xian, Landscape (mid-17th century)',
     institution: 'Harvard Art Museums',
@@ -256,5 +229,15 @@ window.trifoglioRandomIiifManifests = [
     title: 'Celtic gold coin, Picts (300–0 BCE)',
     institution: 'Bibliothèque nationale de France, Gallica',
     type: 'coin',
+  },
+  {
+    url: 'https://iiif.quartexcollections.com/mcgill/iiif/ebc34f5c-2113-41db-9850-d9faab1c6a42/manifest',
+    title: 'McGill University collection object',
+    institution: 'McGill University',
+  },
+  {
+    url: 'https://iiif.quartexcollections.com/mcgill/iiif/55278938-2d8f-450f-be9c-d8e451b7060b/manifest',
+    title: 'McGill University collection object',
+    institution: 'McGill University',
   },
 ];

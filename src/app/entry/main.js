@@ -1867,6 +1867,7 @@ function showCanvasByIndex(index) {
   }
 
   layer.addTo(map);
+  fitIiifLayerToViewport(layer);
   currentCanvasKey = layerKey;
   loadDrawingsForCanvas(layerKey);
   currentCanvasIndex = index;
@@ -1875,6 +1876,36 @@ function showCanvasByIndex(index) {
     t('notifications.canvasLoaded', { index: index + 1, label: layerLabel }),
     'success',
   );
+}
+
+function fitIiifLayerToViewport(layer) {
+  if (!layer || !map || !layer._infoPromise) {
+    return;
+  }
+
+  layer._infoPromise
+    .then(function () {
+      if (!layer._imageSizes || layer._imageSizes.length === 0) {
+        return;
+      }
+
+      const imageSize = layer._imageSizes[0];
+      const bounds = L.latLngBounds(
+        map.options.crs.pointToLatLng(L.point(0, imageSize.y), 0),
+        map.options.crs.pointToLatLng(L.point(imageSize.x, 0), 0),
+      );
+      const zoom = map.getBoundsZoom(bounds, false, L.point(24, 24));
+
+      if (Number.isFinite(zoom)) {
+        map.setView(bounds.getCenter(), zoom, {
+          animate: false,
+          reset: true,
+        });
+      }
+    })
+    .catch(function () {
+      // The tile layer reports its own info request errors.
+    });
 }
 
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
@@ -3306,7 +3337,7 @@ function setStartview() {
     return;
   }
 
-  map.setView([-50, 50], 1);
+  map.setView([-50, 50], 0);
 }
 
 // Event listener for the IIIF layer's 'load' event
@@ -3358,7 +3389,7 @@ try {
 // Call the function to load the IIIF manifest with the user-specified URL
 
 function loadIIIFManifest(manifestUrl, options = {}) {
-  switchMapCrs(MAP_CRS_SIMPLE, [-50, 50], 1);
+  switchMapCrs(MAP_CRS_SIMPLE, [-50, 50], 0);
 
   debugLog('Loading manifest', manifestUrl);
   setManifestStatus(t('notifications.loadingManifest'), null);
@@ -3658,6 +3689,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
 
       currentCanvasIndex = -1;
       showCanvasByIndex(targetCanvasIndex);
+      map.setZoom(0, { animate: false });
       if (manifestCanvasKeys.length > 1) {
         illuminateCounter(pageCounterValue, true);
       }
