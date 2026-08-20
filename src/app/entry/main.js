@@ -513,7 +513,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
-let lastRandomIiifUrl = null;
+let randomIiifQueue = [];
 const OSM_DEFAULT_CENTER = [-50, 50];
 const OSM_DEFAULT_ZOOM = 1;
 const MAP_CRS_SIMPLE = L.CRS.Simple;
@@ -680,6 +680,9 @@ function updateKeywordLegendCounter(entries) {
     });
   });
   legendCounter.textContent = String(layersWithKeywords.size);
+  if (layersWithKeywords.size > 0) {
+    illuminateCounter(legendCounter, false);
+  }
 }
 
 function setKeywordLegendLayerVisibility(layer, visible) {
@@ -1510,6 +1513,47 @@ function setManifestStatus(_message, _variant) {
   // status bar removed
 }
 
+function illuminateCounter(counterElement, force) {
+  if (
+    !counterElement ||
+    !window.gsap ||
+    typeof window.gsap.timeline !== 'function'
+  ) {
+    return;
+  }
+
+  const currentValue = counterElement.textContent;
+  if (!force && counterElement.dataset.illuminatedValue === currentValue) {
+    return;
+  }
+  counterElement.dataset.illuminatedValue = currentValue;
+
+  window.gsap.killTweensOf(counterElement);
+  window.gsap.set(counterElement, {
+    transformOrigin: '50% 50%',
+    scale: 1,
+    force3D: true,
+  });
+
+  window.gsap
+    .timeline({ defaults: { overwrite: 'auto' } })
+    .to(counterElement, {
+      scale: 1.35,
+      color: '#ffffff',
+      backgroundColor: '#36c5f0',
+      boxShadow: '0 0 0 3px rgba(54, 197, 240, 0.2), 0 0 18px #36c5f0',
+      duration: 0.35,
+      ease: 'power1.out',
+    })
+    .to(counterElement, {
+      scale: 1,
+      backgroundColor: '#0f1b2e',
+      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.35)',
+      duration: 0.75,
+      ease: 'power2.inOut',
+    });
+}
+
 function updateCanvasNavigation() {
   const total = manifestCanvasKeys.length;
   const current = currentCanvasIndex >= 0 ? currentCanvasIndex + 1 : 0;
@@ -1834,22 +1878,47 @@ function showCanvasByIndex(index) {
 }
 
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
+const RANDOM_IIIF_FETCH_TIMEOUT_MS = 3000;
 
 function buildProxyUrl(url) {
   return JSON_PROXY_BASE_URL + encodeURIComponent(url);
 }
 
-function fetchJsonWithProxyFallback(url) {
-  function fetchJson(targetUrl) {
-    return fetch(targetUrl, { cache: 'no-cache' }).then(function (response) {
-      if (!response.ok) {
-        const error = new Error('HTTP ' + response.status);
-        error.status = response.status;
-        throw error;
-      }
+function fetchJsonWithProxyFallback(url, options = {}) {
+  const timeoutMs =
+    Number.isFinite(options.timeoutMs) && options.timeoutMs > 0
+      ? options.timeoutMs
+      : 0;
 
-      return response.json();
-    });
+  function fetchJson(targetUrl) {
+    const controller =
+      timeoutMs > 0 && typeof AbortController === 'function'
+        ? new AbortController()
+        : null;
+    const timeoutId = controller
+      ? setTimeout(function () {
+          controller.abort();
+        }, timeoutMs)
+      : null;
+    const fetchOptions = controller
+      ? { cache: 'no-cache', signal: controller.signal }
+      : { cache: 'no-cache' };
+
+    return fetch(targetUrl, fetchOptions)
+      .then(function (response) {
+        if (!response.ok) {
+          const error = new Error('HTTP ' + response.status);
+          error.status = response.status;
+          throw error;
+        }
+
+        return response.json();
+      })
+      .finally(function () {
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
+      });
   }
 
   return fetchJson(url)
@@ -2362,7 +2431,7 @@ function getOrderedAnnotationLayers() {
     });
 }
 
-function updateAnnotationTourCounterDisplay() {
+function updateAnnotationTourCounterDisplay(shouldAnimate) {
   const counterElement = document.getElementById('annotation-tour-counter');
   if (!counterElement) {
     return;
@@ -2381,11 +2450,12 @@ function updateAnnotationTourCounterDisplay() {
 
   if (annotationTourCursor < 0) {
     counterElement.textContent = '0/' + String(total);
-    return;
+  } else {
+    counterElement.textContent =
+      String(annotationTourCursor + 1) + '/' + String(total);
   }
 
-  counterElement.textContent =
-    String(annotationTourCursor + 1) + '/' + String(total);
+  illuminateCounter(counterElement, shouldAnimate === true);
 }
 
 function flashAnnotationLayer(layer) {
@@ -2948,11 +3018,11 @@ function ensureAnnotationEditor(forceRefresh) {
 
     applyPropertiesToLayer(layer, buildAnnotationProperties(values));
     saveToLocalStorage();
-    updateAnnotationTourCounterDisplay();
-    refreshKeywordLegendPanel();
-
     overlay.classList.add('is-hidden');
     annotationEditorState.currentLayer = null;
+
+    updateAnnotationTourCounterDisplay(true);
+    refreshKeywordLegendPanel();
   });
 }
 
@@ -3061,8 +3131,6 @@ function drawSomething() {
     initializeLayerAnnotation(layer);
     openAnnotationEditor(layer);
     saveToLocalStorage();
-    updateAnnotationTourCounterDisplay();
-    refreshKeywordLegendPanel();
   });
 
   map.on('draw:edited', (e) => {
@@ -3086,7 +3154,7 @@ function drawSomething() {
 
   map.on('draw:deleted', () => {
     saveToLocalStorage();
-    updateAnnotationTourCounterDisplay();
+    updateAnnotationTourCounterDisplay(true);
     refreshKeywordLegendPanel();
   });
 }
@@ -3565,6 +3633,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       });
 
       if (manifestCanvasKeys.length === 0) {
+        if (typeof options.onFailure === 'function') {
+          throw new Error('No IIIF image services found in this manifest.');
+        }
         console.error('No IIIF image services found in this manifest.');
         debugLog(
           'No layers created',
@@ -3587,6 +3658,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
 
       currentCanvasIndex = -1;
       showCanvasByIndex(targetCanvasIndex);
+      if (manifestCanvasKeys.length > 1) {
+          illuminateCounter(pageCounterValue, true);
+      }
 
       if (
         pendingImportedGeoJson &&
@@ -3832,32 +3906,35 @@ function isUsableIiifManifest(data) {
 }
 
 async function openRandomIiifManifest() {
-  let pool = Array.isArray(window.trifoglioRandomIiifManifests)
+  const availableManifests = Array.isArray(window.trifoglioRandomIiifManifests)
     ? window.trifoglioRandomIiifManifests.slice()
     : [];
-  if (pool.length === 0) {
+  if (availableManifests.length === 0) {
     showAppAlert(t('errors.randomIiifUnavailable'));
     return;
   }
 
-  if (pool.length > 1 && lastRandomIiifUrl) {
-    const withoutLast = pool.filter(function (candidate) {
-      return candidate.url !== lastRandomIiifUrl;
+  if (randomIiifQueue.length === 0) {
+    const queuedUrls = new Set();
+    randomIiifQueue = availableManifests.filter(function (candidate) {
+      const candidateUrl = candidate && candidate.url;
+      if (!candidateUrl || queuedUrls.has(candidateUrl)) {
+        return false;
+      }
+      queuedUrls.add(candidateUrl);
+      return true;
     });
-    if (withoutLast.length > 0) {
-      pool = withoutLast;
-    }
-  }
 
-  for (let index = pool.length - 1; index > 0; index -= 1) {
-    const randomValue =
-      window.crypto && typeof window.crypto.getRandomValues === 'function'
-        ? window.crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296
-        : Math.random();
-    const swapIndex = Math.floor(randomValue * (index + 1));
-    const current = pool[index];
-    pool[index] = pool[swapIndex];
-    pool[swapIndex] = current;
+    for (let index = randomIiifQueue.length - 1; index > 0; index -= 1) {
+      const randomValue =
+        window.crypto && typeof window.crypto.getRandomValues === 'function'
+          ? window.crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296
+          : Math.random();
+      const swapIndex = Math.floor(randomValue * (index + 1));
+      const current = randomIiifQueue[index];
+      randomIiifQueue[index] = randomIiifQueue[swapIndex];
+      randomIiifQueue[swapIndex] = current;
+    }
   }
 
   if (randomIiifButton) {
@@ -3865,29 +3942,29 @@ async function openRandomIiifManifest() {
   }
 
   try {
-    for (const candidate of pool) {
+    while (randomIiifQueue.length > 0) {
+      const candidate = randomIiifQueue.shift();
+      const candidateUrl = candidate.url;
       try {
         setManifestStatus(t('notifications.randomIiifLoading'), null);
         const prefetchedResult = await fetchJsonWithProxyFallback(
-          candidate.url,
+          candidateUrl,
+          { timeoutMs: RANDOM_IIIF_FETCH_TIMEOUT_MS },
         );
         if (!isUsableIiifManifest(prefetchedResult.data)) {
           throw new Error('Manifest has no canvases');
         }
 
-        await loadIIIFManifest(candidate.url, {
+        await loadIIIFManifest(candidateUrl, {
           prefetchedResult: prefetchedResult,
           randomMetadata: candidate,
+          onFailure: function () {},
         });
-        lastRandomIiifUrl = candidate.url;
         return;
       } catch (error) {
-        debugLog('Random IIIF candidate failed', candidate.url);
+        debugLog('Random IIIF candidate failed', candidateUrl);
       }
     }
-
-    setManifestStatus(t('errors.randomIiifUnavailable'), 'error');
-    showAppAlert(t('errors.randomIiifUnavailable'));
   } finally {
     if (randomIiifButton) {
       randomIiifButton.disabled = false;
