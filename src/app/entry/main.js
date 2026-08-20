@@ -3659,7 +3659,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       currentCanvasIndex = -1;
       showCanvasByIndex(targetCanvasIndex);
       if (manifestCanvasKeys.length > 1) {
-          illuminateCounter(pageCounterValue, true);
+        illuminateCounter(pageCounterValue, true);
       }
 
       if (
