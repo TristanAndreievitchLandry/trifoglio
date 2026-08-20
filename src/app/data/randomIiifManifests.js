@@ -184,11 +184,6 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Bayerische Staatsbibliothek, München',
   },
   {
-    url: 'https://api.digitale-sammlungen.de/iiif/presentation/v2/bsb12186258/manifest',
-    title: 'Benignus Kybler, WunderSpiegl oder Göttliche Wunderwerck',
-    institution: 'Bayerische Staatsbibliothek, München',
-  },
-  {
     url: 'https://www.digital.archives.go.jp/api/iiif/4162870/manifest.json',
     title: '皇輿図 1 (Kōyozu, vol. 1)',
     institution: 'National Archives of Japan',
