@@ -83,6 +83,118 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Yale Center for British Art',
   },
   {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/1003',
+    title: 'Yale Center for British Art object 1003',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/584',
+    title: 'Yale Center for British Art object 584',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/5050',
+    title: 'Vanessa Bell (nee Stephen), 1879-1961, Self-Portrait, ca. 1915',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/73253',
+    title: 'Mary Beale (nee Cradock), 1633-1699, Bartholomew Beale, 1663-64',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/56865',
+    title:
+      'Albert-Ernest Carrier-Belleuse, 1824-1887, William Shakespeare, late 19th century',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/38698',
+    title:
+      'Nicholas Hilliard, ca. 1547-1619, James I of England and VI of Scotland, ca. 1610',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/82154',
+    title:
+      'Kehinde Wiley, born 1977, Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite, 2017',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/12454',
+    title:
+      'Jacques Le Moyne de Morgues, ca. 1533-before 1588, A Young Daughter of the Picts, ca. 1585',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/83328',
+    title:
+      'Circle of Lam Qua, 1801-1860, Portrait of an Unknown Woman, ca. 1850',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/825',
+    title:
+      'Arthur William Devis, 1762-1822, Portrait of an Unknown Man with an Attendant, ca. 1785',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/67562',
+    title: 'Joscelyn Gardner, born 1961, Poinciana pulcherrima (Lilith), 2009',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/4179',
+    title:
+      'Gwen John, 1876-1939, Girl with Large Hat and Straw-Colored Hair, ca. 1910',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/1336',
+    title:
+      'Joanna Mary Wells (née Boyce), 1831-1861, Fanny Eaton (née Antwistle or Entwistle), 1861',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/74791',
+    title:
+      'William Henry Bustin, active late 19th-early 20th century, Portrait of a Man, a Woman Sitting on a Fence, and Boy Holding a Basket, late 19th century',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/11614',
+    title:
+      'David Des Granges, ca. 1611-in or before 1672, Queen Henrietta Maria, 1609-1669, after 1636',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/6127',
+    title: 'Thomas Thornycroft, 1815-1885, Queen Victoria on Horseback, 1853',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/39101',
+    title: 'Modeled by William Hackwood, died 1836, Queen Charlotte, ca. 1776',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/168',
+    title:
+      'unknown artist, An Allegory of the Tudor Succession: The Family of Henry VIII, ca. 1590',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/506',
+    title:
+      'Edward Burne-Jones, 1833-1898, Fair Rosamund and Queen Eleanor, 1861',
+    institution: 'Yale Center for British Art',
+  },
+  {
+    url: 'https://manifests.collections.yale.edu/ycba/obj/452',
+    title: 'Benjamin West, 1738-1820, Queen Charlotte, 1777',
+    institution: 'Yale Center for British Art',
+  },
+  {
     url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b10507217r/manifest.json',
     title:
       "Beatus de Liébana, Commentarius in Apocalypsim, dit Beatus d'Arroyo (NAL 2290)",
