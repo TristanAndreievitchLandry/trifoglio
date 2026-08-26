@@ -177,6 +177,7 @@ function ensureAppShellElements() {
         IIIF_GUIDE_BUTTON_HTML +
         RANDOM_IIIF_BUTTON_HTML +
         '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
+        '<button id="share-button" title="" data-i18n-attr="title:buttons.share"><i class="fa-solid fa-share-nodes"></i></button>' +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
         OSM_BUTTON_HTML +
         OSM_STYLE_MENU_HTML +
