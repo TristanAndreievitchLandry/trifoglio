@@ -152,6 +152,7 @@
     "randomIiifLoading": "Loading a random IIIF manifest...",
     "noIiifService": "No IIIF image service found in this manifest.",
     "loadingFailed": "Load failed: {{details}}",
+    "shareLinkCopied": "Link copied to the clipboard.",
     "osmActive": "OpenStreetMap background ({{style}}) active. IIIF layers were removed."
   },
   "viewer": {
