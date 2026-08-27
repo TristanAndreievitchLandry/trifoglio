@@ -153,6 +153,7 @@
     "loadingManifest": "Cargando manifiesto...",
     "noIiifService": "No se encontró ningún servicio de imagen IIIF en este manifiesto.",
     "loadingFailed": "Error al cargar: {{details}}",
+    "shareLinkCopied": "Enlace copiado al portapapeles.",
     "osmActive": "Fondo de OpenStreetMap ({{style}}) activo. Se eliminaron las capas IIIF."
   },
   "viewer": {

@@ -155,6 +155,7 @@
     "randomIiifLoading": "Chargement d'un manifeste IIIF aléatoire...",
     "noIiifService": "Aucun service d'image IIIF trouvé dans ce manifeste.",
     "loadingFailed": "Échec du chargement : {{details}}",
+    "shareLinkCopied": "Lien copié dans le presse-papiers.",
     "osmActive": "Fond OpenStreetMap ({{style}}) actif. Les couches IIIF ont été retirées."
   },
   "viewer": {
