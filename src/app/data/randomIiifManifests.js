@@ -15,6 +15,11 @@ window.trifoglioRandomIiifManifests = [
     institution: 'David Rumsey Map Collection',
   },
   {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~28698~1120935/manifest',
+    title: 'David Rumsey Map Collection item 1120935',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
     url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b530952389/manifest.json',
     title: 'Carte générale de la France, feuille 23 (1756-1790)',
     institution: 'Gallica, Bibliothèque nationale de France',
