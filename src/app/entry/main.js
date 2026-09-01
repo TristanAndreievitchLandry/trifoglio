@@ -156,6 +156,16 @@ function ensureAppShellElements() {
     );
   }
 
+  if (!document.getElementById('manifest-loading-overlay')) {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<div id="manifest-loading-overlay" class="manifest-loading-overlay is-hidden" role="status" aria-live="polite" aria-hidden="true">' +
+        '<span class="manifest-loading-overlay__spinner" aria-hidden="true"></span>' +
+        '<span class="manifest-loading-overlay__message" data-i18n-key="notifications.loadingManifest"></span>' +
+        '</div>',
+    );
+  }
+
   if (!document.getElementById('infoBox')) {
     document.body.insertAdjacentHTML(
       'beforeend',
@@ -545,6 +555,9 @@ let keywordLegendState = {
 const manifestInput = document.getElementById('manifest-input');
 const manifestStatus = document.getElementById('manifest-status');
 const manifestPanel = document.getElementById('manifestPanel');
+const manifestLoadingOverlay = document.getElementById(
+  'manifest-loading-overlay',
+);
 const alertModal = document.getElementById('trf-alert-modal');
 const alertModalMessage = document.getElementById('trf-alert-modal-message');
 const alertModalInputWrap = document.getElementById(
@@ -1520,6 +1533,15 @@ function setIIIFAttribution(attributionHtml) {
 
 function setManifestStatus(_message, _variant) {
   // status bar removed
+}
+
+function setManifestLoading(isLoading) {
+  if (!manifestLoadingOverlay) {
+    return;
+  }
+
+  manifestLoadingOverlay.classList.toggle('is-hidden', !isLoading);
+  manifestLoadingOverlay.setAttribute('aria-hidden', String(!isLoading));
 }
 
 function illuminateCounter(counterElement, force) {
@@ -3398,6 +3420,11 @@ try {
 // Call the function to load the IIIF manifest with the user-specified URL
 
 function loadIIIFManifest(manifestUrl, options = {}) {
+  const managesLoadingOverlay = options.manageLoadingOverlay !== false;
+  if (managesLoadingOverlay) {
+    setManifestLoading(true);
+  }
+
   switchMapCrs(MAP_CRS_SIMPLE, [-50, 50], 0);
 
   debugLog('Loading manifest', manifestUrl);
@@ -3752,6 +3779,11 @@ function loadIIIFManifest(manifestUrl, options = {}) {
           '\n\n' +
           t('hints.githubPagesCors'),
       );
+    })
+    .finally(function () {
+      if (managesLoadingOverlay) {
+        setManifestLoading(false);
+      }
     });
 }
 
@@ -3981,6 +4013,7 @@ async function openRandomIiifManifest() {
   if (randomIiifButton) {
     randomIiifButton.disabled = true;
   }
+  setManifestLoading(true);
 
   try {
     while (randomIiifQueue.length > 0) {
@@ -3999,6 +4032,7 @@ async function openRandomIiifManifest() {
         await loadIIIFManifest(candidateUrl, {
           prefetchedResult: prefetchedResult,
           randomMetadata: candidate,
+          manageLoadingOverlay: false,
           onFailure: function () {},
         });
         return;
@@ -4010,6 +4044,7 @@ async function openRandomIiifManifest() {
     if (randomIiifButton) {
       randomIiifButton.disabled = false;
     }
+    setManifestLoading(false);
   }
 }
 

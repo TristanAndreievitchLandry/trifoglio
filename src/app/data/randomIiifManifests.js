@@ -5,6 +5,11 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Österreichische Nationalbibliothek',
   },
   {
+    url: 'https://iiif.library.ucla.edu/ark%3A%2F21198%2Fzz0009gx6g/manifest',
+    title: 'Manuscript No. 1: Gladzor Gospels',
+    institution: 'UCLA Library Special Collections',
+  },
+  {
     url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b55007076p/manifest.json',
     title: 'Hessel Gerritsz, Mar del Sur. Mar Pacifico (1622)',
     institution: 'Gallica, Bibliothèque nationale de France',

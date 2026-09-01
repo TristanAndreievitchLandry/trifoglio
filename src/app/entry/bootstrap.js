@@ -1,6 +1,6 @@
 (function () {
   // Runtime manifest for app-owned and vendor resources.
-  const runtimeStamp = '20260816-keyword-legend-fix';
+  const runtimeStamp = '20260901-manifest-loading';
 
   const defaultRuntime = {
     styles: [
