@@ -20,7 +20,6 @@
     "load": "Laden",
     "info": "Info",
     "save": "Speichern",
-    "share": "teilen",
     "cancel": "Abbrechen",
     "finish": "Fertigstellen",
     "manifest": "Manifest",
@@ -153,7 +152,6 @@
     "loadingManifest": "Manifest wird geladen...",
     "noIiifService": "Kein IIIF-Bilddienst in diesem Manifest gefunden.",
     "loadingFailed": "Laden fehlgeschlagen: {{details}}",
-    "shareLinkCopied": "Link wurde in die Zwischenablage kopiert.",
     "osmActive": "OpenStreetMap-Hintergrund ({{style}}) aktiv. IIIF-Ebenen wurden entfernt."
   },
   "viewer": {

@@ -187,7 +187,6 @@ function ensureAppShellElements() {
         IIIF_GUIDE_BUTTON_HTML +
         RANDOM_IIIF_BUTTON_HTML +
         '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
-        '<button id="share-button" title="" data-i18n-attr="title:buttons.share"><i class="fa-solid fa-share-nodes"></i></button>' +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
         OSM_BUTTON_HTML +
         OSM_STYLE_MENU_HTML +
@@ -215,14 +214,6 @@ function ensureAppShellElements() {
   const iiifGuideButton = document.getElementById('iiif-guide-button');
   if (iiifGuideButton && !document.getElementById('random-iiif-button')) {
     iiifGuideButton.insertAdjacentHTML('afterend', RANDOM_IIIF_BUTTON_HTML);
-  }
-
-  const saveButton = document.getElementById('save-button');
-  if (saveButton && !document.getElementById('share-button')) {
-    saveButton.insertAdjacentHTML(
-      'afterend',
-      '<button id="share-button" title="" data-i18n-attr="title:buttons.share"><i class="fa-solid fa-share-nodes"></i></button>',
-    );
   }
 
   let annotationTourActions = document.querySelector(
@@ -4190,7 +4181,6 @@ const infoContent = document.getElementById('infoContent');
 const infoBoxCloseButton = document.getElementById('info-box-close-button');
 const infoButton = document.getElementById('info-button');
 const iiifGuideButton = document.getElementById('iiif-guide-button');
-const shareButton = document.getElementById('share-button');
 const addButton = document.getElementById('add-button');
 const osmButton = document.getElementById('osm-button');
 const annotationTourButton = document.getElementById('annotation-tour-button');
@@ -4295,35 +4285,6 @@ if (iiifGuideButton) {
       '_blank',
       'noopener,noreferrer',
     );
-  });
-}
-
-if (shareButton) {
-  shareButton.addEventListener('click', async function (event) {
-    event.stopPropagation();
-
-    const shareData = {
-      title: document.title,
-      url: window.location.href,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch (error) {
-        if (error && error.name === 'AbortError') {
-          return;
-        }
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareData.url);
-      showAppAlert(t('notifications.shareLinkCopied'));
-    } catch (_error) {
-      showAppAlert(shareData.url);
-    }
   });
 }
 

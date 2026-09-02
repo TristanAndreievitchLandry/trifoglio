@@ -20,7 +20,6 @@
     "load": "Carica",
     "info": "Info",
     "save": "Salva",
-    "share": "Condividi",
     "cancel": "Annulla",
     "finish": "Fine",
     "manifest": "Manifesto",
@@ -153,7 +152,6 @@
     "loadingManifest": "Caricamento manifesto...",
     "noIiifService": "Nessun servizio immagine IIIF trovato in questo manifesto.",
     "loadingFailed": "Caricamento fallito: {{details}}",
-    "shareLinkCopied": "Link copiato negli appunti.",
     "osmActive": "Sfondo OpenStreetMap ({{style}}) attivo. I livelli IIIF sono stati rimossi."
   },
   "viewer": {
