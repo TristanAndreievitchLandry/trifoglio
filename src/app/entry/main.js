@@ -328,6 +328,7 @@ ensureAppShellElements();
 fetchWeatherForCurrentLocation();
 
 let weatherRefreshTimer = null;
+const WEATHER_REFRESH_MS = 5 * 60 * 1000;
 
 function startWeatherRefreshLoop() {
   if (weatherRefreshTimer) {
@@ -338,7 +339,7 @@ function startWeatherRefreshLoop() {
     function () {
       fetchWeatherForCurrentLocation();
     },
-    15 * 60 * 1000,
+    WEATHER_REFRESH_MS,
   );
 }
 
@@ -861,25 +862,46 @@ window.toggleKeywordLegendPanel = toggleKeywordLegendPanel;
 window.setKeywordLegendPanelVisibility = setKeywordLegendPanelVisibility;
 window.refreshKeywordLegendPanel = refreshKeywordLegendPanel;
 
+function normalizeWeatherText(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 function getWeatherConditionIcon(conditionText, period) {
-  const normalized = String(conditionText || '').toLowerCase();
-  const normalizedPeriod = String(period || '').toLowerCase();
+  const normalized = normalizeWeatherText(conditionText);
+  const normalizedPeriod = normalizeWeatherText(period);
   const now = new Date();
   const hour = now.getHours();
-  const isNight =
+  const explicitlyNight =
     normalizedPeriod.includes('night') ||
     normalizedPeriod.includes('nuit') ||
     normalizedPeriod.includes('soir') ||
-    normalizedPeriod.includes('evening') ||
-    hour >= 20 ||
-    hour < 6;
+    normalizedPeriod.includes('evening');
+  const explicitlyDay =
+    normalizedPeriod.includes('day') || normalizedPeriod.includes('jour');
+  const isNight = explicitlyNight || (!explicitlyDay && (hour >= 20 || hour < 6));
 
-  if (
+  const hasRain =
+    normalized.includes('pluie') ||
+    normalized.includes('rain') ||
+    normalized.includes('averse') ||
+    normalized.includes('shower') ||
+    normalized.includes('bruine') ||
+    normalized.includes('crachin') ||
+    normalized.includes('precipitation') ||
+    normalized.includes('drizzle') ||
+    normalized.includes('verglac');
+  const hasSnow =
     normalized.includes('neige') ||
     normalized.includes('snow') ||
-    normalized.includes('blizzard')
-  ) {
-    return isNight ? '🌨️' : '❄️';
+    normalized.includes('blizzard') ||
+    normalized.includes('gresil') ||
+    normalized.includes('sleet');
+
+  if (hasRain && hasSnow) {
+    return isNight ? '🌨️' : '🌦️';
   }
 
   if (
@@ -890,11 +912,11 @@ function getWeatherConditionIcon(conditionText, period) {
     return isNight ? '🌩️' : '⛈️';
   }
 
-  if (
-    normalized.includes('pluie') ||
-    normalized.includes('rain') ||
-    normalized.includes('showers')
-  ) {
+  if (hasSnow) {
+    return isNight ? '🌨️' : '❄️';
+  }
+
+  if (hasRain) {
     return isNight ? '🌧️' : '🌦️';
   }
 
@@ -938,7 +960,7 @@ function fetchWeatherForCurrentLocation() {
       }
 
       fetch(
-        'https://api.weather.gc.ca/collections/citypageweather-realtime/items?lang=fr&f=json&limit=100',
+        'https://api.weather.gc.ca/collections/citypageweather-realtime/items?lang=fr&f=json&limit=1000',
         { headers: { Accept: 'application/geo+json' } },
       )
         .then(function (response) {
@@ -1080,7 +1102,7 @@ function fetchWeatherForCurrentLocation() {
     },
     {
       enableHighAccuracy: false,
-      maximumAge: 15 * 60 * 1000,
+      maximumAge: 5 * 60 * 1000,
       timeout: 10000,
     },
   );

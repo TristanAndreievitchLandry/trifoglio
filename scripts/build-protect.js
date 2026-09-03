@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { minify } = require('terser');
-const JavaScriptObfuscator = require('javascript-obfuscator');
 
 const projectRoot = process.cwd();
 const distDir = path.join(projectRoot, 'dist');
@@ -17,7 +16,7 @@ async function ensureDist() {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-async function minifyAndObfuscate(relativePath, options = {}) {
+async function minifyJavaScript(relativePath) {
   const sourcePath = path.join(projectRoot, relativePath);
   const sourceCode = fs.readFileSync(sourcePath, 'utf8');
 
@@ -33,32 +32,11 @@ async function minifyAndObfuscate(relativePath, options = {}) {
     throw new Error('Minification failed for ' + relativePath);
   }
 
-  const obfuscated = JavaScriptObfuscator.obfuscate(minified.code, {
-    compact: true,
-    controlFlowFlattening: options.strict === true,
-    controlFlowFlatteningThreshold: options.strict === true ? 0.4 : 0,
-    deadCodeInjection: options.strict === true,
-    deadCodeInjectionThreshold: options.strict === true ? 0.2 : 0,
-    disableConsoleOutput: false,
-    identifierNamesGenerator: 'hexadecimal',
-    renameGlobals: false,
-    rotateStringArray: true,
-    selfDefending: options.strict === true,
-    simplify: true,
-    splitStrings: options.strict === true,
-    splitStringsChunkLength: 8,
-    stringArray: true,
-    stringArrayEncoding: ['base64'],
-    stringArrayThreshold: 0.75,
-    transformObjectKeys: false,
-    unicodeEscapeSequence: false,
-  });
-
   const baseName = path.basename(relativePath, '.js');
   const targetRelativePath = baseName + '.min.js';
   fs.writeFileSync(
     path.join(distDir, targetRelativePath),
-    obfuscated.getObfuscatedCode(),
+    minified.code,
     'utf8',
   );
 
@@ -95,8 +73,8 @@ function buildIndex(scriptMap) {
     ';</script>';
 
   html = html.replace(
-    '<script src="src/app/entry/bootstrap.js"></script>',
-    runtimeConfigTag + '<script src="src/app/entry/bootstrap.js"></script>',
+    /<script src="(src\/app\/entry\/bootstrap\.js(?:\?[^\"]*)?)"><\/script>/,
+    runtimeConfigTag + '<script src="$1"></script>',
   );
 
   fs.writeFileSync(path.join(distDir, 'index.html'), html, 'utf8');
@@ -124,9 +102,9 @@ async function run() {
   });
 
   const output = await Promise.all([
-    minifyAndObfuscate('src/app/entry/main.js', { strict }),
-    minifyAndObfuscate('src/app/entry/i18n-runtime.js', { strict }),
-    minifyAndObfuscate('src/app/data/catalogs.js', { strict: false }),
+    minifyJavaScript('src/app/entry/main.js'),
+    minifyJavaScript('src/app/entry/i18n-runtime.js'),
+    minifyJavaScript('src/app/data/catalogs.js'),
   ]);
 
   const scriptMap = output.reduce((acc, item) => {

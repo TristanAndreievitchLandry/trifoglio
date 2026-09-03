@@ -28,7 +28,7 @@ The app now boots through a single runtime loader:
 
 - entrypoint in HTML: src/app/entry/bootstrap.js
 - runtime scripts are loaded sequentially to preserve dependency order
-- runtime paths can be overridden with window.**TRF_RUNTIME_PATHS** (used by protected builds)
+- runtime paths can be overridden with `window.__TRF_RUNTIME_PATHS__` (used by the production build)
 
 Main source structure:
 
@@ -51,27 +51,27 @@ npm install
 
 Then open index.html from a static server (recommended for consistent browser behavior).
 
-## Protected Build (Minified + Obfuscated)
+## Production Build (Minified with Terser)
 
-Generate a standard protected build:
+Generate the production build:
 
 ```bash
 npm run build:protect
 ```
 
-Generate a stricter protected build:
+The legacy strict command remains available for compatibility:
 
 ```bash
 npm run build:protect:strict
 ```
 
-Output is written to dist/.
+The output is written to `dist/`.
 
-Minified/obfuscated outputs:
+Minified outputs:
 
-- dist/main.min.js
-- dist/i18n-runtime.min.js
-- dist/catalogs.min.js
+- `dist/main.min.js`
+- `dist/i18n-runtime.min.js`
+- `dist/catalogs.min.js`
 
 Copied runtime assets:
 
@@ -82,7 +82,7 @@ Copied runtime assets:
 - src/app/entry/bootstrap.js
 - LICENSE
 
-The build script also rewrites dist/index.html by injecting window.**TRF_RUNTIME_PATHS** so bootstrap.js loads the protected scripts.
+Both commands use Terser minification only. The build script also rewrites `dist/index.html` by injecting `window.__TRF_RUNTIME_PATHS__`, so `bootstrap.js` loads the generated minified scripts.
 
 ## i18n Notes
 
@@ -129,4 +129,4 @@ When relevant, please refer to each upstream project for its current license ter
 
 ## Disclaimer
 
-Obfuscation increases reverse-engineering effort but cannot make client-side code fully uncopyable.
+Minification reduces transfer size but does not make client-side code private or secure.

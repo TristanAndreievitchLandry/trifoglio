@@ -4,7 +4,6 @@
   import { viewerStore } from '../stores/viewerStore.js';
   import { selectionStore } from '../stores/selectionStore.js';
   import MapViewport from './MapViewport.svelte';
-  import Weather from './Weather.svelte';
 </script>
 
 <section class="app-shell">
@@ -14,7 +13,6 @@
       <p>Svelte migration shell. No business features are active yet.</p>
     </div>
     <div class="app-shell__topbar-actions">
-      <Weather />
       <div id="language-switcher" class="language-switcher" aria-label="Language switcher">
         <button type="button" class="language-switcher__item" data-locale="de">DE</button>
         <span class="language-switcher__sep" aria-hidden="true">|</span>
