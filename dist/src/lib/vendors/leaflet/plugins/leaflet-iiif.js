@@ -352,7 +352,8 @@ L.TileLayer.Iiif = L.TileLayer.extend({
             if (_this.options.jsonProxyBase && !_this._usedProxyInfoRequest) {
               _this._usedProxyInfoRequest = true;
               var proxyUrl =
-                _this.options.jsonProxyBase + encodeURIComponent(_this._infoUrl);
+                _this.options.jsonProxyBase +
+                encodeURIComponent(_this._infoUrl);
               fetchInfo(proxyUrl);
               return;
             }

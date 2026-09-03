@@ -3767,6 +3767,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
 
       currentCanvasIndex = -1;
       showCanvasByIndex(targetCanvasIndex);
+      closeManifestPanel();
       map.setZoom(0, { animate: false });
       if (manifestCanvasKeys.length > 1) {
         illuminateCounter(pageCounterValue, true);
