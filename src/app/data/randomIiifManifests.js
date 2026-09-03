@@ -15,6 +15,11 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Gallica, Bibliothèque nationale de France',
   },
   {
+    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b10532588f/manifest.json',
+    title: 'Gallica item btv1b10532588f',
+    institution: 'Gallica, Bibliothèque nationale de France',
+  },
+  {
     url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~382301~90/148231/manifest',
     title: 'Encyclopédie Bouasse-Lebel (1867)',
     institution: 'David Rumsey Map Collection',

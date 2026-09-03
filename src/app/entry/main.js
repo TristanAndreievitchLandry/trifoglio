@@ -248,7 +248,7 @@ function ensureAppShellElements() {
       '<div class="viewer-actions-container">' +
         '<button id="canvas-prev" title="" data-i18n-attr="title:buttons.previousPage"><i class="fa-solid fa-arrow-left"></i></button>' +
         '<button id="canvas-next" title="" data-i18n-attr="title:buttons.nextPage"><i class="fa-solid fa-arrow-right"></i></button>' +
-        '<span id="page-counter-value" class="annotation-tour-counter viewer-page-counter">0/0</span>' +
+        '<button id="page-counter-value" type="button" class="viewer-page-counter" title="" data-i18n-attr="title:buttons.goToPage">0/0</button>' +
         '</div>',
     );
     viewerActions = document.querySelector('.viewer-actions-container');
@@ -335,12 +335,9 @@ function startWeatherRefreshLoop() {
     return;
   }
 
-  weatherRefreshTimer = window.setInterval(
-    function () {
-      fetchWeatherForCurrentLocation();
-    },
-    WEATHER_REFRESH_MS,
-  );
+  weatherRefreshTimer = window.setInterval(function () {
+    fetchWeatherForCurrentLocation();
+  }, WEATHER_REFRESH_MS);
 }
 
 function stopWeatherRefreshLoop() {
@@ -881,7 +878,8 @@ function getWeatherConditionIcon(conditionText, period) {
     normalizedPeriod.includes('evening');
   const explicitlyDay =
     normalizedPeriod.includes('day') || normalizedPeriod.includes('jour');
-  const isNight = explicitlyNight || (!explicitlyDay && (hour >= 20 || hour < 6));
+  const isNight =
+    explicitlyNight || (!explicitlyDay && (hour >= 20 || hour < 6));
 
   const hasRain =
     normalized.includes('pluie') ||
@@ -1920,6 +1918,37 @@ function showCanvasByIndex(index) {
     t('notifications.canvasLoaded', { index: index + 1, label: layerLabel }),
     'success',
   );
+}
+
+async function promptForCanvasPage() {
+  const total = manifestCanvasKeys.length;
+  if (total === 0) {
+    return;
+  }
+
+  const requestedPage = await showAppPrompt(
+    t('dialogs.goToPagePrompt', { total: total }),
+    String(currentCanvasIndex + 1),
+    t('buttons.goToPage'),
+    t('buttons.cancel'),
+  );
+  if (requestedPage === null || requestedPage === false) {
+    return;
+  }
+
+  const normalizedPage = String(requestedPage).trim();
+  const pageNumber = Number(normalizedPage);
+  if (
+    !/^\d+$/.test(normalizedPage) ||
+    !Number.isInteger(pageNumber) ||
+    pageNumber < 1 ||
+    pageNumber > total
+  ) {
+    showAppAlert(t('errors.invalidPageNumber', { total: total }));
+    return;
+  }
+
+  showCanvasByIndex(pageNumber - 1);
 }
 
 function fitIiifLayerToViewport(layer) {
@@ -4078,6 +4107,8 @@ canvasPrevButton.addEventListener('click', function () {
 canvasNextButton.addEventListener('click', function () {
   showCanvasByIndex(currentCanvasIndex + 1);
 });
+
+pageCounterValue.addEventListener('click', promptForCanvasPage);
 
 updateCanvasNavigation();
 

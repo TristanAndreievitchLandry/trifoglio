@@ -31,6 +31,7 @@
     "previousPage": "Pagina precedente",
     "nextPage": "Pagina successiva",
     "currentPage": "Pagina corrente",
+    "goToPage": "Vai alla pagina",
     "osm": "OSM",
     "deleteLastPoint": "Elimina ultimo punto",
     "clearAll": "Cancella tutto",
@@ -143,7 +144,8 @@
     "manifestLoadTitle": "Caricamento del manifesto IIIF non riuscito.",
     "detailsLabel": "Dettagli: ",
     "httpStatusPrefix": "HTTP ",
-    "noHttpStatus": "Nessuno stato HTTP"
+    "noHttpStatus": "Nessuno stato HTTP",
+    "invalidPageNumber": "Inserisci un numero di pagina intero tra 1 e {{total}}."
   },
   "notifications": {
     "ready": "Pronto.",
@@ -162,7 +164,8 @@
   },
   "dialogs": {
     "saveFileConfirm": "Salvare il file?",
-    "saveFileNamePrompt": "Nome del file GeoJSON"
+    "saveFileNamePrompt": "Nome del file GeoJSON",
+    "goToPagePrompt": "Numero di pagina (da 1 a {{total}})"
   },
   "files": {
     "drawingExport": "mio_disegno.json"

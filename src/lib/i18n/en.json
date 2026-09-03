@@ -28,6 +28,7 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "currentPage": "Current page",
+    "goToPage": "Go to page",
     "osm": "OSM",
     "deleteLastPoint": "Delete last point",
     "clearAll": "Clear All",
@@ -141,7 +142,8 @@
     "randomIiifUnavailable": "No Random IIIF manifest is available.",
     "detailsLabel": "Details: ",
     "httpStatusPrefix": "HTTP ",
-    "noHttpStatus": "No HTTP status"
+    "noHttpStatus": "No HTTP status",
+    "invalidPageNumber": "Enter a whole page number between 1 and {{total}}."
   },
   "notifications": {
     "ready": "Ready.",
@@ -161,7 +163,8 @@
   },
   "dialogs": {
     "saveFileConfirm": "Save file?",
-    "saveFileNamePrompt": "GeoJSON file name"
+    "saveFileNamePrompt": "GeoJSON file name",
+    "goToPagePrompt": "Page number (1 to {{total}})"
   },
   "files": {
     "drawingExport": "my_drawing.json"

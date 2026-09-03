@@ -31,6 +31,7 @@
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
     "currentPage": "Page actuelle",
+    "goToPage": "Aller à la page",
     "osm": "OSM",
     "deleteLastPoint": "Supprimer le dernier point",
     "clearAll": "Tout effacer",
@@ -144,7 +145,8 @@
     "randomIiifUnavailable": "Aucun manifeste IIIF aléatoire n'est disponible.",
     "detailsLabel": "Détails : ",
     "httpStatusPrefix": "HTTP ",
-    "noHttpStatus": "Aucun statut HTTP"
+    "noHttpStatus": "Aucun statut HTTP",
+    "invalidPageNumber": "Entrez un numéro de page entier entre 1 et {{total}}."
   },
   "notifications": {
     "ready": "Prêt.",
@@ -164,7 +166,8 @@
   },
   "dialogs": {
     "saveFileConfirm": "Enregistrer le fichier ?",
-    "saveFileNamePrompt": "Nom du fichier GeoJSON"
+    "saveFileNamePrompt": "Nom du fichier GeoJSON",
+    "goToPagePrompt": "Numéro de page (1 à {{total}})"
   },
   "files": {
     "drawingExport": "mon_dessin.json"

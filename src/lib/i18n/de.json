@@ -31,6 +31,7 @@
     "previousPage": "Vorherige Seite",
     "nextPage": "Nächste Seite",
     "currentPage": "Aktuelle Seite",
+    "goToPage": "Zur Seite gehen",
     "osm": "OSM",
     "deleteLastPoint": "Letzten Punkt löschen",
     "clearAll": "Alles löschen",
@@ -143,7 +144,8 @@
     "manifestLoadTitle": "Laden des IIIF-Manifests fehlgeschlagen.",
     "detailsLabel": "Details: ",
     "httpStatusPrefix": "HTTP ",
-    "noHttpStatus": "Kein HTTP-Status"
+    "noHttpStatus": "Kein HTTP-Status",
+    "invalidPageNumber": "Geben Sie eine ganze Seitenzahl zwischen 1 und {{total}} ein."
   },
   "notifications": {
     "ready": "Bereit.",
@@ -162,7 +164,8 @@
   },
   "dialogs": {
     "saveFileConfirm": "Datei speichern?",
-    "saveFileNamePrompt": "GeoJSON-Dateiname"
+    "saveFileNamePrompt": "GeoJSON-Dateiname",
+    "goToPagePrompt": "Seitenzahl (1 bis {{total}})"
   },
   "files": {
     "drawingExport": "meine_zeichnung.json"

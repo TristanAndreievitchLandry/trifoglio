@@ -682,26 +682,18 @@ body {
   font-family: 'Courier New', Courier, monospace;
 }
 
-#page-counter-button {
-  cursor: default;
+#page-counter-value {
+  width: 30px;
+  height: 22px;
+  padding: 0 2px;
+  cursor: pointer;
   background-color: rgba(12, 20, 32, 0.97);
-}
-
-#page-counter-button:disabled {
-  opacity: 0.75;
   color: #ffffff;
   border-color: #5b7aa2;
-}
-
-#page-counter-button:hover {
-  background-color: rgba(12, 20, 32, 0.97);
-}
-
-#page-counter-value {
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.2px;
-  color: #ffffff;
 }
 
 .viewer-page-counter#page-counter-value {
