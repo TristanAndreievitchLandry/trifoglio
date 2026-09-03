@@ -43,7 +43,6 @@ L.TileLayer.Iiif = L.TileLayer.extend({
     );
     this._infoUrl = url;
     this._baseUrl = this._templateUrl();
-    this._getInfo();
   },
   _getProxyUrl: function (url) {
     if (!url || !this.options.tileProxyBase) {
@@ -83,6 +82,11 @@ L.TileLayer.Iiif = L.TileLayer.extend({
   },
   onAdd: function (map) {
     var _this = this;
+
+    if (!_this._infoRequestStarted) {
+      _this._infoRequestStarted = true;
+      _this._getInfo();
+    }
 
     // Wait for info.json to be loaded before attaching the layer.
     _this._infoPromise
@@ -323,26 +327,39 @@ L.TileLayer.Iiif = L.TileLayer.extend({
           if (!response.ok) {
             var error = new Error('HTTP ' + response.status);
             error.status = response.status;
+            error.requestedUrl = url;
+            error.responseUrl = response.url;
             throw error;
           }
 
-          return response.json();
+          return response.json().catch(function (error) {
+            error.requestedUrl = url;
+            error.responseUrl = response.url;
+            throw error;
+          });
         })
-        .then(function (data) {
-          parseInfo(data);
-        })
-        .catch(function (error) {
-          // Fallback: fetch IIIF info via proxy when CORS blocks cross-origin JSON.
-          if (_this.options.jsonProxyBase && !_this._usedProxyInfoRequest) {
-            _this._usedProxyInfoRequest = true;
-            var proxyUrl =
-              _this.options.jsonProxyBase + encodeURIComponent(_this._infoUrl);
-            fetchInfo(proxyUrl);
-            return;
-          }
+        .then(
+          function (data) {
+            try {
+              parseInfo(data);
+            } catch (error) {
+              error.requestedUrl = url;
+              _this._rejectInfo(error);
+            }
+          },
+          function (error) {
+            // Retry only request/response failures, never IIIF parsing errors.
+            if (_this.options.jsonProxyBase && !_this._usedProxyInfoRequest) {
+              _this._usedProxyInfoRequest = true;
+              var proxyUrl =
+                _this.options.jsonProxyBase + encodeURIComponent(_this._infoUrl);
+              fetchInfo(proxyUrl);
+              return;
+            }
 
-          _this._rejectInfo(error);
-        });
+            _this._rejectInfo(error);
+          },
+        );
     }
 
     fetchInfo(_this._infoUrl);
