@@ -513,3 +513,101 @@ AWS Marketplace pourrait éventuellement être envisagé plus tard pour les **ve
 # Les coûts AWS et les frais Stripe doivent être considérés séparément dans le modèle financier. La rentabilité doit être calculée sur le revenu net après frais de paiement et coûts d'infrastructure, avant les autres dépenses du projet.
 
 ================================
+ajouter une fonction rotation
+
+---
+
+## Versioning et suivi des modifications
+
+Trifoglio doit prévoir, dès la conception de son architecture de données, la possibilité de suivre les modifications apportées aux projets, cartes, couches et objets géographiques.
+
+L'approche de suivi des changements présentée dans l'écosystème IIIF montre l'intérêt de distinguer :
+
+- l'état courant des données;
+- les modifications apportées à cet état;
+- les révisions successives du projet.
+
+Le système n'a pas besoin de remplacer le stockage principal. PostgreSQL/PostGIS demeure la source de vérité de l'état courant, tandis qu'un historique append-only peut conserver les changements significatifs.
+
+### Principes
+
+Chaque entité importante doit disposer d'un identifiant stable. Les positions dans un tableau ou une collection ne doivent pas servir d'identifiant durable.
+
+Une modification devrait pouvoir être décrite sous une forme conceptuelle similaire à :
+
+```
+projet 42
+révision 17
+feature 183
+propriété : geometry
+ancienne valeur : ...
+nouvelle valeur : ...
+utilisateur : ...
+date : ...
+```
+
+Le système doit pouvoir distinguer :
+
+- modification d'une propriété;
+- ajout d'une entité;
+- suppression d'une entité;
+- déplacement ou modification d'une géométrie;
+- modification des métadonnées;
+- modification de la structure d'une carte ou d'une StoryMap.
+
+### Architecture envisagée
+
+Trifoglio conservera une représentation canonique de l'état actuel dans PostgreSQL/PostGIS et pourra associer à celle-ci un historique des changements.
+
+Cette architecture hybride est préférable à une reconstruction permanente de l'état courant à partir d'un flux d'événements :
+
+```
+État courant
+     +
+Historique des modifications
+     +
+Snapshots / révisions
+```
+
+Le versioning doit être considéré comme une capacité de l'application, et non comme une propriété imposée par IIIF ou par le système de stockage.
+
+### Utilisations futures
+
+Le suivi des modifications pourra permettre :
+
+- historique et révisions des projets;
+- restauration d'une version antérieure;
+- audit des modifications;
+- annulation/rétablissement;
+- synchronisation;
+- collaboration;
+- invalidation ciblée du cache;
+- mise à jour sélective des index;
+- notifications et webhooks;
+- transmission uniquement des données modifiées;
+- évolution éventuelle vers des fonctions hors ligne.
+
+Cette architecture sera particulièrement utile pour la future fonction StoryMap, où plusieurs types d'objets — cartes, couches, données et contenus narratifs — devront pouvoir évoluer indépendamment.
+
+### IIIF
+
+Le suivi interne des modifications ne doit pas être confondu avec IIIF Change Discovery.
+
+Le change tracking sert à déterminer précisément ce qui a changé à l'intérieur d'une ressource. IIIF Change Discovery sert plutôt à signaler qu'une ressource IIIF a été modifiée.
+
+Trifoglio pourra éventuellement utiliser le premier pour alimenter le second.
+
+### Décision architecturale
+
+Le versioning complet n'est pas une priorité de la première version de Trifoglio, mais l'architecture initiale doit éviter de le rendre difficile à ajouter ultérieurement.
+
+En particulier :
+
+1. utiliser des identifiants stables pour les entités;
+2. conserver des relations explicites entre les objets;
+3. séparer l'état courant de l'historique;
+4. prévoir une notion de révision;
+5. éviter de dépendre exclusivement de la position d'un objet dans un tableau;
+6. conserver suffisamment d'informations pour pouvoir introduire ultérieurement l'historique, la collaboration et la synchronisation.
+
+L'objectif n'est pas de transformer Trifoglio en système entièrement « event-sourced », mais de conserver la possibilité d'introduire progressivement ces fonctionnalités sans refonte majeure de la base de données.
