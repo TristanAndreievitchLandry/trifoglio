@@ -110,10 +110,13 @@
   "annotationEditor": {
     "title": "Annotation editor",
     "fieldTitle": "Title",
+    "titleMaxWords": "maximum 10 words · {{remaining}} remaining",
     "fieldDescription": "Description",
+    "descriptionMaxWords": "maximum 100 words · {{remaining}} remaining",
     "fieldDate": "Date",
     "fieldAuthor": "Author",
     "fieldKeywords": "Keywords (comma-separated)",
+    "fieldShowKeywords": "Show keywords in the annotation",
     "fieldOrder": "Order",
     "fieldUrl": "URL",
     "fieldImage": "Image URL",

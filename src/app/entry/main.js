@@ -500,6 +500,8 @@ function updateAttributionPrefix() {
       '</a>' +
       sourcePart,
   );
+
+  scheduleCoordsLayout();
 }
 
 if (map.attributionControl) {
@@ -2083,6 +2085,8 @@ const annotationEditorState = {
   customFields: null,
   currentLayer: null,
 };
+const ANNOTATION_TITLE_MAX_WORDS = 10;
+const ANNOTATION_DESCRIPTION_MAX_WORDS = 100;
 
 function getTotalAnnotationCount() {
   if (!drawnLayers || typeof drawnLayers.getLayers !== 'function') {
@@ -2347,6 +2351,10 @@ function normalizeLayerProperties(layer) {
   const author = annotation.creator || properties.author || '';
   const date = annotation.created || properties.date || '';
   const tags = getAnnotationKeywords(annotation, properties);
+  const showKeywords =
+    annotation.showKeywords === false || properties.showKeywords === false
+      ? false
+      : true;
   const strokeWidthValue = Number.parseFloat(
     properties.strokeWidth || properties.weight || properties.lineWidth,
   );
@@ -2392,6 +2400,7 @@ function normalizeLayerProperties(layer) {
     author: author,
     date: date,
     keywords: tags.join(', '),
+    showKeywords: showKeywords,
     url: annotation.url || properties.url || '',
     image: annotation.image || properties.image || '',
     audio: annotation.audio || properties.audio || '',
@@ -2450,6 +2459,7 @@ function buildAnnotationProperties(values) {
     author: values.author || '',
     date: values.date || '',
     keywords: tags.join(', '),
+    showKeywords: values.showKeywords !== false,
     url: values.url || '',
     image: values.image || '',
     audio: values.audio || '',
@@ -2473,6 +2483,7 @@ function buildAnnotationProperties(values) {
       video: values.video || null,
       url: values.url || null,
       tags: tags,
+      showKeywords: values.showKeywords !== false,
       creator: values.author || '',
       created: values.date || '',
       order: normalizedOrder,
@@ -2771,6 +2782,10 @@ function buildAnnotationPopupHtml(properties) {
     url !== audio &&
     url !== video,
   );
+  const showKeywords =
+    annotation.showKeywords === false || properties.showKeywords === false
+      ? false
+      : true;
   const tags = getAnnotationKeywords(annotation, properties);
 
   const rows = [];
@@ -2795,7 +2810,7 @@ function buildAnnotationPopupHtml(properties) {
         escapeAnnotationHtml(effectiveImage) +
         '" alt="' +
         escapeAnnotationHtml(title || 'annotation image') +
-        '">',
+        '" width="300" height="300">',
     );
   }
 
@@ -2813,7 +2828,7 @@ function buildAnnotationPopupHtml(properties) {
     );
   }
 
-  if (tags.length > 0) {
+  if (showKeywords && tags.length > 0) {
     rows.push(
       '<p class="trf-popup__meta"><strong>' +
         escapeAnnotationHtml(t('popup.annotationKeywordsLabel')) +
@@ -2964,6 +2979,78 @@ function addCustomFieldRow(key, value) {
   annotationEditorState.customFields.appendChild(row);
 }
 
+function limitWords(value, maxWords) {
+  const words = String(value || '').match(/\S+/g) || [];
+  if (words.length <= maxWords) {
+    return String(value || '');
+  }
+
+  return words.slice(0, maxWords).join(' ');
+}
+
+function countWords(value) {
+  return (String(value || '').match(/\S+/g) || []).length;
+}
+
+function updateWordLimitNote(inputElement, selector, labelKey, maxWords) {
+  if (!annotationEditorState.form || !inputElement) {
+    return;
+  }
+
+  const limitNote = annotationEditorState.form.querySelector(selector);
+  if (!limitNote) {
+    return;
+  }
+
+  const remainingWords = Math.max(0, maxWords - countWords(inputElement.value));
+  limitNote.textContent = t(labelKey, {
+    remaining: remainingWords,
+  });
+}
+
+function enforceTitleWordLimit(titleInput) {
+  if (!titleInput) {
+    return '';
+  }
+
+  const limitedValue = limitWords(titleInput.value, ANNOTATION_TITLE_MAX_WORDS);
+  if (titleInput.value !== limitedValue) {
+    titleInput.value = limitedValue;
+  }
+
+  updateWordLimitNote(
+    titleInput,
+    '.annotation-editor__title-limit-note',
+    'annotationEditor.titleMaxWords',
+    ANNOTATION_TITLE_MAX_WORDS,
+  );
+
+  return limitedValue;
+}
+
+function enforceDescriptionWordLimit(descriptionInput) {
+  if (!descriptionInput) {
+    return '';
+  }
+
+  const limitedValue = limitWords(
+    descriptionInput.value,
+    ANNOTATION_DESCRIPTION_MAX_WORDS,
+  );
+  if (descriptionInput.value !== limitedValue) {
+    descriptionInput.value = limitedValue;
+  }
+
+  updateWordLimitNote(
+    descriptionInput,
+    '.annotation-editor__description-limit-note',
+    'annotationEditor.descriptionMaxWords',
+    ANNOTATION_DESCRIPTION_MAX_WORDS,
+  );
+
+  return limitedValue;
+}
+
 function ensureAnnotationEditor(forceRefresh) {
   if (annotationEditorState.overlay && forceRefresh) {
     annotationEditorState.overlay.remove();
@@ -2985,10 +3072,18 @@ function ensureAnnotationEditor(forceRefresh) {
     '</h3>' +
     '<form class="annotation-editor__form">' +
     '<label>' +
+    '<span class="annotation-editor__label-row"><span>' +
     t('annotationEditor.fieldTitle') +
+    '</span><span class="annotation-editor__limit-note annotation-editor__title-limit-note">' +
+    t('annotationEditor.titleMaxWords') +
+    '</span></span>' +
     '<input name="title" type="text"></label>' +
     '<label>' +
+    '<span class="annotation-editor__label-row"><span>' +
     t('annotationEditor.fieldDescription') +
+    '</span><span class="annotation-editor__limit-note annotation-editor__description-limit-note">' +
+    t('annotationEditor.descriptionMaxWords') +
+    '</span></span>' +
     '<textarea name="description" rows="3"></textarea></label>' +
     '<label>' +
     t('annotationEditor.fieldDate') +
@@ -2999,6 +3094,11 @@ function ensureAnnotationEditor(forceRefresh) {
     '<label>' +
     t('annotationEditor.fieldKeywords') +
     '<input name="keywords" type="text"></label>' +
+    '<label class="annotation-editor__checkbox">' +
+    '<input name="showKeywords" type="checkbox" checked>' +
+    '<span>' +
+    t('annotationEditor.fieldShowKeywords') +
+    '</span></label>' +
     '<label>' +
     t('annotationEditor.fieldOrder') +
     '<select name="order"></select></label>' +
@@ -3060,6 +3160,20 @@ function ensureAnnotationEditor(forceRefresh) {
     '.annotation-editor__custom-fields',
   );
 
+  annotationEditorState.form.elements.title.addEventListener(
+    'input',
+    function (event) {
+      enforceTitleWordLimit(event.target);
+    },
+  );
+
+  annotationEditorState.form.elements.description.addEventListener(
+    'input',
+    function (event) {
+      enforceDescriptionWordLimit(event.target);
+    },
+  );
+
   overlay
     .querySelector('.annotation-editor__add-field')
     .addEventListener('click', function () {
@@ -3102,11 +3216,14 @@ function ensureAnnotationEditor(forceRefresh) {
       });
 
     const values = {
-      title: formData.get('title') || '',
-      description: formData.get('description') || '',
+      title: enforceTitleWordLimit(annotationEditorState.form.elements.title),
+      description: enforceDescriptionWordLimit(
+        annotationEditorState.form.elements.description,
+      ),
       date: formData.get('date') || '',
       author: formData.get('author') || '',
       keywords: formData.get('keywords') || '',
+      showKeywords: annotationEditorState.form.elements.showKeywords.checked,
       order: formData.get('order') || '1',
       url: formData.get('url') || '',
       image: formData.get('image') || '',
@@ -3135,11 +3252,20 @@ function openAnnotationEditor(layer) {
 
   const normalized = normalizeLayerProperties(layer);
   const form = annotationEditorState.form;
-  form.elements.title.value = normalized.title;
-  form.elements.description.value = normalized.description;
+  form.elements.title.value = limitWords(
+    normalized.title,
+    ANNOTATION_TITLE_MAX_WORDS,
+  );
+  enforceTitleWordLimit(form.elements.title);
+  form.elements.description.value = limitWords(
+    normalized.description,
+    ANNOTATION_DESCRIPTION_MAX_WORDS,
+  );
+  enforceDescriptionWordLimit(form.elements.description);
   form.elements.date.value = normalized.date;
   form.elements.author.value = normalized.author;
   form.elements.keywords.value = normalized.keywords;
+  form.elements.showKeywords.checked = normalized.showKeywords !== false;
   populateOrderSelect(
     form.elements.order,
     normalized.order || String(getLayerOrderPosition(layer)),
@@ -4142,14 +4268,98 @@ div.style.backgroundColor = 'black';
 div.style.color = 'white';
 div.style.padding = '2px 4px';
 div.style.zIndex = '999';
+div.style.boxSizing = 'border-box';
+div.style.maxWidth = 'calc(100% - 12px)';
+div.style.overflow = 'hidden';
+div.style.textOverflow = 'ellipsis';
+div.style.whiteSpace = 'nowrap';
 document.getElementById('map').appendChild(div);
+
+var pointerCoordsText = 'Y, X: -, -';
+var hashCoordsText = 'zoom, y, x: -, -, -';
+var coordsLayoutFrame = null;
+
+function renderCoordsDiv() {
+  div.textContent = pointerCoordsText + ' | ' + hashCoordsText;
+  scheduleCoordsLayout();
+}
+
+function updateCoordsLayout() {
+  if (!div) {
+    return;
+  }
+
+  div.style.bottom = '0';
+  div.style.maxWidth = 'calc(100% - 12px)';
+
+  var attributionControl = document.querySelector(
+    '.leaflet-control-attribution',
+  );
+  if (!attributionControl) {
+    return;
+  }
+
+  var gap = 8;
+  var mapBounds = map.getContainer().getBoundingClientRect();
+  var coordsBounds = div.getBoundingClientRect();
+  var attributionBounds = attributionControl.getBoundingClientRect();
+  var overlapsHorizontally = coordsBounds.right + gap > attributionBounds.left;
+
+  if (!overlapsHorizontally) {
+    return;
+  }
+
+  div.style.bottom =
+    Math.max(0, mapBounds.bottom - attributionBounds.top + gap) + 'px';
+  div.style.maxWidth = 'calc(100% - 12px)';
+}
+
+function scheduleCoordsLayout() {
+  if (coordsLayoutFrame !== null) {
+    return;
+  }
+
+  var schedule =
+    window.requestAnimationFrame ||
+    function (callback) {
+      return window.setTimeout(callback, 0);
+    };
+
+  coordsLayoutFrame = schedule(function () {
+    coordsLayoutFrame = null;
+    updateCoordsLayout();
+  });
+}
+
+function updateHashCoords() {
+  var formattedHash =
+    hash && typeof hash.formatHash === 'function'
+      ? hash.formatHash(map)
+      : window.location.hash;
+  var hashParts = String(formattedHash || '')
+    .replace(/^#/, '')
+    .split('/');
+
+  if (hashParts.length === 3) {
+    hashCoordsText =
+      'zoom, y, x: ' + hashParts[0] + ', ' + hashParts[1] + ', ' + hashParts[2];
+  }
+
+  renderCoordsDiv();
+}
 
 map.on('mousemove', function (e) {
   var lat = e.latlng.lat.toFixed(5);
   var lon = e.latlng.lng.toFixed(5);
 
-  document.getElementById('coordsDiv').innerHTML = lat + ', ' + lon;
+  pointerCoordsText = 'Y, X: ' + lat + ', ' + lon;
+  renderCoordsDiv();
 });
+
+map.on('moveend zoomend', updateHashCoords);
+window.addEventListener('hashchange', updateHashCoords);
+window.addEventListener('resize', scheduleCoordsLayout);
+updateHashCoords();
 
 ///////////////////////
 //DRAG AND DROP ///////

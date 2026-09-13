@@ -113,10 +113,13 @@
   "annotationEditor": {
     "title": "Editor annotazione",
     "fieldTitle": "Titolo",
+    "titleMaxWords": "massimo 10 parole · {{remaining}} rimanenti",
     "fieldDescription": "Descrizione",
+    "descriptionMaxWords": "massimo 100 parole · {{remaining}} rimanenti",
     "fieldDate": "Data",
     "fieldAuthor": "Autore",
     "fieldKeywords": "Parole chiave (separate da virgole)",
+    "fieldShowKeywords": "Mostra le parole chiave nell'annotazione",
     "fieldOrder": "Ordine",
     "fieldUrl": "URL",
     "fieldImage": "URL immagine",

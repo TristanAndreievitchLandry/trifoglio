@@ -113,10 +113,13 @@
   "annotationEditor": {
     "title": "Éditeur d'annotation",
     "fieldTitle": "Titre",
+    "titleMaxWords": "maximum 10 mots · {{remaining}} restants",
     "fieldDescription": "Description",
+    "descriptionMaxWords": "maximum 100 mots · {{remaining}} restants",
     "fieldDate": "Date",
     "fieldAuthor": "Auteur",
     "fieldKeywords": "Mots-clés (séparés par des virgules)",
+    "fieldShowKeywords": "Afficher les mots-clés dans l'annotation",
     "fieldOrder": "Ordre",
     "fieldUrl": "URL",
     "fieldImage": "URL de l'image",

@@ -113,10 +113,13 @@
   "annotationEditor": {
     "title": "Anmerkungseditor",
     "fieldTitle": "Titel",
+    "titleMaxWords": "maximal 10 Wörter · {{remaining}} übrig",
     "fieldDescription": "Beschreibung",
+    "descriptionMaxWords": "maximal 100 Wörter · {{remaining}} übrig",
     "fieldDate": "Datum",
     "fieldAuthor": "Autor",
     "fieldKeywords": "Schlüsselwörter (kommagetrennt)",
+    "fieldShowKeywords": "Schlüsselwörter in der Anmerkung anzeigen",
     "fieldOrder": "Reihenfolge",
     "fieldUrl": "URL",
     "fieldImage": "Bild-URL",

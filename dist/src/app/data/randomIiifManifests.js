@@ -239,4 +239,24 @@ window.trifoglioRandomIiifManifests = [
     institution: 'Bibliothèque nationale de France, Gallica',
     type: 'coin',
   },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~330663~90099189/manifest',
+    title: 'Description précise de la Volga par Adam Olearius (1663)',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b100601717/manifest.json',
+    title: 'Carte du monde du « Livre de Roger », al-Idrissi (1154)',
+    institution: 'Gallica, Bibliothèque nationale de France',
+  },
+  {
+    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b8469069h/manifest.json',
+    title: 'Carte historique, Gallica item btv1b8469069h',
+    institution: 'Gallica, Bibliothèque nationale de France',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~374665~90141167/manifest',
+    title: 'Medieval World Map (Mappa Mundi)',
+    institution: 'David Rumsey Map Collection',
+  },
 ];

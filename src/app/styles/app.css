@@ -1345,6 +1345,19 @@ p {
   font-size: 12px;
 }
 
+.annotation-editor__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.annotation-editor__limit-note {
+  color: #a8c4e0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .annotation-editor__form input,
 .annotation-editor__form select,
 .annotation-editor__form textarea {
@@ -1357,6 +1370,20 @@ p {
   font-family: inherit;
   font-size: 12px;
   box-sizing: border-box;
+}
+
+.annotation-editor__form .annotation-editor__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.annotation-editor__form .annotation-editor__checkbox input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: #8bbdff;
 }
 
 .annotation-editor__style-grid {
@@ -1535,10 +1562,23 @@ p {
   line-height: 1.4;
 }
 
-.trf-popup__image,
-.trf-popup__media {
+.trf-popup__image {
+  width: 300px;
+  height: 300px;
   max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 6px 0;
+}
+
+.trf-popup__media {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
   height: auto;
+  max-height: min(240px, 42vh);
+  object-fit: contain;
+  background: #050a12;
   display: block;
   margin: 6px 0;
 }
