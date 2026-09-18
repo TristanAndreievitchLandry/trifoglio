@@ -1984,10 +1984,15 @@ function fitIiifLayerToViewport(layer) {
 }
 
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
+const JSON_PROXY_FALLBACK_BASE_URL = 'https://api.codetabs.com/v1/proxy?quest=';
 const RANDOM_IIIF_FETCH_TIMEOUT_MS = 3000;
 
 function buildProxyUrl(url) {
   return JSON_PROXY_BASE_URL + encodeURIComponent(url);
+}
+
+function buildFallbackProxyUrl(url) {
+  return JSON_PROXY_FALLBACK_BASE_URL + encodeURIComponent(url);
 }
 
 function fetchJsonWithProxyFallback(url, options = {}) {
@@ -2050,9 +2055,20 @@ function fetchJsonWithProxyFallback(url, options = {}) {
       const proxyUrl = buildProxyUrl(url);
       debugLog('Direct JSON blocked, retry proxy', url);
 
-      return fetchJson(proxyUrl).then(function (data) {
-        return { data: data, usedProxy: true };
-      });
+      return fetchJson(proxyUrl)
+        .then(function (data) {
+          return { data: data, usedProxy: true };
+        })
+        .catch(function () {
+          // The primary proxy can itself be degraded independently of the
+          // source host, so try a second proxy before giving up entirely.
+          const fallbackProxyUrl = buildFallbackProxyUrl(url);
+          debugLog('Primary proxy blocked, retry fallback proxy', url);
+
+          return fetchJson(fallbackProxyUrl).then(function (data) {
+            return { data: data, usedProxy: true };
+          });
+        });
     });
 }
 
@@ -2754,6 +2770,16 @@ function focusAnnotationLayer(layer) {
     }
   }
 
+  // Opening the popup (which can trigger Leaflet's autoPan) while flyTo is
+  // still animating the view fights with that animation and can spiral into
+  // a runaway pan/moveend loop that crashes the map, so it must wait until
+  // the transition has fully settled.
+  function openLayerPopup() {
+    if (typeof layer.openPopup === 'function') {
+      layer.openPopup();
+    }
+  }
+
   // Hide the annotations while the map flies to the target, then reveal them
   // once it settles, to avoid the visible glitch of vector layers being
   // reprojected mid-animation.
@@ -2761,13 +2787,11 @@ function focusAnnotationLayer(layer) {
     setAnnotationsTransitionHidden(true);
     scheduleAnnotationsReveal(flyDurationSeconds * 1000 + 250, function () {
       flashAnnotationLayer(layer);
+      openLayerPopup();
     });
   } else {
     flashAnnotationLayer(layer);
-  }
-
-  if (typeof layer.openPopup === 'function') {
-    layer.openPopup();
+    openLayerPopup();
   }
 }
 
@@ -4448,7 +4472,6 @@ function scheduleCoordsLayout() {
     updateCoordsLayout();
   });
 }
-
 
 function updateHashCoords() {
   var formattedHash =
