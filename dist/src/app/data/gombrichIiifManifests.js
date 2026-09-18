@@ -1,0 +1,332 @@
+window.trifoglioGombrichIiifManifests = {
+  source: {
+    basis:
+      "Selection from data/wikipedia-iiif-manifests.json, organized according to the chapter periods of Ernst H. Gombrich's The Story of Art.",
+    generatedFrom:
+      'Wikidata P6108 IIIF manifest URLs with Wikipedia article links',
+    notes:
+      'This is a curated teaching-oriented selection, not an exhaustive art-historical catalogue. Weakly covered periods are marked with notes.',
+  },
+  periods: [
+    {
+      period: '1. Mystérieux débuts : préhistoire, premiers arts',
+      notes:
+        'Aucun candidat solide trouvé dans les entrées Wikipedia/Wikidata générées. Chercher ailleurs pour Lascaux, Altamira, art paléolithique, art océanien/africain, etc.',
+      manifests: [],
+    },
+    {
+      period: "2. Un art pour l'éternité : Égypte, Mésopotamie, Crète",
+      notes:
+        'La couverture est limitée dans la liste générée; les candidats disponibles sont surtout des manuscrits/papyrus.',
+      manifests: [
+        {
+          title: 'Prisse Papyrus',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b52515226n/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/Papyrus_Prisse',
+        },
+        {
+          title: 'Papyrus 4',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b11004472k/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/Papyrus_4',
+        },
+      ],
+    },
+    {
+      period:
+        '3-4. Le Grand Éveil / La Terre de la beauté : Grèce archaïque, classique et hellénistique',
+      notes:
+        "Quelques candidats sont utiles, mais certains relèvent aussi de la réception moderne de l'Antiquité.",
+      manifests: [
+        {
+          title: 'Hermes Belvedere',
+          manifestUrl:
+            'https://catalogo.museivaticani.va/service.php/IIIF/7288/manifest',
+          articleUrl: 'https://en.wikipedia.org/wiki/Hermes_(Museo_Pio-Clementino)',
+        },
+        {
+          title: 'Young Greeks Attending a Cock Fight',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!328/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/The_Cock_Fight',
+        },
+      ],
+    },
+    {
+      period: "5. Conquérants d'empires : Rome, premiers chrétiens, juifs",
+      manifests: [
+        {
+          title: 'Arch of Septimius Severus, Roman Forum',
+          manifestUrl:
+            'https://gn.biblhertz.it/fotothek/api/iiif/3/werk/obj08047620/manifest',
+          articleUrl: 'https://de.wikipedia.org/wiki/Septimius-Severus-Bogen',
+        },
+        {
+          title: 'Dura-Europos route map / Roman road distances',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b105388698/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/Routenkarte_von_Dura_Europos',
+        },
+        {
+          title: 'Taylor-Schechter 16.320',
+          manifestUrl: 'https://cudl.lib.cam.ac.uk/iiif/MS-TS-00016-00320',
+          articleUrl: 'https://en.wikipedia.org/wiki/Taylor-Schechter_16.320',
+        },
+      ],
+    },
+    {
+      period: '6. Bifurcation : Rome et Byzance',
+      manifests: [
+        {
+          title: 'Santa Maria Annunziata in Borgo',
+          manifestUrl:
+            'https://gn.biblhertz.it/fotothek/api/iiif/3/werk/obj08047008/manifest',
+          articleUrl: 'https://de.wikipedia.org/wiki/Santa_Maria_Annunziata_in_Borgo',
+        },
+        {
+          title: 'Santa Francesca Romana',
+          manifestUrl:
+            'https://gn.biblhertz.it/fotothek/api/iiif/3/werk/obj08045167/manifest',
+          articleUrl: 'https://de.wikipedia.org/wiki/Santa_Francesca_Romana',
+        },
+      ],
+    },
+    {
+      period: "7. Regard vers l'est : Islam et Chine",
+      notes:
+        "Bonnes pistes pour la Chine; aucun candidat vraiment solide trouvé pour l'art islamique dans cette extraction.",
+      manifests: [
+        {
+          title: 'Selden Map of China',
+          manifestUrl:
+            'https://iiif.bodleian.ox.ac.uk/iiif/manifest/58b9518f-d5ea-4cb3-aa15-f42640c50ef3.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Selden_Map',
+        },
+        {
+          title: 'China Illustrata',
+          manifestUrl:
+            'https://cdm15129.contentdm.oclc.org/iiif/info/p264101coll7/5302/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/China_illustrata',
+        },
+      ],
+    },
+    {
+      period: '8-11. Le creuset occidental / art roman / art gothique / XIVe siècle',
+      manifests: [
+        {
+          title: 'Sacramentaire de Saint-Étienne de Limoges',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b8530222d/manifest.json',
+          articleUrl:
+            'https://fr.wikipedia.org/wiki/Sacramentaire_de_Saint-%C3%89tienne_de_Limoges',
+        },
+        {
+          title: 'Bible moralisée Oxford-Paris-Londres',
+          manifestUrl:
+            'https://iiif.bodleian.ox.ac.uk/iiif/manifest/4cf7e9d2-c06e-4029-a3b1-152736320897.json',
+          articleUrl:
+            'https://fr.wikipedia.org/wiki/Bible_moralis%C3%A9e_Oxford-Paris-Londres',
+        },
+        {
+          title: 'Bobbio Missal',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b550103970/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Bobbio_Missal',
+        },
+        {
+          title: 'Apocalypse flamande',
+          manifestUrl:
+            'https://gallica.bnf.fr/iiif/ark:/12148/btv1b10532634z/manifest.json',
+          articleUrl: 'https://fr.wikipedia.org/wiki/Apocalypse_flamande',
+        },
+      ],
+    },
+    {
+      period: '12-17. Renaissance : réalité, Italie, Nord des Alpes',
+      manifests: [
+        {
+          title: 'Christ as the Suffering Redeemer, Mantegna',
+          manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=KMSsp69',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Christ_as_the_Suffering_Redeemer_(Mantegna)',
+        },
+        {
+          title: 'Melancholy, Lucas Cranach the Elder',
+          manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=KMSsp722',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Melancholia_(Lucas_Cranach_the_Elder,_Copenhagen)',
+        },
+        {
+          title: 'Raphael and the Fornarina',
+          manifestUrl: 'https://iiif.harvardartmuseums.org/manifests/object/299807',
+          articleUrl: 'https://en.wikipedia.org/wiki/Raphael_and_La_Fornarina',
+        },
+        {
+          title: 'Saint Jerome / Bosch',
+          manifestUrl: 'https://imagehub.mskgent.be/iiif/3/117/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/St._Jerome_at_Prayer_(Bosch)',
+        },
+      ],
+    },
+    {
+      period: '18. Maniérisme / fin du XVIe siècle',
+      manifests: [
+        {
+          title: 'Nativity, Parmigianino',
+          manifestUrl: 'https://gallerycollections.courtauld.ac.uk/api/iiif/O2930/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Nativity_(Parmigianino)',
+        },
+        {
+          title: 'Portrait of the Venetian Painter Giovanni Bellini (?) / Titian context',
+          manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=DEP15',
+          articleUrl:
+            'https://fr.wikipedia.org/wiki/Portrait_d%27homme_(Titien,_Copenhague)',
+        },
+      ],
+    },
+    {
+      period: '19-20. Baroque : Europe catholique et Hollande',
+      manifests: [
+        {
+          title: 'The Entombment of Christ, Caravaggio',
+          manifestUrl: 'https://catalogo.museivaticani.va/service.php/IIIF/4568/manifest',
+          articleUrl:
+            'https://de.wikipedia.org/wiki/Die_Grablegung_Christi_(Caravaggio)',
+        },
+        {
+          title: 'The Kitchen Maid, Rembrandt',
+          manifestUrl:
+            'http://nationalmuseumse.iiifhosting.com/iiif/640882d756112062a94fcb87dff89327bc80499e7b80d89b613f252093ceed10/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/The_Kitchen_Maid_(Rembrandt)',
+        },
+        {
+          title: "Rembrandt's Daughter",
+          manifestUrl: 'https://iiif.harvardartmuseums.org/manifests/object/231931',
+          articleUrl: 'https://en.wikipedia.org/wiki/Rembrandt%27s_Daughter',
+        },
+        {
+          title: 'Self-Portrait, Rubens',
+          manifestUrl: 'https://dams.antwerpen.be/iiif/H1ZNQXINnUOmWBRXJLq7AlLK/manifest',
+          articleUrl: 'https://en.wikipedia.org/wiki/Self-Portrait_(Rubens,_Antwerp)',
+        },
+      ],
+    },
+    {
+      period: '21-23. XVIIe-XVIIIe : puissance, gloire, rococo, Lumières',
+      manifests: [
+        {
+          title: 'The Milliner, Boucher',
+          manifestUrl:
+            'http://nationalmuseumse.iiifhosting.com/iiif/fc30c48013b0fae5438718d3130498c9491f8541d539fc27b99053760b386402/manifest.json',
+          articleUrl:
+            'https://fr.wikipedia.org/wiki/La_Marchande_de_modes_(Boucher)',
+        },
+        {
+          title: 'Rest on the Flight into Egypt, David',
+          manifestUrl: 'https://iiif.kmska.be/iiif/2/47/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Rest_on_the_Flight_into_Egypt_(David,_Antwerp)',
+        },
+        {
+          title: 'Self-Portrait, Ingres',
+          manifestUrl: 'https://iiif.kmska.be/iiif/2/31916/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Self-Portrait_(Ingres)',
+        },
+      ],
+    },
+    {
+      period: '24-25. Rupture et XIXe siècle : néoclassicisme, romantisme, réalisme',
+      manifests: [
+        {
+          title: 'The Source, Ingres',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!525/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/Die_Quelle_(Ingres)',
+        },
+        {
+          title: 'Dolbadarn Castle, Turner',
+          manifestUrl: 'https://damsssl.llgc.org.uk/iiif/2.0/4655776/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Dolbadarn_Castle_(Turner)',
+        },
+        {
+          title: 'Arab Horses Fighting in a Stable, Delacroix',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1038/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/Arab_Horses_Fighting_in_a_Stable',
+        },
+        {
+          title: 'A Burial at Ornans, Courbet',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!924/manifest.json',
+          articleUrl:
+            'https://de.wikipedia.org/wiki/Ein_Begr%C3%A4bnis_in_Ornans',
+        },
+        {
+          title: 'The Gleaners, Millet',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!342/manifest.json',
+          articleUrl: 'https://en.wikipedia.org/wiki/The_Gleaners',
+        },
+      ],
+    },
+    {
+      period: '25-26. Impressionnisme et postimpressionnisme',
+      manifests: [
+        {
+          title: 'The Poppy Field near Argenteuil, Monet',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1010/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/The_Poppy_Field_near_Argenteuil',
+        },
+        {
+          title: 'Bal du moulin de la Galette, Renoir',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!497/manifest.json',
+          articleUrl: 'https://de.wikipedia.org/wiki/Bal_du_moulin_de_la_Galette',
+        },
+        {
+          title: 'The Ballet Class, Degas',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1151/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/The_Ballet_Class_(Degas,_Mus%C3%A9e_d%27Orsay)',
+        },
+        {
+          title: 'Self-portrait, Van Gogh',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!747/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Self-portrait_(van_Gogh,_Paris)',
+        },
+        {
+          title: 'Apples and Oranges, Cézanne',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1470/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Still_Life_with_Apples_and_Oranges',
+        },
+        {
+          title: 'Tahitian Women on the Beach, Gauguin',
+          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!290/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Tahitian_Women_on_the_Beach',
+        },
+      ],
+    },
+    {
+      period: '27-28. Expérimentation moderne / modernisme',
+      manifests: [
+        {
+          title: 'The Green Blouse, Matisse',
+          manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=KMSr174',
+          articleUrl: 'https://fr.wikipedia.org/wiki/La_Blouse_verte_(Matisse)',
+        },
+        {
+          title: 'Blue Nude IV, Matisse',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!201188/manifest.json',
+          articleUrl: 'https://fr.wikipedia.org/wiki/Nu_bleu_IV',
+        },
+        {
+          title: "Trees at l'Estaque, Braque",
+          manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=KMSr7',
+          articleUrl:
+            'https://fr.wikipedia.org/wiki/Arbres_%C3%A0_L%27Estaque_(Braque)',
+        },
+      ],
+    },
+  ],
+};

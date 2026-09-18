@@ -61,6 +61,7 @@ function buildIndex(scriptMap) {
       'src/lib/vendors/leaflet/plugins/leaflet-hash.js',
       scriptMap['src/app/data/catalogs.js'],
       'src/app/data/randomIiifManifests.js',
+      scriptMap['src/app/data/gombrichIiifManifests.js'],
       scriptMap['src/app/entry/i18n-runtime.js'] + '?v=20260807-fr-default',
       'src/lib/vendors/gsap/gsap.min.js',
       scriptMap['src/app/entry/main.js'] + '?v=20260807-fr-default',
@@ -92,6 +93,7 @@ async function run() {
     'src/app/styles/app.css',
     'src/app/entry/bootstrap.js',
     'src/app/data/randomIiifManifests.js',
+    'src/app/data/gombrichIiifManifests.js',
     'LICENSE',
   ];
 
@@ -105,6 +107,7 @@ async function run() {
     minifyJavaScript('src/app/entry/main.js'),
     minifyJavaScript('src/app/entry/i18n-runtime.js'),
     minifyJavaScript('src/app/data/catalogs.js'),
+    minifyJavaScript('src/app/data/gombrichIiifManifests.js'),
   ]);
 
   const scriptMap = output.reduce((acc, item) => {

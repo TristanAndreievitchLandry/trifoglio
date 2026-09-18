@@ -508,6 +508,95 @@ if (map.attributionControl) {
   updateAttributionPrefix();
 }
 
+const ATTRIBUTION_TEXT_MAX_LENGTH = 120;
+const IIIF_SOURCE_TEXT_MAX_LENGTH = 70;
+
+function normalizeManifestUrlForLookup(url) {
+  return String(url || '')
+    .trim()
+    .replace(/\/+$/, '');
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function truncateText(value, maxLength) {
+  const text = String(value || '').trim();
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return text.slice(0, maxLength).trimEnd() + '…';
+}
+
+function truncateForAttribution(value) {
+  return truncateText(value, ATTRIBUTION_TEXT_MAX_LENGTH);
+}
+
+function findGombrichManifestMetadata(manifestUrl) {
+  const catalog = window.trifoglioGombrichIiifManifests;
+  const normalizedUrl = normalizeManifestUrlForLookup(manifestUrl);
+  if (!catalog || !Array.isArray(catalog.periods) || !normalizedUrl) {
+    return null;
+  }
+
+  for (const period of catalog.periods) {
+    const manifests = Array.isArray(period.manifests) ? period.manifests : [];
+    for (const manifest of manifests) {
+      if (
+        normalizeManifestUrlForLookup(manifest.manifestUrl) === normalizedUrl
+      ) {
+        return {
+          period: period.period,
+          title: manifest.title,
+          articleUrl: manifest.articleUrl,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function buildGombrichDescription(manifestUrl) {
+  const metadata = findGombrichManifestMetadata(manifestUrl);
+  if (!metadata) {
+    return null;
+  }
+
+  const description = [metadata.period, metadata.title]
+    .filter(Boolean)
+    .join(' — ');
+  const text = escapeHtml(truncateForAttribution(description));
+  if (!metadata.articleUrl) {
+    return text;
+  }
+
+  return (
+    '<a href="' +
+    escapeHtml(metadata.articleUrl) +
+    '" target="_blank" rel="noopener noreferrer">' +
+    text +
+    '</a>'
+  );
+}
+
+function appendAttributionDescription(sourceAttribution, description) {
+  if (!description) {
+    return sourceAttribution;
+  }
+
+  return sourceAttribution
+    ? sourceAttribution + ' · ' + description
+    : description;
+}
+
 map.on('popupopen', function (event) {
   if (!event || !event.popup) {
     return;
@@ -3765,26 +3854,6 @@ function loadIIIFManifest(manifestUrl, options = {}) {
     return firstService.id || firstService['@id'] || null;
   }
 
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  const ATTRIBUTION_TEXT_MAX_LENGTH = 120;
-
-  function truncateForAttribution(value) {
-    const text = String(value || '').trim();
-    if (text.length <= ATTRIBUTION_TEXT_MAX_LENGTH) {
-      return text;
-    }
-
-    return text.slice(0, ATTRIBUTION_TEXT_MAX_LENGTH).trimEnd() + '…';
-  }
-
   function getText(value, fallbackIndex) {
     if (!value) {
       return null;
@@ -3858,13 +3927,15 @@ function loadIIIFManifest(manifestUrl, options = {}) {
           ': <a href="' +
           escapeHtml(homepage) +
           '" target="_blank" rel="noopener noreferrer">' +
-          escapeHtml(truncateForAttribution(name)) +
+          escapeHtml(truncateText(name, IIIF_SOURCE_TEXT_MAX_LENGTH)) +
           '</a>'
         );
       }
 
       return (
-        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(name))
+        t('viewer.iiifSource') +
+        ': ' +
+        escapeHtml(truncateText(name, IIIF_SOURCE_TEXT_MAX_LENGTH))
       );
     }
 
@@ -3874,7 +3945,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       return (
         t('viewer.iiifSource') +
         ': ' +
-        escapeHtml(truncateForAttribution(attributionText))
+        escapeHtml(truncateText(attributionText, IIIF_SOURCE_TEXT_MAX_LENGTH))
       );
     }
 
@@ -3884,7 +3955,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       return (
         t('viewer.iiifSource') +
         ': ' +
-        escapeHtml(truncateForAttribution(manifestLabel))
+        escapeHtml(truncateText(manifestLabel, IIIF_SOURCE_TEXT_MAX_LENGTH))
       );
     }
 
@@ -3973,13 +4044,24 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
       const randomMetadata = options.randomMetadata;
-      const attribution = randomMetadata
+      const sourceAttribution = randomMetadata
         ? t('viewer.iiifSource') +
           ': ' +
-          escapeHtml(truncateForAttribution(randomMetadata.title)) +
+          escapeHtml(
+            truncateText(randomMetadata.title, IIIF_SOURCE_TEXT_MAX_LENGTH),
+          ) +
           ' - ' +
-          escapeHtml(truncateForAttribution(randomMetadata.institution))
+          escapeHtml(
+            truncateText(
+              randomMetadata.institution,
+              IIIF_SOURCE_TEXT_MAX_LENGTH,
+            ),
+          )
         : buildManifestSourceAttribution(data, manifestUrl);
+      const attribution = appendAttributionDescription(
+        sourceAttribution,
+        buildGombrichDescription(manifestUrl),
+      );
       setIIIFAttribution(attribution);
 
       // Reset previous layers each time a new manifest is loaded.

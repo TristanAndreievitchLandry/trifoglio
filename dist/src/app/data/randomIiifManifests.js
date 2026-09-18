@@ -216,6 +216,12 @@ window.trifoglioRandomIiifManifests = [
     type: 'painting',
   },
   {
+    url: 'https://iiif-cache.digitalhumanities.fas.harvard.edu/iiif/manifest?manifest=https%3A%2F%2Fnrs.lib.harvard.edu%2FURN-3%3AAT%3AGENLyFfeEcz3FGTZc536bSwya%3AMANIFEST%3A3',
+    title: 'Devi Enthroned (c. 1660-1670)',
+    institution: 'Museum of Fine Arts, Boston',
+    type: 'painting',
+  },
+  {
     url: 'https://iiif.harvardartmuseums.org/manifests/object/209698',
     title: 'Gong Xian, Landscape (mid-17th century)',
     institution: 'Harvard Art Museums',
@@ -258,5 +264,62 @@ window.trifoglioRandomIiifManifests = [
     url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~374665~90141167/manifest',
     title: 'Medieval World Map (Mappa Mundi)',
     institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://purl.stanford.edu/zm563pn6730/iiif/manifest',
+    title: 'Typus Orbis Terrarum, Abraham Ortelius (1570)',
+    institution: 'David Rumsey Map Center, Stanford University Libraries',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~286311~90058830/manifest',
+    title: 'Tabula orbis cum descriptione ventorum',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://dlg.usg.edu/record/guan_hmap_hmap1550m8/presentation/manifest.json',
+    title: 'Tabula nouarum insularum (Sebastian Münster, 1550)',
+    institution:
+      'Hargrett Rare Book and Manuscript Library, University of Georgia',
+  },
+  {
+    url: 'https://purl.stanford.edu/cn491rz6351/iiif/manifest',
+    title: 'Americam utramque aliis correctiorem (Nueva España, 1561)',
+    institution: 'Stanford University Libraries',
+  },
+  {
+    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b5901086g/manifest.json',
+    title:
+      "Planisphère de l'Atlas nautique du monde, Battista Agnese (1540-1550)",
+    institution: 'Gallica, Bibliothèque nationale de France',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~286438~90058933/manifest',
+    title: 'Nueva Hispania tabula nova (1561)',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~324792~90093828/manifest',
+    title: 'Atlas Historique, Chatelain et Gueudeville (1719)',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b8446636q/manifest.json',
+    title: "L'Amérique ou le Nouveau Monde (1596)",
+    institution: 'Gallica, Bibliothèque nationale de France',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~377137~90143274/manifest',
+    title: 'La Carta del Cantino (1502)',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://www.davidrumsey.com/luna/servlet/iiif/m/RUMSEY~8~1~358527~90126555/manifest',
+    title: 'Blatt XIII, Nuremberg Chronicle',
+    institution: 'David Rumsey Map Collection',
+  },
+  {
+    url: 'https://digi.vatlib.it/iiif/MSS_Borg.Carte.naut.III/manifest.json',
+    title: 'Carte du monde, Diego Ribeiro (1529)',
+    institution: 'Biblioteca Apostolica Vaticana',
   },
 ];

@@ -611,3 +611,541 @@ En particulier :
 6. conserver suffisamment d'informations pour pouvoir introduire ultérieurement l'historique, la collaboration et la synchronisation.
 
 L'objectif n'est pas de transformer Trifoglio en système entièrement « event-sourced », mais de conserver la possibilité d'introduire progressivement ces fonctionnalités sans refonte majeure de la base de données.
+/////////////////////////////
+
+## Collaboration et groupes — Trifoglio Pro
+
+Trifoglio évoluera d’un outil individuel d’annotation IIIF vers un **espace collaboratif de travail sur les cartes et les images**.
+
+### Concept
+
+Les utilisateurs Pro pourront créer des **groupes de travail** autour d’une carte ou d’une image IIIF. Plusieurs personnes pourront alors annoter simultanément le même document spatial, partager leurs observations et construire collectivement un corpus d’annotations.
+
+L’image ou la carte IIIF constitue le **référentiel spatial commun** du groupe.
+
+### Fonctionnalités envisagées
+
+- création de projets et de groupes de travail ;
+- invitation de personnes participantes ;
+- rôles et permissions : propriétaire, éditeur, contributeur, lecture seule ;
+- annotations partagées : points, lignes, polygones, textes et images ;
+- couleurs par personne, catégorie ou type d’annotation ;
+- commentaires associés aux annotations ;
+- historique et versionnement des modifications ;
+- validation ou révision des annotations ;
+- visualisation des contributions de chaque personne ;
+- export des résultats en GeoJSON, Web Annotation et JSON Trifoglio.
+
+### Distinction projet / groupe
+
+Un **projet** correspond au contenu et aux documents étudiés.
+
+Un **groupe** correspond aux personnes autorisées à travailler sur ces documents.
+
+Un même projet pourra donc accueillir plusieurs groupes, et un groupe pourra travailler sur plusieurs cartes ou images.
+
+```text
+Projet
+│
+├── Carte / Image 1
+│   ├── Groupe A
+│   └── Groupe B
+│
+├── Carte / Image 2
+│   └── Groupe A
+│
+└── Image 3
+    └── Groupe C
+```
+
+### Architecture
+
+Cette évolution s’intègre à une architecture fondée sur :
+
+- **Cognito** pour l’authentification ;
+- **PostgreSQL/PostGIS** pour les utilisateurs, projets, groupes et annotations ;
+- **IIIF** comme infrastructure de diffusion des images ;
+- un système d’événements et de versionnement permettant éventuellement la **synchronisation en temps réel** des annotations.
+
+Le modèle d’annotation doit être conçu dès le départ pour permettre plusieurs auteurs, les modifications concurrentes, l’historique et la validation.
+
+### Positionnement de Trifoglio Pro
+
+La collaboration constitue un axe majeur de la version Pro. La valeur ajoutée ne repose plus uniquement sur des fonctionnalités supplémentaires, mais sur la possibilité de **faire travailler plusieurs personnes sur un même document spatial et de conserver la trace de leur démarche**.
+
+À terme, Trifoglio pourrait ainsi devenir un **laboratoire collaboratif de cartographie et d’annotation historique**, particulièrement adapté à l’enseignement, à la recherche et aux projets collectifs.
+/////////////////////////////
+
+## Collaboration et groupes — Trifoglio Pro
+
+Trifoglio évoluera d’un outil individuel d’annotation IIIF vers un **espace collaboratif de travail sur les cartes et les images**.
+
+### Concept
+
+Les utilisateurs Pro pourront créer des **groupes de travail** autour d’une carte ou d’une image IIIF. Plusieurs personnes pourront alors annoter simultanément le même document spatial, partager leurs observations et construire collectivement un corpus d’annotations.
+
+L’image ou la carte IIIF constitue le **référentiel spatial commun** du groupe.
+
+### Usages pédagogiques prioritaires
+
+La collaboration sera d’abord conçue pour les **cours universitaires, les séminaires et les ateliers pratiques**.
+
+Cas d’usage prioritaires :
+
+- **Travail en équipe** : plusieurs personnes étudiantes annotent collectivement une même carte ou image.
+- **Analyse comparative** : différents groupes travaillent sur le même document et leurs annotations sont ensuite comparées.
+- **Répartition des tâches** : chaque personne ou sous-groupe reçoit une catégorie d’éléments à identifier — lieux, routes, frontières, bâtiments, végétation, personnages, etc.
+- **Lecture critique des cartes** : les personnes étudiantes identifient les choix, omissions, classifications et représentations présentes dans une carte.
+- **Exercice de cartographie historique** : repérage et annotation de territoires, itinéraires, frontières ou transformations spatiales.
+- **Travail dirigé en classe** : l’enseignante ou l’enseignant projette une même image et suit les annotations produites par les personnes étudiantes.
+- **Évaluation de la démarche** : l’historique des annotations permet de documenter la progression du travail plutôt que de conserver uniquement le résultat final.
+- **Discussion autour des annotations** : les personnes étudiantes peuvent commenter, questionner ou proposer des modifications aux annotations des autres.
+- **Validation par l’enseignante ou l’enseignant** : les annotations peuvent être révisées, commentées et validées avant leur intégration au résultat final.
+- **Production collective** : le groupe produit finalement un corpus d’annotations exportable et réutilisable dans un travail, une exposition ou un projet de recherche.
+
+### Exemple pédagogique
+
+Une personne enseignante fournit une carte historique IIIF à un groupe de 5 personnes étudiantes.
+
+```text id="71942"
+Carte historique
+       │
+       ▼
+Groupe de travail
+       │
+ ┌─────┼─────┬─────┬─────┐
+ │     │     │     │     │
+Routes Lieux Frontières Ressources Commentaires
+ │     │     │     │     │
+ └─────┴─────┴─────┴─────┘
+              │
+              ▼
+       Corpus collectif
+              │
+              ▼
+       Validation / discussion
+              │
+              ▼
+        Export / remise
+```
+
+L’enseignante ou l’enseignant peut ensuite consulter **qui a produit quelle annotation, quand et à partir de quelles modifications**.
+
+Cette traçabilité est particulièrement importante pour les activités pédagogiques fondées sur la démarche historienne : Trifoglio conserve non seulement le résultat, mais également une partie du **processus d’observation, d’interprétation et de discussion**.
+
+### Fonctionnalités envisagées
+
+- création de projets et de groupes de travail ;
+- invitation de personnes participantes ;
+- rôles et permissions : propriétaire, éditeur, contributeur, lecture seule ;
+- annotations partagées : points, lignes, polygones, textes et images ;
+- couleurs par personne, catégorie ou type d’annotation ;
+- commentaires associés aux annotations ;
+- historique et versionnement des modifications ;
+- validation ou révision des annotations ;
+- visualisation des contributions de chaque personne ;
+- export des résultats en GeoJSON, Web Annotation et JSON Trifoglio.
+
+### Distinction projet / groupe
+
+Un **projet** correspond au contenu et aux documents étudiés.
+
+Un **groupe** correspond aux personnes autorisées à travailler sur ces documents.
+
+Un même projet pourra donc accueillir plusieurs groupes, et un groupe pourra travailler sur plusieurs cartes ou images.
+
+### Architecture
+
+Cette évolution s’intègre à une architecture fondée sur :
+
+- **Cognito** pour l’authentification ;
+- **PostgreSQL/PostGIS** pour les utilisateurs, projets, groupes et annotations ;
+- **IIIF** comme infrastructure de diffusion des images ;
+- un système d’événements et de versionnement permettant éventuellement la **synchronisation en temps réel** des annotations.
+
+Le modèle d’annotation doit être conçu dès le départ pour permettre plusieurs auteurs, les modifications concurrentes, l’historique et la validation.
+
+### Positionnement de Trifoglio Pro
+
+La collaboration constitue un axe majeur de la version Pro. La valeur ajoutée ne repose plus uniquement sur des fonctionnalités supplémentaires, mais sur la possibilité de **faire travailler plusieurs personnes sur un même document spatial et de conserver la trace de leur démarche**.
+
+Le premier marché cible de cette fonctionnalité est l’**enseignement supérieur**, où Trifoglio peut servir à organiser des exercices d’analyse collective, des travaux pratiques, des séminaires et des évaluations fondées sur la démarche.
+
+À terme, Trifoglio pourrait ainsi devenir un **laboratoire collaboratif de cartographie et d’annotation historique**, adapté à l’enseignement, à la recherche et aux projets collectifs.
+/////////////////////////////////////
+
+## Usages pédagogiques prioritaires
+
+Les fonctionnalités collaboratives de Trifoglio Pro seront développées en priorité pour les usages pédagogiques suivants.
+
+### 1. Annotation collective d’une même carte ou image
+
+**Priorité : très élevée**
+
+Plusieurs personnes étudiantes travaillent simultanément sur le même document IIIF et produisent un corpus commun d’annotations.
+
+**Objectif pédagogique :** apprendre à observer, localiser, décrire et interpréter collectivement une source visuelle.
+
+C’est le **cas d’usage fondamental** de la collaboration dans Trifoglio.
+
+---
+
+### 2. Travail en équipes avec répartition des tâches
+
+**Priorité : très élevée**
+
+Une même carte est distribuée entre plusieurs personnes ou sous-groupes, chacun étant responsable d’un type d’élément :
+
+- frontières ;
+- routes et itinéraires ;
+- lieux ;
+- bâtiments ;
+- ressources ;
+- éléments naturels ;
+- toponymes ;
+- zones d’incertitude.
+
+**Objectif pédagogique :** développer une méthode d’analyse structurée et produire collectivement un corpus cohérent.
+
+---
+
+### 3. Comparaison des interprétations
+
+**Priorité : élevée**
+
+Plusieurs groupes travaillent sur **la même source**, mais leurs annotations restent séparées.
+
+L’enseignante ou l’enseignant peut ensuite afficher les différents corpus et faire comparer les interprétations.
+
+**Objectif pédagogique :** montrer qu’une source cartographique ou visuelle peut faire l’objet de lectures différentes et amener les personnes étudiantes à justifier leurs choix.
+
+---
+
+### 4. Discussion et révision des annotations
+
+**Priorité : élevée**
+
+Une annotation devient un objet de discussion :
+
+```text
+Annotation
+   │
+   ├── proposition
+   ├── commentaire
+   ├── contre-interprétation
+   └── validation / révision
+```
+
+**Objectif pédagogique :** faire passer les personnes étudiantes de la simple identification à l’argumentation et à la confrontation des interprétations.
+
+---
+
+### 5. Suivi de la démarche historienne
+
+**Priorité : élevée**
+
+Trifoglio conserve l’auteur, les modifications et l’historique des annotations.
+
+L’évaluation peut donc porter sur **la démarche**, et non uniquement sur le produit final.
+
+**Objectif pédagogique :** rendre visible le processus d’observation, de recherche, d’interprétation, de correction et de validation.
+
+---
+
+### 6. Activité dirigée en classe
+
+**Priorité : moyenne**
+
+L’enseignante ou l’enseignant utilise Trifoglio en temps réel :
+
+1. affiche une source ;
+2. demande une observation ;
+3. les personnes étudiantes proposent des annotations ;
+4. les annotations apparaissent collectivement ;
+5. la classe discute les interprétations.
+
+**Objectif pédagogique :** transformer une analyse individuelle en discussion collective autour d’une source primaire.
+
+---
+
+### 7. Production d’un corpus réutilisable
+
+**Priorité : moyenne**
+
+Le travail réalisé dans le cadre du cours peut être exporté et réutilisé pour :
+
+- un travail écrit ;
+- une exposition numérique ;
+- une présentation ;
+- une autre activité pédagogique ;
+- un projet de recherche.
+
+**Objectif pédagogique :** faire comprendre que l’annotation constitue une production documentaire et non une activité jetable.
+
+---
+
+## Priorités de développement
+
+Pour le développement de Trifoglio Pro, je concentrerais le premier cycle sur **trois fonctions pédagogiques** :
+
+```text
+1. ANNOTER ENSEMBLE
+        ↓
+2. DISCUTER / COMPARER
+        ↓
+3. CONSERVER LA DÉMARCHE
+```
+
+Cela implique que la première version collaborative devrait privilégier :
+
+- groupes ;
+- membres et permissions simples ;
+- annotations partagées ;
+- attribution des annotations à une personne ;
+- commentaires ;
+- historique minimal ;
+- possibilité de séparer les travaux de plusieurs groupes sur une même image ;
+- export du corpus final.
+
+Les fonctions plus complexes — synchronisation en temps réel avancée, validation élaborée, statistiques pédagogiques, etc. — peuvent venir ensuite.
+
+**Principe directeur :** Trifoglio ne doit pas seulement permettre à plusieurs personnes d’annoter une image ; il doit permettre à une enseignante ou un enseignant de **faire de l’annotation un objet d’apprentissage, de discussion et d’évaluation**.
+//////////////////////////////////////
+
+## Critères de hiérarchisation des usages pédagogiques
+
+Les usages pédagogiques sont hiérarchisés selon cinq critères, chacun pouvant être évalué de 1 à 5.
+
+| Critère                        | Question                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------------- |
+| **Valeur pédagogique**         | L’usage permet-il de développer une compétence importante ?                         |
+| **Spécificité de Trifoglio**   | L’usage exploite-t-il particulièrement bien l’annotation IIIF et l’espace spatial ? |
+| **Fréquence d’utilisation**    | Peut-il être utilisé régulièrement dans différents cours ?                          |
+| **Simplicité pédagogique**     | Est-il facile à expliquer et à intégrer dans une activité de cours ?                |
+| **Potentiel de développement** | L’usage peut-il servir de base à d’autres fonctionnalités de Trifoglio ?            |
+
+### 1. Valeur pédagogique — critère principal
+
+Le premier critère est la capacité de l’activité à développer une compétence identifiable : observation, analyse de source, interprétation spatiale, argumentation, collaboration ou démarche historienne.
+
+Un usage techniquement intéressant mais pédagogiquement faible ne doit pas être prioritaire.
+
+### 2. Spécificité de Trifoglio
+
+La priorité augmente lorsque l’activité dépend directement des caractéristiques de Trifoglio :
+
+- image IIIF ;
+- espace de coordonnées ;
+- annotation spatiale ;
+- superposition de plusieurs interprétations ;
+- collaboration autour d’une même source.
+
+L’objectif est d’éviter de développer des fonctionnalités que d’autres outils généralistes permettent déjà de réaliser aussi bien.
+
+### 3. Fréquence et transférabilité
+
+Une fonctionnalité utilisée dans un seul type de cours est moins prioritaire qu'une fonctionnalité utilisable dans :
+
+- histoire ;
+- géographie ;
+- histoire de l’art ;
+- archéologie ;
+- études environnementales ;
+- patrimoine ;
+- autres disciplines utilisant des documents visuels ou cartographiques.
+
+### 4. Simplicité d’intégration
+
+Une activité doit pouvoir être mise en place rapidement par une personne enseignante.
+
+La priorité est donc plus élevée lorsque le scénario peut être résumé simplement :
+
+> **Je fournis une image → je crée un groupe → les personnes étudiantes annotent → nous discutons → j’évalue le résultat.**
+
+### 5. Potentiel comme fondation technique
+
+Certaines fonctionnalités ont une valeur supérieure parce qu’elles permettent d’en construire d’autres.
+
+Par exemple, **les groupes et les permissions** constituent une infrastructure pour :
+
+- le travail en équipe ;
+- la comparaison de groupes ;
+- la validation ;
+- l’évaluation ;
+- l'historique ;
+- les projets de recherche collaboratifs.
+
+Elles peuvent donc être prioritaires même si leur usage pédagogique immédiat est relativement simple.
+
+## Principe de décision
+
+La hiérarchisation doit privilégier les fonctionnalités qui combinent :
+
+**forte valeur pédagogique + forte spécificité de Trifoglio + utilisation fréquente + simplicité d’usage + potentiel d’extension.**
+
+La difficulté technique ne constitue pas en elle-même un critère de priorité pédagogique. Elle intervient ensuite dans la décision de développement et dans la planification des versions.
+//////////////////////////////
+
+# Trifoglio Pro — Collaboration et usages pédagogiques
+
+## Vision
+
+Trifoglio doit évoluer d’un outil individuel d’annotation IIIF vers un **espace collaboratif de travail sur les cartes et les images**.
+
+Les utilisateurs Pro pourront créer des **projets et des groupes de travail** autour d’une ou plusieurs ressources IIIF. Plusieurs personnes pourront annoter une même image, discuter leurs interprétations et construire collectivement un corpus d’annotations.
+
+L’image ou la carte IIIF constitue le **référentiel spatial commun** du groupe.
+
+## Modèle projet / groupe
+
+Un **projet** correspond au contenu et aux documents étudiés.
+
+Un **groupe** correspond aux personnes autorisées à travailler sur ces documents.
+
+Un projet peut donc contenir plusieurs groupes, et un groupe peut travailler sur plusieurs cartes ou images.
+
+```text
+Projet
+│
+├── Carte / Image 1
+│   ├── Groupe A
+│   └── Groupe B
+│
+├── Carte / Image 2
+│   └── Groupe A
+│
+└── Image 3
+    └── Groupe C
+```
+
+## Usages pédagogiques prioritaires
+
+### 1. Annotation collective — très élevée
+
+Plusieurs personnes étudiantes annotent simultanément la même carte ou image.
+
+**Compétences :** observation, localisation, description, interprétation et collaboration.
+
+C’est le **cas d’usage fondamental** de la collaboration dans Trifoglio.
+
+### 2. Travail en équipes — très élevée
+
+Les personnes ou sous-groupes se répartissent l’analyse : frontières, routes, lieux, bâtiments, ressources, éléments naturels, toponymes, zones d’incertitude, etc.
+
+**Compétence :** construire collectivement une analyse structurée.
+
+### 3. Comparaison des interprétations — élevée
+
+Plusieurs groupes travaillent sur la même source avec des corpus d’annotations distincts, qui peuvent ensuite être comparés.
+
+**Compétence :** confronter et justifier différentes interprétations d’une même source.
+
+### 4. Discussion et révision — élevée
+
+Les annotations deviennent des objets de discussion :
+
+```text
+proposition → commentaire → contre-interprétation → révision → validation
+```
+
+**Compétence :** passer de l’identification à l’argumentation.
+
+### 5. Suivi de la démarche historienne — élevée
+
+Trifoglio conserve l’auteur, les modifications et l’historique des annotations.
+
+**Compétence :** rendre visible le processus d’observation, de recherche, d’interprétation et de correction.
+
+### 6. Activité dirigée en classe — moyenne
+
+Une source est affichée, les personnes étudiantes proposent des annotations en direct, puis la classe discute collectivement les résultats.
+
+### 7. Corpus réutilisable — moyenne
+
+Les annotations peuvent être exportées et réutilisées dans un travail, une exposition numérique, une présentation ou un projet de recherche.
+
+## Critères de hiérarchisation
+
+Les usages sont évalués selon cinq critères :
+
+1. **Valeur pédagogique** — quelle compétence l’activité développe-t-elle ?
+2. **Spécificité de Trifoglio** — exploite-t-elle réellement IIIF, l’espace et l’annotation ?
+3. **Fréquence et transférabilité** — peut-elle être utilisée régulièrement et dans plusieurs disciplines ?
+4. **Simplicité d’intégration** — une personne enseignante peut-elle facilement l’intégrer à un cours ?
+5. **Potentiel de développement** — constitue-t-elle une base pour d’autres fonctionnalités ?
+
+La priorité revient aux fonctionnalités combinant **forte valeur pédagogique, forte spécificité de Trifoglio, utilisation fréquente, simplicité d’usage et potentiel d’extension**.
+
+La difficulté technique est évaluée séparément : elle influence la planification du développement, mais ne détermine pas la valeur pédagogique.
+
+## Priorités de développement
+
+Le premier cycle collaboratif doit se concentrer sur trois fonctions :
+
+```text
+ANNOTER ENSEMBLE
+       ↓
+DISCUTER / COMPARER
+       ↓
+CONSERVER LA DÉMARCHE
+```
+
+### Version initiale
+
+- création de groupes ;
+- membres et permissions simples ;
+- annotations partagées ;
+- attribution des annotations à chaque personne ;
+- commentaires ;
+- historique minimal ;
+- séparation des travaux de plusieurs groupes sur une même image ;
+- export du corpus final.
+
+### Évolutions
+
+- synchronisation en temps réel avancée ;
+- validation et workflow de révision ;
+- statistiques pédagogiques ;
+- outils d’évaluation ;
+- gestion avancée des projets et des cohortes.
+
+## Architecture envisagée
+
+La collaboration s’intègre à l’architecture existante :
+
+```text
+IIIF
+ │
+ ▼
+Images / Cartes
+ │
+ ▼
+Trifoglio
+ │
+ ├── Projets
+ │    └── Groupes
+ │         └── Membres / Permissions
+ │
+ └── Annotations
+      ├── Auteur
+      ├── Géométrie
+      ├── Commentaires
+      ├── Versions
+      └── Validation
+             │
+             ▼
+       PostgreSQL / PostGIS
+```
+
+**Cognito** pourra gérer l’authentification et PostgreSQL/PostGIS les utilisateurs, projets, groupes et annotations.
+
+Le modèle d’annotation doit être conçu dès le départ pour supporter **plusieurs auteurs, les modifications concurrentes, l’historique et la validation**.
+
+## Positionnement de Trifoglio Pro
+
+La collaboration constitue un axe majeur de Trifoglio Pro. La valeur ajoutée n’est pas simplement de permettre à plusieurs personnes d’annoter une image, mais de transformer l’annotation en **objet d’apprentissage, de discussion, de collaboration et d’évaluation**.
+
+Le premier marché cible est l’**enseignement supérieur**, avec un potentiel d’extension vers la recherche collaborative, le patrimoine et les projets institutionnels.
+
+À terme, Trifoglio peut devenir un **laboratoire collaboratif de cartographie et d’annotation IIIF**.
+//////////////////////////////////

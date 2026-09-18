@@ -15,6 +15,7 @@
       'src/lib/vendors/leaflet/plugins/leaflet-hash.js?v=' + runtimeStamp,
       'src/app/data/catalogs.js?v=' + runtimeStamp,
       'src/app/data/randomIiifManifests.js?v=' + runtimeStamp,
+      'src/app/data/gombrichIiifManifests.js?v=' + runtimeStamp,
       'src/app/entry/i18n-runtime.js?v=20260807-fr-default&cache=' +
         runtimeStamp,
       'src/lib/vendors/gsap/gsap.min.js?v=' + runtimeStamp,
@@ -35,6 +36,10 @@
 
     if (cleanSrc === 'src/app/data/catalogs.js') {
       return 'catalogs.min.js' + query;
+    }
+
+    if (cleanSrc === 'src/app/data/gombrichIiifManifests.js') {
+      return 'gombrichIiifManifests.min.js' + query;
     }
 
     if (cleanSrc === 'src/app/entry/i18n-runtime.js') {

@@ -125,24 +125,52 @@ L.TileLayer.Iiif = L.TileLayer.extend({
             return;
           }
 
-          var currentUrl = target.currentSrc || target.src;
+          var originalUrl = target.getAttribute('data-trf-tile-original-src');
+          if (!originalUrl) {
+            originalUrl = target.currentSrc || target.src;
+            target.setAttribute('data-trf-tile-original-src', originalUrl);
+          }
+
           var attempt = parseInt(
             target.getAttribute('data-trf-tile-attempt') || '0',
             10,
           );
-          var isAlreadyProxied =
-            currentUrl.indexOf(_this.options.tileProxyBase || '') !== -1;
+          // Transient network errors (reset connections, timeouts) are common
+          // with some IIIF hosts, so retry the direct URL a couple of times
+          // before falling back to the proxy, instead of giving up after a
+          // single failure and leaving a black tile.
+          var maxDirectRetries = 2;
+          var maxProxyRetries = 2;
 
-          if (
-            attempt >= 1 ||
-            !_this.options.tileProxyBase ||
-            isAlreadyProxied
-          ) {
+          if (attempt < maxDirectRetries) {
+            target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
+            setTimeout(
+              function () {
+                target.src = originalUrl;
+              },
+              400 * (attempt + 1),
+            );
+            return;
+          }
+
+          if (!_this.options.tileProxyBase) {
+            return;
+          }
+
+          var proxyAttempt = attempt - maxDirectRetries;
+          if (proxyAttempt > maxProxyRetries) {
             return;
           }
 
           target.setAttribute('data-trf-tile-attempt', String(attempt + 1));
-          target.src = _this._getProxyUrl(currentUrl);
+          var proxyUrl = _this._getProxyUrl(originalUrl);
+          if (proxyAttempt === 0) {
+            target.src = proxyUrl;
+          } else {
+            setTimeout(function () {
+              target.src = proxyUrl;
+            }, 400 * proxyAttempt);
+          }
         });
       })
       .catch(function (error) {
