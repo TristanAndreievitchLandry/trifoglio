@@ -2713,9 +2713,7 @@ function focusAnnotationLayer(layer) {
   // make the whole map and its layers vanish, so bail out defensively.
   function isFiniteLatLng(latLng) {
     return (
-      !!latLng &&
-      Number.isFinite(latLng.lat) &&
-      Number.isFinite(latLng.lng)
+      !!latLng && Number.isFinite(latLng.lat) && Number.isFinite(latLng.lng)
     );
   }
 
@@ -3841,14 +3839,18 @@ function loadIIIFManifest(manifestUrl, options = {}) {
         );
       }
 
-      return t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(name));
+      return (
+        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(name))
+      );
     }
 
     // IIIF Presentation 2 often has attribution text.
     const attributionText = getText(root.attribution);
     if (attributionText) {
       return (
-        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(attributionText))
+        t('viewer.iiifSource') +
+        ': ' +
+        escapeHtml(truncateForAttribution(attributionText))
       );
     }
 
@@ -3856,7 +3858,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
     const manifestLabel = getText(root.label);
     if (manifestLabel) {
       return (
-        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(manifestLabel))
+        t('viewer.iiifSource') +
+        ': ' +
+        escapeHtml(truncateForAttribution(manifestLabel))
       );
     }
 
@@ -4385,13 +4389,12 @@ loadFromLocalStorage();
 
 var div = document.createElement('div');
 div.id = 'coordsDiv';
-div.style.position = 'absolute';
-div.style.bottom = '0';
-div.style.left = '0';
+div.style.position = 'fixed';
+div.style.top = '10px';
 div.style.backgroundColor = 'black';
 div.style.color = 'white';
 div.style.padding = '2px 4px';
-div.style.zIndex = '999';
+div.style.zIndex = '5999';
 div.style.boxSizing = 'border-box';
 div.style.maxWidth = 'calc(100% - 12px)';
 div.style.overflow = 'hidden';
@@ -4413,29 +4416,20 @@ function updateCoordsLayout() {
     return;
   }
 
-  div.style.bottom = '0';
-  div.style.maxWidth = 'calc(100% - 12px)';
-
-  var attributionControl = document.querySelector(
-    '.leaflet-control-attribution',
-  );
-  if (!attributionControl) {
+  // Position the coords readout just left of the top-right button column
+  // (next to the info button) instead of at the bottom of the map.
+  var buttonContainer = document.querySelector('.button-container');
+  if (!buttonContainer) {
     return;
   }
 
   var gap = 8;
-  var mapBounds = map.getContainer().getBoundingClientRect();
-  var coordsBounds = div.getBoundingClientRect();
-  var attributionBounds = attributionControl.getBoundingClientRect();
-  var overlapsHorizontally = coordsBounds.right + gap > attributionBounds.left;
+  var containerBounds = buttonContainer.getBoundingClientRect();
 
-  if (!overlapsHorizontally) {
-    return;
-  }
-
-  div.style.bottom =
-    Math.max(0, mapBounds.bottom - attributionBounds.top + gap) + 'px';
-  div.style.maxWidth = 'calc(100% - 12px)';
+  div.style.top = Math.max(0, containerBounds.top) + 'px';
+  div.style.right =
+    Math.max(0, window.innerWidth - containerBounds.left + gap) + 'px';
+  div.style.maxWidth = Math.max(0, containerBounds.left - gap * 2) + 'px';
 }
 
 function scheduleCoordsLayout() {
@@ -4454,6 +4448,7 @@ function scheduleCoordsLayout() {
     updateCoordsLayout();
   });
 }
+
 
 function updateHashCoords() {
   var formattedHash =
