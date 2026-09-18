@@ -2647,6 +2647,51 @@ function flashAnnotationLayer(layer) {
   }
 }
 
+let annotationsRevealTimeoutId = null;
+let annotationsRevealMoveEndHandler = null;
+
+function setAnnotationsTransitionHidden(hidden) {
+  if (!map || typeof map.getContainer !== 'function') {
+    return;
+  }
+
+  const container = map.getContainer();
+  if (container) {
+    container.classList.toggle('trf-annotations-in-transit', hidden);
+  }
+}
+
+function cancelPendingAnnotationsReveal() {
+  if (annotationsRevealTimeoutId !== null) {
+    clearTimeout(annotationsRevealTimeoutId);
+    annotationsRevealTimeoutId = null;
+  }
+
+  if (annotationsRevealMoveEndHandler && map && typeof map.off === 'function') {
+    map.off('moveend', annotationsRevealMoveEndHandler);
+    annotationsRevealMoveEndHandler = null;
+  }
+}
+
+function scheduleAnnotationsReveal(fallbackDelayMs, onRevealed) {
+  cancelPendingAnnotationsReveal();
+
+  const reveal = function () {
+    cancelPendingAnnotationsReveal();
+    setAnnotationsTransitionHidden(false);
+    if (typeof onRevealed === 'function') {
+      onRevealed();
+    }
+  };
+
+  annotationsRevealMoveEndHandler = reveal;
+  if (map && typeof map.once === 'function') {
+    map.once('moveend', reveal);
+  }
+
+  annotationsRevealTimeoutId = setTimeout(reveal, fallbackDelayMs);
+}
+
 function focusAnnotationLayer(layer) {
   if (!layer || !map) {
     return;
@@ -2655,38 +2700,77 @@ function focusAnnotationLayer(layer) {
   const isSimpleCrs = map.options.crs === MAP_CRS_SIMPLE;
   const maxZoom = isSimpleCrs ? 3 : 16;
   const pointFocusZoom = isSimpleCrs ? 2 : 15;
+  const flyDurationSeconds = 0.8;
 
   if (typeof map.stop === 'function') {
     map.stop();
   }
 
+  cancelPendingAnnotationsReveal();
+
+  // A bounds/latLng with non-finite values (e.g. leftover annotations from a
+  // different image space) would corrupt the map's pan/zoom transform and
+  // make the whole map and its layers vanish, so bail out defensively.
+  function isFiniteLatLng(latLng) {
+    return (
+      !!latLng &&
+      Number.isFinite(latLng.lat) &&
+      Number.isFinite(latLng.lng)
+    );
+  }
+
+  let isTransitioning = false;
+
   if (typeof layer.getBounds === 'function') {
     const bounds = layer.getBounds();
-    if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+    if (
+      bounds &&
+      typeof bounds.isValid === 'function' &&
+      bounds.isValid() &&
+      isFiniteLatLng(bounds.getNorthEast()) &&
+      isFiniteLatLng(bounds.getSouthWest())
+    ) {
+      isTransitioning = true;
       map.flyToBounds(bounds.pad(0.35), {
         maxZoom: maxZoom,
         animate: true,
-        duration: 0.8,
+        duration: flyDurationSeconds,
       });
     }
   } else if (typeof layer.getLatLng === 'function') {
     const latLng = layer.getLatLng();
-    const currentZoom =
-      typeof map.getZoom === 'function' && Number.isFinite(map.getZoom())
-        ? Number(map.getZoom())
-        : pointFocusZoom;
-    const targetZoom = Math.min(maxZoom, Math.max(pointFocusZoom, currentZoom));
-    map.flyTo(latLng, targetZoom, {
-      animate: true,
-      duration: 0.8,
+    if (isFiniteLatLng(latLng)) {
+      const currentZoom =
+        typeof map.getZoom === 'function' && Number.isFinite(map.getZoom())
+          ? Number(map.getZoom())
+          : pointFocusZoom;
+      const targetZoom = Math.min(
+        maxZoom,
+        Math.max(pointFocusZoom, currentZoom),
+      );
+      isTransitioning = true;
+      map.flyTo(latLng, targetZoom, {
+        animate: true,
+        duration: flyDurationSeconds,
+      });
+    }
+  }
+
+  // Hide the annotations while the map flies to the target, then reveal them
+  // once it settles, to avoid the visible glitch of vector layers being
+  // reprojected mid-animation.
+  if (isTransitioning) {
+    setAnnotationsTransitionHidden(true);
+    scheduleAnnotationsReveal(flyDurationSeconds * 1000 + 250, function () {
+      flashAnnotationLayer(layer);
     });
+  } else {
+    flashAnnotationLayer(layer);
   }
 
   if (typeof layer.openPopup === 'function') {
     layer.openPopup();
   }
-
-  flashAnnotationLayer(layer);
 }
 
 function focusNextOrderedAnnotation() {
@@ -3668,6 +3752,17 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       .replace(/'/g, '&#39;');
   }
 
+  const ATTRIBUTION_TEXT_MAX_LENGTH = 120;
+
+  function truncateForAttribution(value) {
+    const text = String(value || '').trim();
+    if (text.length <= ATTRIBUTION_TEXT_MAX_LENGTH) {
+      return text;
+    }
+
+    return text.slice(0, ATTRIBUTION_TEXT_MAX_LENGTH).trimEnd() + '…';
+  }
+
   function getText(value, fallbackIndex) {
     if (!value) {
       return null;
@@ -3741,24 +3836,28 @@ function loadIIIFManifest(manifestUrl, options = {}) {
           ': <a href="' +
           escapeHtml(homepage) +
           '" target="_blank" rel="noopener noreferrer">' +
-          escapeHtml(name) +
+          escapeHtml(truncateForAttribution(name)) +
           '</a>'
         );
       }
 
-      return t('viewer.iiifSource') + ': ' + escapeHtml(name);
+      return t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(name));
     }
 
     // IIIF Presentation 2 often has attribution text.
     const attributionText = getText(root.attribution);
     if (attributionText) {
-      return t('viewer.iiifSource') + ': ' + escapeHtml(attributionText);
+      return (
+        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(attributionText))
+      );
     }
 
     // Fallback to manifest label, then URL host.
     const manifestLabel = getText(root.label);
     if (manifestLabel) {
-      return t('viewer.iiifSource') + ': ' + escapeHtml(manifestLabel);
+      return (
+        t('viewer.iiifSource') + ': ' + escapeHtml(truncateForAttribution(manifestLabel))
+      );
     }
 
     try {
@@ -3849,9 +3948,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       const attribution = randomMetadata
         ? t('viewer.iiifSource') +
           ': ' +
-          escapeHtml(randomMetadata.title) +
+          escapeHtml(truncateForAttribution(randomMetadata.title)) +
           ' - ' +
-          escapeHtml(randomMetadata.institution)
+          escapeHtml(truncateForAttribution(randomMetadata.institution))
         : buildManifestSourceAttribution(data, manifestUrl);
       setIIIFAttribution(attribution);
 
@@ -3993,6 +4092,14 @@ function clearIIIFLayers() {
   currentCanvasIndex = -1;
   currentCanvasKey = null;
   updateCanvasNavigation();
+
+  // Drawings are image-space coordinates; keeping them displayed once there
+  // is no IIIF canvas (e.g. after switching to the OSM background) would let
+  // the annotation tour fly to coordinates from another image space and
+  // break the map view. They stay saved in drawingsByCanvas.
+  drawnLayers.clearLayers();
+  updateAnnotationTourCounterDisplay();
+  refreshKeywordLegendPanel();
 }
 
 function closeOsmStyleMenu() {

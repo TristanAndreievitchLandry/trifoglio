@@ -1694,6 +1694,16 @@ p {
   overflow: visible;
 }
 
+.leaflet-overlay-pane,
+.leaflet-marker-pane {
+  transition: opacity 0.15s ease;
+}
+
+.trf-annotations-in-transit .leaflet-overlay-pane,
+.trf-annotations-in-transit .leaflet-marker-pane {
+  opacity: 0;
+}
+
 .trf-annotation-flash-path {
   animation: trf-annotation-aura-path 1.35s cubic-bezier(0.2, 0.7, 0.2, 1) 1;
   stroke-width: var(--trf-flash-stroke-width, 5px) !important;

@@ -278,7 +278,8 @@ window.trifoglioRandomIiifManifests = [
   {
     url: 'https://dlg.usg.edu/record/guan_hmap_hmap1550m8/presentation/manifest.json',
     title: 'Tabula nouarum insularum (Sebastian Münster, 1550)',
-    institution: 'Hargrett Rare Book and Manuscript Library, University of Georgia',
+    institution:
+      'Hargrett Rare Book and Manuscript Library, University of Georgia',
   },
   {
     url: 'https://purl.stanford.edu/cn491rz6351/iiif/manifest',
@@ -287,7 +288,8 @@ window.trifoglioRandomIiifManifests = [
   },
   {
     url: 'https://gallica.bnf.fr/iiif/ark:/12148/btv1b5901086g/manifest.json',
-    title: "Planisphère de l'Atlas nautique du monde, Battista Agnese (1540-1550)",
+    title:
+      "Planisphère de l'Atlas nautique du monde, Battista Agnese (1540-1550)",
     institution: 'Gallica, Bibliothèque nationale de France',
   },
   {
