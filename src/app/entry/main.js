@@ -2018,7 +2018,22 @@ function fetchJsonWithProxyFallback(url, options = {}) {
           throw error;
         }
 
-        return response.json();
+        return response.text().then(function (text) {
+          const trimmed = text.trim();
+          // Some anti-bot services answer 200 with an HTML challenge page instead of JSON.
+          if (trimmed.startsWith('<')) {
+            const error = new Error('Blocked by source (non-JSON response)');
+            error.blockedByHost = true;
+            throw error;
+          }
+
+          try {
+            return JSON.parse(text);
+          } catch (parseError) {
+            parseError.blockedByHost = trimmed.startsWith('<');
+            throw parseError;
+          }
+        });
       })
       .finally(function () {
         if (timeoutId !== null) {
@@ -3946,7 +3961,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
           t('errors.detailsLabel') +
           details +
           '\n\n' +
-          t('hints.githubPagesCors'),
+          (error && error.blockedByHost
+            ? t('hints.sourceBlockedByHost')
+            : t('hints.githubPagesCors')),
       );
     })
     .finally(function () {

@@ -174,7 +174,8 @@
     "drawingExport": "mi_dibujo.json"
   },
   "hints": {
-    "githubPagesCors": "Consejo para GitHub Pages: usa una URL HTTPS y un servidor IIIF que permita CORS."
+    "githubPagesCors": "Consejo para GitHub Pages: usa una URL HTTPS y un servidor IIIF que permita CORS.",
+    "sourceBlockedByHost": "La fuente parece bloquear el acceso automatizado (protección antibots). Intenta abrir la URL del manifiesto directamente en tu navegador."
   },
   "attribution": {
     "osmCarto": "&copy; Colaboradores de OpenStreetMap &copy; CARTO",

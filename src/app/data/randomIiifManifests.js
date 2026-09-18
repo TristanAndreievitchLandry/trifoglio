@@ -216,6 +216,12 @@ window.trifoglioRandomIiifManifests = [
     type: 'painting',
   },
   {
+    url: 'https://iiif-cache.digitalhumanities.fas.harvard.edu/iiif/manifest?manifest=https%3A%2F%2Fnrs.lib.harvard.edu%2FURN-3%3AAT%3AGENLyFfeEcz3FGTZc536bSwya%3AMANIFEST%3A3',
+    title: 'Devi Enthroned (c. 1660-1670)',
+    institution: 'Museum of Fine Arts, Boston',
+    type: 'painting',
+  },
+  {
     url: 'https://iiif.harvardartmuseums.org/manifests/object/209698',
     title: 'Gong Xian, Landscape (mid-17th century)',
     institution: 'Harvard Art Museums',
