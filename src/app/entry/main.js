@@ -511,6 +511,23 @@ if (map.attributionControl) {
 
 const ATTRIBUTION_TEXT_MAX_LENGTH = 120;
 const IIIF_SOURCE_TEXT_MAX_LENGTH = 70;
+const IIIF_INSTITUTION_BY_HOST = {
+  'api.smk.dk': 'SMK',
+  'catalogo.museivaticani.va': 'Musei Vaticani',
+  'cdm15129.contentdm.oclc.org': 'CONTENTdm',
+  'cudl.lib.cam.ac.uk': 'Cambridge',
+  'damsssl.llgc.org.uk': 'Llyfrgell Genedlaethol Cymru',
+  'dams.antwerpen.be': 'Antwerpen',
+  'gallerycollections.courtauld.ac.uk': 'Courtauld',
+  'gallica.bnf.fr': 'Gallica',
+  'gn.biblhertz.it': 'Bibliotheca Hertziana',
+  'iiif.bodleian.ox.ac.uk': 'Bodleian',
+  'iiif.harvardartmuseums.org': 'Harvard',
+  'iiif.kmska.be': 'KMSKA',
+  'iiif.musee-orsay.fr': "Musée d'Orsay",
+  'imagehub.mskgent.be': 'MSK Gent',
+  'nationalmuseumse.iiifhosting.com': 'Nationalmuseum',
+};
 
 function normalizeManifestUrlForLookup(url) {
   return String(url || '')
@@ -538,6 +555,18 @@ function truncateText(value, maxLength) {
 
 function truncateForAttribution(value) {
   return truncateText(value, ATTRIBUTION_TEXT_MAX_LENGTH);
+}
+
+function getShortIiifInstitution(manifestUrl) {
+  try {
+    const hostname = new URL(manifestUrl).hostname.toLowerCase();
+    if (hostname.includes('rumsey')) {
+      return 'Rumsey';
+    }
+    return IIIF_INSTITUTION_BY_HOST[hostname] || null;
+  } catch (_) {
+    return null;
+  }
 }
 
 function findGombrichManifestMetadata(manifestUrl) {
@@ -571,12 +600,13 @@ function buildGombrichDescription(manifestUrl) {
     return null;
   }
 
-  const description = [metadata.period, metadata.title]
-    .filter(Boolean)
-    .join(' — ');
-  const text = escapeHtml(truncateForAttribution(description));
+  const text = escapeHtml(truncateForAttribution(metadata.title));
+  const institution = getShortIiifInstitution(manifestUrl);
+  const institutionSuffix = institution
+    ? ' · ' + escapeHtml(institution)
+    : '';
   if (!metadata.articleUrl) {
-    return text;
+    return text + institutionSuffix;
   }
 
   return (
@@ -584,18 +614,9 @@ function buildGombrichDescription(manifestUrl) {
     escapeHtml(metadata.articleUrl) +
     '" target="_blank" rel="noopener noreferrer">' +
     text +
-    '</a>'
+    '</a>' +
+    institutionSuffix
   );
-}
-
-function appendAttributionDescription(sourceAttribution, description) {
-  if (!description) {
-    return sourceAttribution;
-  }
-
-  return sourceAttribution
-    ? sourceAttribution + ' · ' + description
-    : description;
 }
 
 map.on('popupopen', function (event) {
@@ -613,6 +634,7 @@ let manifestCanvasLabels = {};
 let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
+let canvasLayerTransitionId = 0;
 let randomIiifQueue = [];
 let randomIiifQueueSource = null;
 const OSM_DEFAULT_CENTER = [-50, 50];
@@ -2006,11 +2028,6 @@ function showCanvasByIndex(index) {
 
   if (currentCanvasIndex >= 0 && manifestCanvasKeys[currentCanvasIndex]) {
     saveCurrentCanvasDrawings();
-
-    const previousLayer = iiifLayers[manifestCanvasKeys[currentCanvasIndex]];
-    if (previousLayer && map.hasLayer(previousLayer)) {
-      map.removeLayer(previousLayer);
-    }
   }
 
   const layerKey = manifestCanvasKeys[index];
@@ -2021,7 +2038,43 @@ function showCanvasByIndex(index) {
     return;
   }
 
-  layer.addTo(map);
+  const transitionId = ++canvasLayerTransitionId;
+
+  if (layer._trifoglioCanvasLoadHandler) {
+    layer.off('load', layer._trifoglioCanvasLoadHandler);
+  }
+
+  const handleCanvasLoad = function () {
+    if (layer._trifoglioCanvasLoadHandler === handleCanvasLoad) {
+      layer._trifoglioCanvasLoadHandler = null;
+    }
+
+    if (transitionId !== canvasLayerTransitionId) {
+      if (map.hasLayer(layer)) {
+        map.removeLayer(layer);
+      }
+      return;
+    }
+
+    Object.keys(iiifLayers).forEach(function (key) {
+      const inactiveLayer = iiifLayers[key];
+      if (
+        inactiveLayer !== layer &&
+        map.hasLayer(inactiveLayer) &&
+        inactiveLayer._container &&
+        inactiveLayer._container.parentNode
+      ) {
+        map.removeLayer(inactiveLayer);
+      }
+    });
+  };
+
+  layer._trifoglioCanvasLoadHandler = handleCanvasLoad;
+  layer.once('load', handleCanvasLoad);
+
+  if (!map.hasLayer(layer)) {
+    layer.addTo(map);
+  }
   fitIiifLayerToViewport(layer);
   currentCanvasKey = layerKey;
   loadDrawingsForCanvas(layerKey);
@@ -2097,6 +2150,15 @@ function fitIiifLayerToViewport(layer) {
 const JSON_PROXY_BASE_URL = 'https://api.allorigins.win/raw?url=';
 const JSON_PROXY_FALLBACK_BASE_URL = 'https://api.codetabs.com/v1/proxy?quest=';
 const RANDOM_IIIF_FETCH_TIMEOUT_MS = 3000;
+const RANDOM_IIIF_BLOCKED_HOSTS = new Set(['gallica.bnf.fr']);
+
+function isRandomIiifHostSupported(url) {
+  try {
+    return !RANDOM_IIIF_BLOCKED_HOSTS.has(new URL(url).hostname.toLowerCase());
+  } catch (_) {
+    return false;
+  }
+}
 
 function buildProxyUrl(url) {
   return JSON_PROXY_BASE_URL + encodeURIComponent(url);
@@ -4101,25 +4163,17 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       debugLog('Manifest fetched', usedProxy ? 'via proxy' : 'ok');
 
       const randomMetadata = options.randomMetadata;
-      const sourceAttribution = randomMetadata
-        ? t('viewer.iiifSource') +
+      const catalogDescription = buildGombrichDescription(manifestUrl);
+      const sourceAttribution = catalogDescription
+        ? t('viewer.iiifSource') + ': ' + catalogDescription
+        : randomMetadata
+          ? t('viewer.iiifSource') +
           ': ' +
           escapeHtml(
             truncateText(randomMetadata.title, IIIF_SOURCE_TEXT_MAX_LENGTH),
-          ) +
-          ' - ' +
-          escapeHtml(
-            truncateText(
-              randomMetadata.institution,
-              IIIF_SOURCE_TEXT_MAX_LENGTH,
-            ),
           )
-        : buildManifestSourceAttribution(data, manifestUrl);
-      const attribution = appendAttributionDescription(
-        sourceAttribution,
-        buildGombrichDescription(manifestUrl),
-      );
-      setIIIFAttribution(attribution);
+          : buildManifestSourceAttribution(data, manifestUrl);
+      setIIIFAttribution(sourceAttribution);
 
       // Reset previous layers each time a new manifest is loaded.
       iiifLayers = {};
@@ -4256,6 +4310,7 @@ var iiifLayers = {};
 //pour monter les tuiles iiif
 
 function clearIIIFLayers() {
+  canvasLayerTransitionId += 1;
   saveCurrentCanvasDrawings();
   clearIIIFAttribution();
 
@@ -4500,7 +4555,11 @@ async function openRandomIiifManifest() {
     const queuedUrls = new Set();
     randomIiifQueue = availableManifests.filter(function (candidate) {
       const candidateUrl = candidate && candidate.url;
-      if (!candidateUrl || queuedUrls.has(candidateUrl)) {
+      if (
+        !candidateUrl ||
+        queuedUrls.has(candidateUrl) ||
+        !isRandomIiifHostSupported(candidateUrl)
+      ) {
         return false;
       }
       queuedUrls.add(candidateUrl);

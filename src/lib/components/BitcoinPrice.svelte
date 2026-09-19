@@ -25,7 +25,7 @@
     requestController?.abort();
     const currentRequestController = new AbortController();
     requestController = currentRequestController;
-    loading = true;
+    loading = price === null;
     error = null;
 
     try {
@@ -113,10 +113,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-width: 54px;
+    gap: 10px;
+    width: 180px;
     height: 34px;
-    padding: 0 10px 0 12px;
+    padding: 0 16px;
     margin: 0 6px;
     box-sizing: border-box;
     border: 1px solid #5b7aa2;
@@ -139,6 +139,8 @@
     justify-content: center;
     width: 18px;
     height: 18px;
+    flex: 0 0 18px;
+    aspect-ratio: 1;
     border-radius: 50%;
     background: #f7931a;
     color: #ffffff;
@@ -149,8 +151,21 @@
   }
 
   .bitcoin-price__change {
-    padding-left: 8px;
-    border-left: 1px solid rgba(91, 122, 162, 0.55);
+    position: absolute;
+    right: -46px;
+    top: -6px;
+    width: 64px;
+    height: 18px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    border: 1px solid rgba(120, 150, 190, 0.6);
+    border-radius: 999px;
+    background: #0f1b2e;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
   }
 
   .bitcoin-price__change--positive {
