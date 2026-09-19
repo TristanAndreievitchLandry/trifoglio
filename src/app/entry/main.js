@@ -44,11 +44,6 @@ const IIIF_GUIDE_BUTTON_HTML =
   '</svg>' +
   '</button>';
 
-const RANDOM_IIIF_BUTTON_HTML =
-  '<button id="random-iiif-button" title="" data-i18n-attr="title:buttons.randomIiif">' +
-  '<i class="fa-solid fa-shuffle" aria-hidden="true"></i>' +
-  '</button>';
-
 const ANNOTATION_TOUR_BUTTON_HTML =
   '<button id="annotation-tour-button" title="" data-i18n-attr="title:buttons.annotationTour">' +
   '<i class="fa-solid fa-list-ol"></i>' +
@@ -186,7 +181,6 @@ function ensureAppShellElements() {
         '<button id="info-button" title="" data-i18n-attr="title:buttons.info"><i class="fa-solid fa-info"></i></button>' +
         '<button id="ask-button" style="font-size: 20px" title="" data-i18n-attr="title:buttons.manifest"><i class="fa-solid fa-image"></i></button>' +
         IIIF_GUIDE_BUTTON_HTML +
-        RANDOM_IIIF_BUTTON_HTML +
         '<button id="save-button" onclick="downloadDrawnLayers()" title="" data-i18n-attr="title:buttons.save"><i class="fa-solid fa-download"></i></button>' +
         '<button id="add-button" title="" data-i18n-attr="title:buttons.importJson"><i class="fa-solid fa-plus"></i></button>' +
         OSM_BUTTON_HTML +
@@ -210,11 +204,6 @@ function ensureAppShellElements() {
     !document.getElementById('iiif-guide-button')
   ) {
     askButton.insertAdjacentHTML('afterend', IIIF_GUIDE_BUTTON_HTML);
-  }
-
-  const iiifGuideButton = document.getElementById('iiif-guide-button');
-  if (iiifGuideButton && !document.getElementById('random-iiif-button')) {
-    iiifGuideButton.insertAdjacentHTML('afterend', RANDOM_IIIF_BUTTON_HTML);
   }
 
   let annotationTourActions = document.querySelector(
