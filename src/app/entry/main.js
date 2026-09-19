@@ -602,9 +602,7 @@ function buildGombrichDescription(manifestUrl) {
 
   const text = escapeHtml(truncateForAttribution(metadata.title));
   const institution = getShortIiifInstitution(manifestUrl);
-  const institutionSuffix = institution
-    ? ' · ' + escapeHtml(institution)
-    : '';
+  const institutionSuffix = institution ? ' · ' + escapeHtml(institution) : '';
   if (!metadata.articleUrl) {
     return text + institutionSuffix;
   }
@@ -2180,11 +2178,12 @@ function fetchJsonWithProxyFallback(url, options = {}) {
       (timeoutMs > 0 || externalSignal) && typeof AbortController === 'function'
         ? new AbortController()
         : null;
-    const timeoutId = controller && timeoutMs > 0
-      ? setTimeout(function () {
-          controller.abort();
-        }, timeoutMs)
-      : null;
+    const timeoutId =
+      controller && timeoutMs > 0
+        ? setTimeout(function () {
+            controller.abort();
+          }, timeoutMs)
+        : null;
     const abortFromExternalSignal = function () {
       controller.abort();
     };
@@ -4168,10 +4167,10 @@ function loadIIIFManifest(manifestUrl, options = {}) {
         ? t('viewer.iiifSource') + ': ' + catalogDescription
         : randomMetadata
           ? t('viewer.iiifSource') +
-          ': ' +
-          escapeHtml(
-            truncateText(randomMetadata.title, IIIF_SOURCE_TEXT_MAX_LENGTH),
-          )
+            ': ' +
+            escapeHtml(
+              truncateText(randomMetadata.title, IIIF_SOURCE_TEXT_MAX_LENGTH),
+            )
           : buildManifestSourceAttribution(data, manifestUrl);
       setIIIFAttribution(sourceAttribution);
 
@@ -4507,40 +4506,12 @@ function isUsableIiifManifest(data) {
 }
 
 async function openRandomIiifManifest() {
-  function getGombrichRandomManifests() {
-    const catalog = window.trifoglioGombrichIiifManifests;
-    if (!catalog || !Array.isArray(catalog.periods)) {
-      return [];
-    }
-
-    const manifests = [];
-    catalog.periods.forEach(function (period) {
-      const periodManifests = Array.isArray(period.manifests)
-        ? period.manifests
-        : [];
-      periodManifests.forEach(function (manifest) {
-        if (!manifest || !manifest.manifestUrl) {
-          return;
-        }
-
-        manifests.push({
-          url: manifest.manifestUrl,
-          title: manifest.title || period.period,
-          institution: period.period,
-        });
-      });
-    });
-
-    return manifests;
-  }
-
-  const gombrichManifests = getGombrichRandomManifests();
-  const availableManifests = gombrichManifests.length > 0
-    ? gombrichManifests
-    : Array.isArray(window.trifoglioRandomIiifManifests)
-      ? window.trifoglioRandomIiifManifests.slice()
-      : [];
-  const queueSource = gombrichManifests.length > 0 ? 'gombrich' : 'default';
+  const availableManifests = Array.isArray(
+    window.trifoglioRandomIiifManifests,
+  )
+    ? window.trifoglioRandomIiifManifests.slice()
+    : [];
+  const queueSource = 'random-list';
   if (availableManifests.length === 0) {
     showAppAlert(t('errors.randomIiifUnavailable'));
     return;
