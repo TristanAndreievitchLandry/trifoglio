@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const esbuild = require('esbuild');
+const { compile } = require('svelte/compiler');
 const { minify } = require('terser');
 
 const projectRoot = process.cwd();
@@ -14,6 +16,47 @@ async function copyPath(relativePath) {
 async function ensureDist() {
   fs.rmSync(distDir, { recursive: true, force: true });
   fs.mkdirSync(distDir, { recursive: true });
+}
+
+async function buildBitcoinPriceWidget() {
+  const entryPoint = path.join(
+    projectRoot,
+    'src/app/entry/bitcoin-price-widget.entry.js',
+  );
+  const outputPath = path.join(
+    projectRoot,
+    'src/app/entry/bitcoin-price-widget.js',
+  );
+
+  await esbuild.build({
+    entryPoints: [entryPoint],
+    outfile: outputPath,
+    bundle: true,
+    minify: true,
+    format: 'iife',
+    platform: 'browser',
+    plugins: [
+      {
+        name: 'svelte',
+        setup(build) {
+          build.onLoad({ filter: /\.svelte$/ }, async ({ path: filePath }) => {
+            const source = fs.readFileSync(filePath, 'utf8');
+            const compiled = compile(source, {
+              filename: filePath,
+              generate: 'client',
+              css: 'injected',
+            });
+
+            return {
+              contents: compiled.js.code,
+              loader: 'js',
+              resolveDir: path.dirname(filePath),
+            };
+          });
+        },
+      },
+    ],
+  });
 }
 
 async function minifyJavaScript(relativePath) {
@@ -65,6 +108,7 @@ function buildIndex(scriptMap) {
       scriptMap['src/app/entry/i18n-runtime.js'] + '?v=20260807-fr-default',
       'src/lib/vendors/gsap/gsap.min.js',
       scriptMap['src/app/entry/main.js'] + '?v=20260807-fr-default',
+      'src/app/entry/bitcoin-price-widget.js',
     ],
   };
 
@@ -85,6 +129,7 @@ async function run() {
   const strict = process.argv.includes('--strict');
 
   await ensureDist();
+  await buildBitcoinPriceWidget();
 
   const copyList = [
     'src/app/assets',
@@ -92,6 +137,7 @@ async function run() {
     'src/lib/i18n',
     'src/app/styles/app.css',
     'src/app/entry/bootstrap.js',
+    'src/app/entry/bitcoin-price-widget.js',
     'src/app/data/randomIiifManifests.js',
     'src/app/data/gombrichIiifManifests.js',
     'LICENSE',

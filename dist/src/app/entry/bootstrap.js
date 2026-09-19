@@ -1,6 +1,6 @@
 (function () {
   // Runtime manifest for app-owned and vendor resources.
-  const runtimeStamp = '20260901-manifest-loading';
+  const runtimeStamp = '20260919-bitcoin-price';
 
   const defaultRuntime = {
     styles: [
@@ -20,6 +20,7 @@
         runtimeStamp,
       'src/lib/vendors/gsap/gsap.min.js?v=' + runtimeStamp,
       'src/app/entry/main.js?v=20260807-fr-default&cache=' + runtimeStamp,
+      'src/app/entry/bitcoin-price-widget.js?v=' + runtimeStamp,
     ],
   };
 

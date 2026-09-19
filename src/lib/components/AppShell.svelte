@@ -3,6 +3,7 @@
   import { projectStore } from '../stores/projectStore.js';
   import { viewerStore } from '../stores/viewerStore.js';
   import { selectionStore } from '../stores/selectionStore.js';
+  import BitcoinPrice from './BitcoinPrice.svelte';
   import MapViewport from './MapViewport.svelte';
 </script>
 
@@ -24,6 +25,7 @@
         <span class="language-switcher__sep" aria-hidden="true">|</span>
         <button type="button" class="language-switcher__item" data-locale="it">IT</button>
       </div>
+      <BitcoinPrice />
     </div>
   </div>
 
