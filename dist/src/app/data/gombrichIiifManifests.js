@@ -43,7 +43,8 @@ window.trifoglioGombrichIiifManifests = {
           title: 'Hermes Belvedere',
           manifestUrl:
             'https://catalogo.museivaticani.va/service.php/IIIF/7288/manifest',
-          articleUrl: 'https://en.wikipedia.org/wiki/Hermes_(Museo_Pio-Clementino)',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Hermes_(Museo_Pio-Clementino)',
         },
         {
           title: 'Young Greeks Attending a Cock Fight',
@@ -66,7 +67,8 @@ window.trifoglioGombrichIiifManifests = {
           title: 'Dura-Europos route map / Roman road distances',
           manifestUrl:
             'https://gallica.bnf.fr/iiif/ark:/12148/btv1b105388698/manifest.json',
-          articleUrl: 'https://de.wikipedia.org/wiki/Routenkarte_von_Dura_Europos',
+          articleUrl:
+            'https://de.wikipedia.org/wiki/Routenkarte_von_Dura_Europos',
         },
         {
           title: 'Taylor-Schechter 16.320',
@@ -82,7 +84,8 @@ window.trifoglioGombrichIiifManifests = {
           title: 'Santa Maria Annunziata in Borgo',
           manifestUrl:
             'https://gn.biblhertz.it/fotothek/api/iiif/3/werk/obj08047008/manifest',
-          articleUrl: 'https://de.wikipedia.org/wiki/Santa_Maria_Annunziata_in_Borgo',
+          articleUrl:
+            'https://de.wikipedia.org/wiki/Santa_Maria_Annunziata_in_Borgo',
         },
         {
           title: 'Santa Francesca Romana',
@@ -112,7 +115,8 @@ window.trifoglioGombrichIiifManifests = {
       ],
     },
     {
-      period: '8-11. Le creuset occidental / art roman / art gothique / XIVe siècle',
+      period:
+        '8-11. Le creuset occidental / art roman / art gothique / XIVe siècle',
       manifests: [
         {
           title: 'Sacramentaire de Saint-Étienne de Limoges',
@@ -159,13 +163,15 @@ window.trifoglioGombrichIiifManifests = {
         },
         {
           title: 'Raphael and the Fornarina',
-          manifestUrl: 'https://iiif.harvardartmuseums.org/manifests/object/299807',
+          manifestUrl:
+            'https://iiif.harvardartmuseums.org/manifests/object/299807',
           articleUrl: 'https://en.wikipedia.org/wiki/Raphael_and_La_Fornarina',
         },
         {
           title: 'Saint Jerome / Bosch',
           manifestUrl: 'https://imagehub.mskgent.be/iiif/3/117/manifest.json',
-          articleUrl: 'https://en.wikipedia.org/wiki/St._Jerome_at_Prayer_(Bosch)',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/St._Jerome_at_Prayer_(Bosch)',
         },
       ],
     },
@@ -174,11 +180,13 @@ window.trifoglioGombrichIiifManifests = {
       manifests: [
         {
           title: 'Nativity, Parmigianino',
-          manifestUrl: 'https://gallerycollections.courtauld.ac.uk/api/iiif/O2930/manifest.json',
+          manifestUrl:
+            'https://gallerycollections.courtauld.ac.uk/api/iiif/O2930/manifest.json',
           articleUrl: 'https://en.wikipedia.org/wiki/Nativity_(Parmigianino)',
         },
         {
-          title: 'Portrait of the Venetian Painter Giovanni Bellini (?) / Titian context',
+          title:
+            'Portrait of the Venetian Painter Giovanni Bellini (?) / Titian context',
           manifestUrl: 'https://api.smk.dk/api/v1/iiif/manifest/?id=DEP15',
           articleUrl:
             'https://fr.wikipedia.org/wiki/Portrait_d%27homme_(Titien,_Copenhague)',
@@ -190,7 +198,8 @@ window.trifoglioGombrichIiifManifests = {
       manifests: [
         {
           title: 'The Entombment of Christ, Caravaggio',
-          manifestUrl: 'https://catalogo.museivaticani.va/service.php/IIIF/4568/manifest',
+          manifestUrl:
+            'https://catalogo.museivaticani.va/service.php/IIIF/4568/manifest',
           articleUrl:
             'https://de.wikipedia.org/wiki/Die_Grablegung_Christi_(Caravaggio)',
         },
@@ -198,17 +207,21 @@ window.trifoglioGombrichIiifManifests = {
           title: 'The Kitchen Maid, Rembrandt',
           manifestUrl:
             'http://nationalmuseumse.iiifhosting.com/iiif/640882d756112062a94fcb87dff89327bc80499e7b80d89b613f252093ceed10/manifest.json',
-          articleUrl: 'https://en.wikipedia.org/wiki/The_Kitchen_Maid_(Rembrandt)',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/The_Kitchen_Maid_(Rembrandt)',
         },
         {
           title: "Rembrandt's Daughter",
-          manifestUrl: 'https://iiif.harvardartmuseums.org/manifests/object/231931',
+          manifestUrl:
+            'https://iiif.harvardartmuseums.org/manifests/object/231931',
           articleUrl: 'https://en.wikipedia.org/wiki/Rembrandt%27s_Daughter',
         },
         {
           title: 'Self-Portrait, Rubens',
-          manifestUrl: 'https://dams.antwerpen.be/iiif/H1ZNQXINnUOmWBRXJLq7AlLK/manifest',
-          articleUrl: 'https://en.wikipedia.org/wiki/Self-Portrait_(Rubens,_Antwerp)',
+          manifestUrl:
+            'https://dams.antwerpen.be/iiif/H1ZNQXINnUOmWBRXJLq7AlLK/manifest',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Self-Portrait_(Rubens,_Antwerp)',
         },
       ],
     },
@@ -236,32 +249,39 @@ window.trifoglioGombrichIiifManifests = {
       ],
     },
     {
-      period: '24-25. Rupture et XIXe siècle : néoclassicisme, romantisme, réalisme',
+      period:
+        '24-25. Rupture et XIXe siècle : néoclassicisme, romantisme, réalisme',
       manifests: [
         {
           title: 'The Source, Ingres',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!525/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!525/manifest.json',
           articleUrl: 'https://de.wikipedia.org/wiki/Die_Quelle_(Ingres)',
         },
         {
           title: 'Dolbadarn Castle, Turner',
-          manifestUrl: 'https://damsssl.llgc.org.uk/iiif/2.0/4655776/manifest.json',
+          manifestUrl:
+            'https://damsssl.llgc.org.uk/iiif/2.0/4655776/manifest.json',
           articleUrl: 'https://en.wikipedia.org/wiki/Dolbadarn_Castle_(Turner)',
         },
         {
           title: 'Arab Horses Fighting in a Stable, Delacroix',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1038/manifest.json',
-          articleUrl: 'https://en.wikipedia.org/wiki/Arab_Horses_Fighting_in_a_Stable',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1038/manifest.json',
+          articleUrl:
+            'https://en.wikipedia.org/wiki/Arab_Horses_Fighting_in_a_Stable',
         },
         {
           title: 'A Burial at Ornans, Courbet',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!924/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!924/manifest.json',
           articleUrl:
             'https://de.wikipedia.org/wiki/Ein_Begr%C3%A4bnis_in_Ornans',
         },
         {
           title: 'The Gleaners, Millet',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!342/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!342/manifest.json',
           articleUrl: 'https://en.wikipedia.org/wiki/The_Gleaners',
         },
       ],
@@ -271,36 +291,43 @@ window.trifoglioGombrichIiifManifests = {
       manifests: [
         {
           title: 'The Poppy Field near Argenteuil, Monet',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1010/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1010/manifest.json',
           articleUrl:
             'https://en.wikipedia.org/wiki/The_Poppy_Field_near_Argenteuil',
         },
         {
           title: 'Bal du moulin de la Galette, Renoir',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!497/manifest.json',
-          articleUrl: 'https://de.wikipedia.org/wiki/Bal_du_moulin_de_la_Galette',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!497/manifest.json',
+          articleUrl:
+            'https://de.wikipedia.org/wiki/Bal_du_moulin_de_la_Galette',
         },
         {
           title: 'The Ballet Class, Degas',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1151/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1151/manifest.json',
           articleUrl:
             'https://en.wikipedia.org/wiki/The_Ballet_Class_(Degas,_Mus%C3%A9e_d%27Orsay)',
         },
         {
           title: 'Self-portrait, Van Gogh',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!747/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!747/manifest.json',
           articleUrl:
             'https://en.wikipedia.org/wiki/Self-portrait_(van_Gogh,_Paris)',
         },
         {
           title: 'Apples and Oranges, Cézanne',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1470/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!1470/manifest.json',
           articleUrl:
             'https://en.wikipedia.org/wiki/Still_Life_with_Apples_and_Oranges',
         },
         {
           title: 'Tahitian Women on the Beach, Gauguin',
-          manifestUrl: 'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!290/manifest.json',
+          manifestUrl:
+            'https://iiif.musee-orsay.fr/Manifester/IIIF/3/objects!290/manifest.json',
           articleUrl:
             'https://en.wikipedia.org/wiki/Tahitian_Women_on_the_Beach',
         },

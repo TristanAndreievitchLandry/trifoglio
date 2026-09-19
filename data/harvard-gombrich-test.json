@@ -1,0 +1,334 @@
+{
+  "source": {
+    "basis": "Harvard Art Museums API object metadata filtered by broad Gombrich-style art-history categories.",
+    "api": "https://api.harvardartmuseums.org/object",
+    "iiifManifestPattern": "https://iiif.harvardartmuseums.org/manifests/object/{objectid}",
+    "generatedAt": "2026-09-18T23:53:25.863Z",
+    "termsNote": "Harvard Art Museums API terms ask users not to cache/store API content for more than two weeks without permission."
+  },
+  "periods": [
+    {
+      "period": "1. Mystérieux débuts : préhistoire, premiers arts",
+      "queries": [
+        {
+          "keyword": "prehistoric"
+        },
+        {
+          "culture": "Ancient American"
+        },
+        {
+          "keyword": "Maya"
+        },
+        {
+          "keyword": "Olmec"
+        },
+        {
+          "keyword": "Nazca"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "2. Un art pour l'éternité : Égypte, Mésopotamie, Crète",
+      "queries": [
+        {
+          "culture": "Egyptian"
+        },
+        {
+          "keyword": "Egyptian"
+        },
+        {
+          "keyword": "Mesopotamian"
+        },
+        {
+          "keyword": "Sumerian"
+        },
+        {
+          "keyword": "Assyrian"
+        },
+        {
+          "keyword": "Minoan"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "3-4. Le Grand Éveil / La Terre de la beauté : Grèce archaïque, classique et hellénistique",
+      "queries": [
+        {
+          "culture": "Greek"
+        },
+        {
+          "period": "Archaic period"
+        },
+        {
+          "period": "Classical period"
+        },
+        {
+          "period": "Hellenistic period"
+        },
+        {
+          "keyword": "Greek vase"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "5. Conquérants d'empires : Rome, premiers chrétiens, juifs",
+      "queries": [
+        {
+          "culture": "Roman"
+        },
+        {
+          "keyword": "Roman"
+        },
+        {
+          "keyword": "Early Christian"
+        },
+        {
+          "keyword": "Byzantine"
+        },
+        {
+          "keyword": "Jewish"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "6. Bifurcation : Rome et Byzance",
+      "queries": [
+        {
+          "culture": "Byzantine"
+        },
+        {
+          "keyword": "Byzantine"
+        },
+        {
+          "keyword": "icon"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "7. Regard vers l'est : Islam et Chine",
+      "queries": [
+        {
+          "culture": "Chinese"
+        },
+        {
+          "culture": "Islamic"
+        },
+        {
+          "keyword": "Quran"
+        },
+        {
+          "keyword": "Persian"
+        },
+        {
+          "keyword": "Mughal"
+        },
+        {
+          "keyword": "Ottoman"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "8-11. Le creuset occidental / art roman / art gothique / XIVe siècle",
+      "queries": [
+        {
+          "keyword": "medieval"
+        },
+        {
+          "keyword": "Romanesque"
+        },
+        {
+          "keyword": "Gothic"
+        },
+        {
+          "keyword": "manuscript"
+        },
+        {
+          "keyword": "book of hours"
+        },
+        {
+          "yearmade": "600-1400"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "12-17. Renaissance : réalité, Italie, Nord des Alpes",
+      "queries": [
+        {
+          "keyword": "Renaissance"
+        },
+        {
+          "keyword": "Italian Renaissance"
+        },
+        {
+          "keyword": "Northern Renaissance"
+        },
+        {
+          "keyword": "Dürer"
+        },
+        {
+          "keyword": "Cranach"
+        },
+        {
+          "yearmade": "1400-1550"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "18. Maniérisme / fin du XVIe siècle",
+      "queries": [
+        {
+          "keyword": "Mannerist"
+        },
+        {
+          "keyword": "Parmigianino"
+        },
+        {
+          "yearmade": "1520-1600"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "19-20. Baroque : Europe catholique et Hollande",
+      "queries": [
+        {
+          "keyword": "Baroque"
+        },
+        {
+          "keyword": "Caravaggio"
+        },
+        {
+          "keyword": "Rubens"
+        },
+        {
+          "keyword": "Rembrandt"
+        },
+        {
+          "keyword": "Dutch"
+        },
+        {
+          "yearmade": "1600-1700"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "21-23. XVIIe-XVIIIe : puissance, gloire, rococo, Lumières",
+      "queries": [
+        {
+          "keyword": "Rococo"
+        },
+        {
+          "keyword": "Boucher"
+        },
+        {
+          "keyword": "Fragonard"
+        },
+        {
+          "keyword": "Neoclassical"
+        },
+        {
+          "yearmade": "1700-1800"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "24-25. Rupture et XIXe siècle : néoclassicisme, romantisme, réalisme",
+      "queries": [
+        {
+          "keyword": "Romantic"
+        },
+        {
+          "keyword": "Realist"
+        },
+        {
+          "keyword": "Ingres"
+        },
+        {
+          "keyword": "Delacroix"
+        },
+        {
+          "keyword": "Courbet"
+        },
+        {
+          "yearmade": "1800-1870"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "25-26. Impressionnisme et postimpressionnisme",
+      "queries": [
+        {
+          "keyword": "Impressionist"
+        },
+        {
+          "keyword": "Post-Impressionist"
+        },
+        {
+          "keyword": "Monet"
+        },
+        {
+          "keyword": "Renoir"
+        },
+        {
+          "keyword": "Cézanne"
+        },
+        {
+          "keyword": "Van Gogh"
+        },
+        {
+          "yearmade": "1870-1905"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    },
+    {
+      "period": "27-28. Expérimentation moderne / modernisme",
+      "queries": [
+        {
+          "keyword": "Modern"
+        },
+        {
+          "keyword": "Matisse"
+        },
+        {
+          "keyword": "Picasso"
+        },
+        {
+          "keyword": "Braque"
+        },
+        {
+          "keyword": "Bauhaus"
+        },
+        {
+          "yearmade": "1900-1950"
+        }
+      ],
+      "error": "Harvard API HTTP 401",
+      "manifests": []
+    }
+  ]
+}

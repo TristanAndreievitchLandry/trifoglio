@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:protect": "node scripts/build-protect.js",
     "build:protect:strict": "node scripts/build-protect.js --strict",
-    "fetch:wikipedia-iiif": "node scripts/fetch-wikipedia-iiif-manifests.js"
+    "fetch:wikipedia-iiif": "node scripts/fetch-wikipedia-iiif-manifests.js",
+    "fetch:harvard-gombrich-iiif": "node scripts/fetch-harvard-gombrich-iiif-manifests.js"
   },
   "repository": {
     "type": "git",

@@ -162,6 +162,7 @@ function ensureAppShellElements() {
       '<div id="manifest-loading-overlay" class="manifest-loading-overlay is-hidden" role="status" aria-live="polite" aria-hidden="true">' +
         '<span class="manifest-loading-overlay__spinner" aria-hidden="true"></span>' +
         '<span class="manifest-loading-overlay__message" data-i18n-key="notifications.loadingManifest"></span>' +
+        '<button id="manifest-loading-cancel-button" class="manifest-loading-overlay__cancel" type="button" data-i18n-key="buttons.cancel"></button>' +
         '</div>',
     );
   }
@@ -613,6 +614,7 @@ let currentCanvasIndex = -1;
 let currentManifestId = null;
 let currentCanvasKey = null;
 let randomIiifQueue = [];
+let randomIiifQueueSource = null;
 const OSM_DEFAULT_CENTER = [-50, 50];
 const OSM_DEFAULT_ZOOM = 1;
 const MAP_CRS_SIMPLE = L.CRS.Simple;
@@ -637,6 +639,9 @@ const manifestStatus = document.getElementById('manifest-status');
 const manifestPanel = document.getElementById('manifestPanel');
 const manifestLoadingOverlay = document.getElementById(
   'manifest-loading-overlay',
+);
+const manifestLoadingCancelButton = document.getElementById(
+  'manifest-loading-cancel-button',
 );
 const alertModal = document.getElementById('trf-alert-modal');
 const alertModalMessage = document.getElementById('trf-alert-modal-message');
@@ -1637,6 +1642,23 @@ function setManifestStatus(_message, _variant) {
   // status bar removed
 }
 
+let activeManifestAbortController = null;
+
+function isAbortError(error) {
+  return (
+    !!error &&
+    (error.name === 'AbortError' ||
+      error.message === 'The operation was aborted.' ||
+      error.message === 'signal is aborted without reason')
+  );
+}
+
+function cancelActiveManifestLoad() {
+  if (activeManifestAbortController) {
+    activeManifestAbortController.abort();
+  }
+}
+
 function setManifestLoading(isLoading) {
   if (!manifestLoadingOverlay) {
     return;
@@ -2089,17 +2111,30 @@ function fetchJsonWithProxyFallback(url, options = {}) {
     Number.isFinite(options.timeoutMs) && options.timeoutMs > 0
       ? options.timeoutMs
       : 0;
+  const externalSignal = options.signal || null;
 
   function fetchJson(targetUrl) {
     const controller =
-      timeoutMs > 0 && typeof AbortController === 'function'
+      (timeoutMs > 0 || externalSignal) && typeof AbortController === 'function'
         ? new AbortController()
         : null;
-    const timeoutId = controller
+    const timeoutId = controller && timeoutMs > 0
       ? setTimeout(function () {
           controller.abort();
         }, timeoutMs)
       : null;
+    const abortFromExternalSignal = function () {
+      controller.abort();
+    };
+    if (controller && externalSignal) {
+      if (externalSignal.aborted) {
+        controller.abort();
+      } else {
+        externalSignal.addEventListener('abort', abortFromExternalSignal, {
+          once: true,
+        });
+      }
+    }
     const fetchOptions = controller
       ? { cache: 'no-cache', signal: controller.signal }
       : { cache: 'no-cache' };
@@ -2133,6 +2168,9 @@ function fetchJsonWithProxyFallback(url, options = {}) {
         if (timeoutId !== null) {
           clearTimeout(timeoutId);
         }
+        if (controller && externalSignal) {
+          externalSignal.removeEventListener('abort', abortFromExternalSignal);
+        }
       });
   }
 
@@ -2140,7 +2178,11 @@ function fetchJsonWithProxyFallback(url, options = {}) {
     .then(function (data) {
       return { data: data, usedProxy: false };
     })
-    .catch(function () {
+    .catch(function (error) {
+      if (isAbortError(error)) {
+        throw error;
+      }
+
       const proxyUrl = buildProxyUrl(url);
       debugLog('Direct JSON blocked, retry proxy', url);
 
@@ -2148,7 +2190,11 @@ function fetchJsonWithProxyFallback(url, options = {}) {
         .then(function (data) {
           return { data: data, usedProxy: true };
         })
-        .catch(function () {
+        .catch(function (proxyError) {
+          if (isAbortError(proxyError)) {
+            throw proxyError;
+          }
+
           // The primary proxy can itself be degraded independently of the
           // source host, so try a second proxy before giving up entirely.
           const fallbackProxyUrl = buildFallbackProxyUrl(url);
@@ -3799,6 +3845,15 @@ try {
 
 function loadIIIFManifest(manifestUrl, options = {}) {
   const managesLoadingOverlay = options.manageLoadingOverlay !== false;
+  const abortController =
+    options.abortController ||
+    (typeof AbortController === 'function' ? new AbortController() : null);
+
+  if (managesLoadingOverlay && abortController) {
+    cancelActiveManifestLoad();
+    activeManifestAbortController = abortController;
+  }
+
   if (managesLoadingOverlay) {
     setManifestLoading(true);
   }
@@ -4035,7 +4090,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
 
   const manifestRequest = options.prefetchedResult
     ? Promise.resolve(options.prefetchedResult)
-    : fetchJsonWithProxyFallback(manifestUrl);
+    : fetchJsonWithProxyFallback(manifestUrl, {
+        signal: abortController ? abortController.signal : null,
+      });
 
   return manifestRequest
     .then(function (result) {
@@ -4092,7 +4149,7 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       });
 
       if (manifestCanvasKeys.length === 0) {
-        if (typeof options.onFailure === 'function') {
+        if (typeof options.onFailure === 'function' || options.suppressErrors) {
           throw new Error('No IIIF image services found in this manifest.');
         }
         console.error('No IIIF image services found in this manifest.');
@@ -4146,10 +4203,20 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       );
     })
     .catch(function (error) {
+      if (isAbortError(error)) {
+        debugLog('Manifest load canceled', manifestUrl);
+        return;
+      }
+
       if (typeof options.onFailure === 'function') {
         options.onFailure(error);
         throw error;
       }
+
+      if (options.suppressErrors) {
+        throw error;
+      }
+
       const status =
         error && error.status
           ? t('errors.httpStatusPrefix') + error.status
@@ -4176,6 +4243,9 @@ function loadIIIFManifest(manifestUrl, options = {}) {
       );
     })
     .finally(function () {
+      if (activeManifestAbortController === abortController) {
+        activeManifestAbortController = null;
+      }
       if (managesLoadingOverlay) {
         setManifestLoading(false);
       }
@@ -4382,12 +4452,48 @@ function isUsableIiifManifest(data) {
 }
 
 async function openRandomIiifManifest() {
-  const availableManifests = Array.isArray(window.trifoglioRandomIiifManifests)
-    ? window.trifoglioRandomIiifManifests.slice()
-    : [];
+  function getGombrichRandomManifests() {
+    const catalog = window.trifoglioGombrichIiifManifests;
+    if (!catalog || !Array.isArray(catalog.periods)) {
+      return [];
+    }
+
+    const manifests = [];
+    catalog.periods.forEach(function (period) {
+      const periodManifests = Array.isArray(period.manifests)
+        ? period.manifests
+        : [];
+      periodManifests.forEach(function (manifest) {
+        if (!manifest || !manifest.manifestUrl) {
+          return;
+        }
+
+        manifests.push({
+          url: manifest.manifestUrl,
+          title: manifest.title || period.period,
+          institution: period.period,
+        });
+      });
+    });
+
+    return manifests;
+  }
+
+  const gombrichManifests = getGombrichRandomManifests();
+  const availableManifests = gombrichManifests.length > 0
+    ? gombrichManifests
+    : Array.isArray(window.trifoglioRandomIiifManifests)
+      ? window.trifoglioRandomIiifManifests.slice()
+      : [];
+  const queueSource = gombrichManifests.length > 0 ? 'gombrich' : 'default';
   if (availableManifests.length === 0) {
     showAppAlert(t('errors.randomIiifUnavailable'));
     return;
+  }
+
+  if (randomIiifQueueSource !== queueSource) {
+    randomIiifQueue = [];
+    randomIiifQueueSource = queueSource;
   }
 
   if (randomIiifQueue.length === 0) {
@@ -4416,6 +4522,12 @@ async function openRandomIiifManifest() {
   if (randomIiifButton) {
     randomIiifButton.disabled = true;
   }
+  const abortController =
+    typeof AbortController === 'function' ? new AbortController() : null;
+  if (abortController) {
+    cancelActiveManifestLoad();
+    activeManifestAbortController = abortController;
+  }
   setManifestLoading(true);
 
   try {
@@ -4426,7 +4538,10 @@ async function openRandomIiifManifest() {
         setManifestStatus(t('notifications.randomIiifLoading'), null);
         const prefetchedResult = await fetchJsonWithProxyFallback(
           candidateUrl,
-          { timeoutMs: RANDOM_IIIF_FETCH_TIMEOUT_MS },
+          {
+            timeoutMs: RANDOM_IIIF_FETCH_TIMEOUT_MS,
+            signal: abortController ? abortController.signal : null,
+          },
         );
         if (!isUsableIiifManifest(prefetchedResult.data)) {
           throw new Error('Manifest has no canvases');
@@ -4436,14 +4551,26 @@ async function openRandomIiifManifest() {
           prefetchedResult: prefetchedResult,
           randomMetadata: candidate,
           manageLoadingOverlay: false,
+          abortController: abortController,
+          suppressErrors: true,
           onFailure: function () {},
         });
         return;
       } catch (error) {
-        debugLog('Random IIIF candidate failed', candidateUrl);
+        if (isAbortError(error)) {
+          debugLog('Random IIIF load canceled', candidateUrl);
+          return;
+        }
+        debugLog(
+          'Random IIIF candidate skipped',
+          candidateUrl + (error && error.message ? ' - ' + error.message : ''),
+        );
       }
     }
   } finally {
+    if (activeManifestAbortController === abortController) {
+      activeManifestAbortController = null;
+    }
     if (randomIiifButton) {
       randomIiifButton.disabled = false;
     }
@@ -4454,6 +4581,12 @@ async function openRandomIiifManifest() {
 loadManifestButton.addEventListener('click', submitManifestFromInput);
 if (randomIiifButton) {
   randomIiifButton.addEventListener('click', openRandomIiifManifest);
+}
+if (manifestLoadingCancelButton) {
+  manifestLoadingCancelButton.addEventListener('click', function (event) {
+    event.stopPropagation();
+    cancelActiveManifestLoad();
+  });
 }
 manifestInput.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
