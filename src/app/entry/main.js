@@ -4506,9 +4506,7 @@ function isUsableIiifManifest(data) {
 }
 
 async function openRandomIiifManifest() {
-  const availableManifests = Array.isArray(
-    window.trifoglioRandomIiifManifests,
-  )
+  const availableManifests = Array.isArray(window.trifoglioRandomIiifManifests)
     ? window.trifoglioRandomIiifManifests.slice()
     : [];
   const queueSource = 'random-list';
