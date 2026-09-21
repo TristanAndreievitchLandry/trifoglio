@@ -136,6 +136,7 @@
     "addField": "Añadir campo",
     "save": "Guardar anotación",
     "cancel": "Cancelar",
+    "editAction": "Editar anotación",
     "editHint": "Haz doble clic en esta anotación para editarla"
   },
   "settings": {

@@ -3214,9 +3214,13 @@ function buildAnnotationPopupHtml(properties) {
   }
 
   rows.push(
-    '<p class="trf-popup__hint">' +
-      escapeAnnotationHtml(t('annotationEditor.editHint')) +
-      '</p>',
+    '<div class="trf-popup__actions">' +
+      '<button type="button" class="trf-popup__edit-button" title="' +
+      escapeAnnotationHtml(t('annotationEditor.editAction')) +
+      '" aria-label="' +
+      escapeAnnotationHtml(t('annotationEditor.editAction')) +
+      '"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>' +
+      '</div>',
   );
   return '<div class="trf-popup">' + rows.join('') + '</div>';
 }
@@ -3611,6 +3615,25 @@ function attachAnnotationLayerBehavior(layer) {
   layer.on('dblclick', function (event) {
     L.DomEvent.stop(event);
     openAnnotationEditor(layer);
+  });
+
+  layer.on('popupopen', function (event) {
+    const popupElement = event.popup && event.popup.getElement
+      ? event.popup.getElement()
+      : null;
+    const editButton = popupElement
+      ? popupElement.querySelector('.trf-popup__edit-button')
+      : null;
+
+    if (!editButton || editButton.__trfAnnotationEditBound) {
+      return;
+    }
+
+    editButton.__trfAnnotationEditBound = true;
+    editButton.addEventListener('click', function (clickEvent) {
+      L.DomEvent.stop(clickEvent);
+      openAnnotationEditor(layer);
+    });
   });
 }
 

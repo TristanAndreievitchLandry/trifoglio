@@ -136,6 +136,7 @@
     "addField": "Feld hinzufügen",
     "save": "Anmerkung speichern",
     "cancel": "Abbrechen",
+    "editAction": "Anmerkung bearbeiten",
     "editHint": "Doppelklicken Sie auf diese Anmerkung, um sie zu bearbeiten"
   },
   "settings": {

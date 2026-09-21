@@ -1601,6 +1601,34 @@ p {
   line-height: 1.4;
 }
 
+.trf-popup__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.trf-popup__edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(159, 230, 255, 0.54);
+  border-radius: 999px;
+  background: rgba(159, 230, 255, 0.1);
+  color: #e6f0ff;
+  cursor: pointer;
+}
+
+.trf-popup__edit-button:hover,
+.trf-popup__edit-button:focus-visible {
+  background: rgba(159, 230, 255, 0.2);
+  color: #ffffff;
+  outline: none;
+}
+
 .trf-popup__image {
   width: 300px;
   height: 300px;
