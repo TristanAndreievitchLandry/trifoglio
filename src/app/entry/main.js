@@ -3819,9 +3819,7 @@ async function downloadDrawnLayers() {
     return;
   }
 
-  const fileName = /\.(geo)?json$/i.test(trimmedName)
-    ? trimmedName
-    : trimmedName + '.geojson';
+  const fileName = trimmedName.replace(/\.(geo)?json$/i, '') + '.json';
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
